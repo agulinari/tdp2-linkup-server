@@ -67,7 +67,7 @@ const UserProfileSchema = new Schema({
 		      Order: Number, 
 		      Data: String //Data persist an String and this convert to base 64
 		    }}],
-  //Interests : [{ Interest : {...} Falta ver como es la estructura de los intereses que devuelve la api de facebook
+  Interests : [{ "Interest" : {name: String}}],// Falta ver como es la estructura de los intereses que devuelve la api de facebook
   Settings: {maxRange : Number,
 	     minAge: Number,
 	     maxAge: Number,
@@ -77,7 +77,7 @@ const UserProfileSchema = new Schema({
 	     searchSheMales: Number, //True: 1, False: 0
              location: [{lon : {type:Number},
 			 lat : {type:Number}}]}
-},{ collection: 'users_profile' });
+},{ collection: 'usersProfile' });
 
 // make this available to our users in our Node applications
 module.exports = mongoose.model("UserProfile", UserProfileSchema);

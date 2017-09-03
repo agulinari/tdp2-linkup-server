@@ -1,0 +1,88 @@
+[
+   {
+      "fbId":"012ProbandoId",
+      "Name":"Pablo Daniel Sívori",
+      "Occupation":"Estudiante",
+      "Education":"Licenciado en todo",
+      "Comments":"Esclavo del server",
+      "Birthdate":"1984-05-30",
+      "Sex":"M",
+      "Notifications":1,
+      "Invisible":0,
+      "accountType":"Basic",
+      "Images":[
+         {
+            "Image":{
+               "Id":"img_1",
+               "Order":1,
+               "Data":"la imagen"
+            }
+         }
+      ],
+      "Interests":[
+         {
+            "Interest":{
+
+            }
+         }
+      ],
+      "Settings":{
+         "maxRange":20,
+         "minAge":18,
+         "maxAge":34,
+         "onlyFriends":1,
+         "searchMales":0,
+         "searchFemales":0,
+         "searchSheMales":0,
+         "location":[
+            {
+               "lat":37.2,
+               "lon":34.2
+            }
+         ]
+      }
+   }
+,
+{
+      "fbId":"013ProbandoId",
+      "Name":"Juan Ignacio Lopez",
+      "Occupation":"Estudiante",
+      "Education":"Licenciado en todo",
+      "Comments":"Juan es shemale los sabados después de las 00:00",
+      "Birthdate":"1984-05-30",
+      "Sex":"M",
+      "Notifications":1,
+      "Invisible":0,
+      "accountType":"Basic",
+      "Images":[
+         {
+            "Image":{
+               "Id":"img_1",
+               "Order":1,
+               "Data":"la imagen"
+            }
+         }
+      ],
+      "Interests":[
+         {
+            "Interest":{
+
+            }
+         }
+      ],
+      "Settings":{
+         "maxRange":20,
+         "minAge":18,
+         "maxAge":34,
+         "onlyFriends":0,
+         "searchMales":0,
+         "searchFemales":0,
+         "searchSheMales":1,
+         "location":[
+            {
+               "lat":34.2,
+               "lon":34.2
+            }
+         ]
+      }
+   }]

@@ -17,5 +17,16 @@ exports.getUsersProfile = function (req, res) {
     });
 };
 
+//GET - Return UserProfile by facebookId
+exports.getUserProfileById = function (req, res) {
+    console.log('GET /userProfile');
+    var id = req.params.id ? req.params.id : "";
+    service.getUserProfileById(id, function (err, response) {
+        if (err) {
+            return errorHandler.throwError(res, err);
+        }
+        return res.json(response);
+    });
+};
 
 

@@ -23,7 +23,7 @@ app.get('/usersProfile', function (req,res,next){
 
 //GET UserProfile
 app.get('/userProfile/:id', function (req, res, next) {
-    userProfileCtrl.getUserProfile(req, res);
+    userProfileCtrl.getUserProfileById(req, res);
 });
  
 app.all('*', function (req,res,next) {

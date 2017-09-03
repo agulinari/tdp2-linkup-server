@@ -23,3 +23,24 @@ exports.getUsersProfile = function (term,offset,count, callback) {
     });
 };
 
+
+exports.getUserProfileById = function (id, callback) {
+/*
+    if (! utils.isValidPattern(namePattern)) {
+        callback(new BadRequest("Invalid City name"));
+        return;
+    }
+*/
+    console.log('Id: '+id);
+    dao.getUserProfileById(id, function (err,response) {
+       
+        if (err) {
+            console.log('hay error');
+	    callback(err);
+            return;
+        }
+        response.metadata = utils.getMetadata(response.length);
+        callback(null, response);
+    });
+};
+
