@@ -1,0 +1,25 @@
+{
+    "name": "weather-server",
+    "version": "0.0.1",
+    "description": "A weather rest server",
+    "private": "true",
+    "main":"server.js",
+    "scripts": {
+        "test": "mocha test --recursive --timeout 10000",
+        "coverage": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec ./test/*.js",
+        "start": "node src/server.js"
+    },
+    "dependencies": {
+        "express": "4.13.3",
+        "body-parser": "1.17.2",
+        "bootstrap": "3.3.6",
+        "mongoose": "latest",
+        "jsonschema": "1.1.0",
+        "async": "^2.0.1",
+        "node-rest-client": "3.1.0",
+        "geo-tz": "3.3.3",
+        "chai": "^3.5.0",
+        "chai-http": "^2.0.1",
+        "mocha": "2.4.5"
+    }
+}
