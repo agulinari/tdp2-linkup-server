@@ -16,12 +16,12 @@ app.set('port', (process.env.PORT || 3000));
 
 var userProfileCtrl = require(process.cwd() + '/src/controllers/UserProfileController');
 
-//Array<UsersProfile>
+//GET Array<UsersProfile>
 app.get('/usersProfile', function (req,res,next){
     userProfileCtrl.getUsersProfile(req, res);	
 });
 
-//UserProfile
+//GET UserProfile
 app.get('/userProfile/:id', function (req, res, next) {
     userProfileCtrl.getUserProfile(req, res);
 });
