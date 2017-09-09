@@ -28,7 +28,7 @@ app.get('/profile/:id', function (req, res, next) {
 
 //POST UserProfile
 app.post('/profile', function (req,res,next){
-    userProfileCtrl.getUsersProfile(req, res);	
+    userProfileCtrl.saveUserProfile(req, res);	
 });
 
 app.all('*', function (req,res,next) {

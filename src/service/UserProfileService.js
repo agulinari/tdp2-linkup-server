@@ -48,34 +48,21 @@ exports.getUserProfileById = function (id, callback) {
  * @param {Request} Request
  * @param {Function} callback  The function to call when retrieval is complete.
  */
-exports.saveUserProfile = function(req, callback) {
-
-  var isValid = jsonValidator.isInterestValid(req.body);
-
-  if (!isValid) {
-    callback(new BadRequest("Invalid interest's json format"));
-    return;
-  }
-
-  var interest = {
-    category: req.body.interest.category,
-    value: req.body.interest.value
-  }
-  var self = this;
-  self.existsInterest(interest, function(err, exists, response) {
-    if (err) {
-      callback(err);
-    } else if (exists) {
-      callback(new BadRequest("Interest " + JSON.stringify(response) + " already exists."));
-    } else {
-      dao.saveInterest(interest, function(err, response) {
-        if (err) {
-          callback(err);
-        } else {
-          callback(null);
-        }
-      });
+exports.saveUserProfile = function (userProfile, callback) {
+    /*
+    var isValid = jsonValidator.isUserProfileValid(userProfile);
+    if (!isValid) {
+        callback(new BadRequest("Invalid UserProfile's json format"));
+        return;
     }
-  });
+    */
+
+    dao.saveUser(userProfile, function (err, response) {
+        if (err) {
+            callback(err, response);
+            return;
+        }
+        callback(null, response);
+    });
 };
 

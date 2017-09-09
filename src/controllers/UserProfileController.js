@@ -32,15 +32,12 @@ exports.getUserProfileById = function (req, res) {
 
 //POST - Insert a new UserProfile in db
 exports.saveUserProfile = function(req, res) {
-
-  console.log('POST /userProfile');
-
-  service.saveUserProfile(req, function(err, response) {
-    if (err) {
-      return errorHandler.throwError(res, err);
-    }
-
-    return res.json(response);
-  });
+    console.log('POST /profile' + JSON.stringify(req.body));
+    service.saveUserProfile(req.body.UserProfile, function (err, response) {
+        if (err) {
+            return errorHandler.throwError(res, err);
+        }
+        return res.json(response);
+    });
 };
 
