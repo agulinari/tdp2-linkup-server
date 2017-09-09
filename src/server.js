@@ -16,18 +16,22 @@ app.set('port', (process.env.PORT || 3000));
 
 var userProfileCtrl = require(process.cwd() + '/src/controllers/UserProfileController');
 
-//GET Array<UsersProfile>
-app.get('/usersProfile', function (req,res,next){
+//GET Array<UserProfile>
+app.get('/profile', function (req,res,next){
     userProfileCtrl.getUsersProfile(req, res);	
 });
 
 //GET UserProfile
-app.get('/userProfile/:id', function (req, res, next) {
+app.get('/profile/:id', function (req, res, next) {
     userProfileCtrl.getUserProfileById(req, res);
 });
- 
+
+//POST UserProfile
+app.post('/profile', function (req,res,next){
+    userProfileCtrl.getUsersProfile(req, res);	
+});
+
 app.all('*', function (req,res,next) {
-    console.log('NOPE');
     return res.sendStatus(401);
     next();
 });

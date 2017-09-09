@@ -19,7 +19,7 @@ exports.getUsersProfile = function (req, res) {
 
 //GET - Return UserProfile by facebookId
 exports.getUserProfileById = function (req, res) {
-    console.log('GET /userProfile');
+    console.log('GET /profile/*id');
     var id = req.params.id ? req.params.id : "";
     service.getUserProfileById(id, function (err, response) {
         if (err) {

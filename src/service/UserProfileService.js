@@ -31,12 +31,10 @@ exports.getUserProfileById = function (id, callback) {
         return;
     }
 */
-    console.log('Id: '+id);
     dao.getUserProfileById(id, function (err,response) {
-       
         if (err) {
             console.log('hay error');
-	    callback(err);
+	        callback(err);
             return;
         }
         response.metadata = utils.getMetadata(response.length);
