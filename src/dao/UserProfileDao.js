@@ -87,10 +87,11 @@ exports.updateUserProfile = function (userProfileIn, callback) {
            var id = userProfileData.fbid;
       	   console.log("userProfile fbid a updatear: " + id);
 
-      	   userProfile.find({"fbid":id},function(err,values){
+      	   userProfile.find({"fbid":id},function(err,value){
  
-         	if(values != null && values.length != 0){ 
-      			userProfile.update({"fbid":id},userProfileData,function(err){
+         	if(value != null && value.length != 0){ 
+                        userProfileData._id = userProfile._id;
+                        userProfile.update({"fbid":id},userProfileData,function(err){
 				if(err){
 					console.log(err);			
 					callback(err,'Error update user profile');
@@ -99,7 +100,7 @@ exports.updateUserProfile = function (userProfileIn, callback) {
 				callback(null,userProfileData);	
 			});
 	
-	 	}else if(values!=null){			
+	 	}else if(value!=null){			
 			console.log('No se encontro el perfil del usuario con id ', id);
 			err = new NotFound("UserProfile not exist");
 		        callback(err,null);	
