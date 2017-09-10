@@ -82,4 +82,4 @@ const UserProfileSchema = new Schema({
 },{ collection: 'usersProfile' });
 
 // make this available to our users in our Node applications
-module.exports = mongoose.model("UserProfile", UserProfileSchema);
+module.exports = mongoose.model("userProfile", UserProfileSchema);
