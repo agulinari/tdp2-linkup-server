@@ -1,6 +1,6 @@
 'use strict';
 
-var userProfile = require('../model/UserProfile');
+var UserProfile = require('../model/UserProfile');
 var NotFound = require("../error/NotFound");
 var BadRequest = require("../error/BadRequest");
 
@@ -10,7 +10,7 @@ var BadRequest = require("../error/BadRequest");
  * @param {Function} callback  The function to call when retrieval is complete.
  **/
 exports.getUserProfileById = function(id, callback) {
-    userProfile.findOne({"fbid":id},function (err, value) {
+    UserProfile.findOne({"fbid":id},function (err, value) {
         if (err){
             console.log('Error: ' + err);
             callback(err,null);
@@ -29,7 +29,7 @@ exports.getUserProfileById = function(id, callback) {
 exports.getUsersProfile = function(term,offset,count,callback) {
       console.log("offset " + offset);
       console.log("count " + count);
-      userProfile.find({},function (err, values) {
+      UserProfile.find({},function (err, values) {
       if (err){
            console.log('Error: ' + err);
 	   callback(err,null);
@@ -38,16 +38,16 @@ exports.getUsersProfile = function(term,offset,count,callback) {
     }).sort('name').skip(offset).limit(count);    
 };
 
-exports.saveUserProfile = function (userProfileIn, callback) {
+exports.saveUserProfile = function (userProfile, callback) {
             
-      var userProfileData = new userProfile(userProfileIn);
+      var userProfileData = new UserProfile(userProfile);
        
        if((userProfileData != null && userProfileData != undefined) && 
-         (userProfileIn.fbid != null && userProfileIn.fbid!= undefined)){	
+         (userProfile.fbid != null && userProfile.fbid!= undefined)){	
 
       		console.log("userProfile fbid a insertar: " + userProfileData.fbid);
 
-      		userProfile.find({"fbid":userProfileData.fbid},function(err,values){
+      		UserProfile.find({"fbid":userProfileData.fbid},function(err,values){
 
 			if(err){
 				console.log('Error: Buscando usuario a insertar: '+ err);
@@ -55,16 +55,19 @@ exports.saveUserProfile = function (userProfileIn, callback) {
 			}	
 
 			if(values == null || values.length == 0){
-	      
-		    	      userProfileData.save(function (err) {
 
-		    		 if(err) {
-        	   		    console.error('Error haciendo save del perfil de usuario!');
-		    		    callback(err,'Error save perfil de usuario');
-        	 		 }
+			     // function(err,result){
+
+		    		//    if(err) {
+        	   		  //  	console.error('Error haciendo save del perfil de usuario!');
+		    		    // 	callback(err,'Error save perfil de usuario');
+        	 		    //}
 	    
-	        	         callback(null,userProfileData);
-      	     	    	      });
+	        	          // callback(null,userProfileData);
+      	     	    	     // }	      
+
+		    	      userProfileData.save();
+			      callback(null,userProfileData);
 			}else if(values!=null){
 			      err = new BadRequest("UserProfile already exist");
 			      callback(err,null);
@@ -77,21 +80,21 @@ exports.saveUserProfile = function (userProfileIn, callback) {
 	
 };
 
-exports.updateUserProfile = function (userProfileIn, callback) {
+exports.updateUserProfile = function (userProfile, callback) {
 
-      var userProfileData = new userProfile(userProfileIn);
+      var userProfileData = new UserProfile(userProfile);
       
       if((userProfileData != null && userProfileData != undefined) && 
-         (userProfileIn.fbid != null && userProfileIn.fbid!= undefined)){
+         (userProfile.fbid != null && userProfile.fbid!= undefined)){
       	   
            var id = userProfileData.fbid;
       	   console.log("userProfile fbid a updatear: " + id);
 
-      	   userProfile.find({"fbid":id},function(err,value){
+      	   UserProfile.find({"fbid":id},function(err,value){
  
          	if(value != null && value.length != 0){ 
                         userProfileData._id = userProfile._id;
-                        userProfile.update({"fbid":id},userProfileData,function(err){
+                        UserProfile.update({"fbid":id},userProfileData,function(err){
 				if(err){
 					console.log(err);			
 					callback(err,'Error update user profile');
@@ -115,7 +118,7 @@ exports.updateUserProfile = function (userProfileIn, callback) {
 
 exports.deleteUsersProfile = function (callback) {
 
-      	   userProfile.remove({},function(err,values){
+      	   UserProfile.remove({},function(err,values){
  
          	if(err){
 			console.log(err);

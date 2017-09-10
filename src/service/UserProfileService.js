@@ -20,7 +20,8 @@ exports.getUsersProfile = function (term,offset,count, callback) {
         }
         response.metadata = utils.getMetadata(response.length);
         callback(null, response);
-    });
+    }); 
+    
 };
 
 

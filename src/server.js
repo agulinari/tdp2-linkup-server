@@ -17,27 +17,52 @@ var userProfileCtrl = require(process.cwd() + '/src/controllers/UserProfileContr
 
 //GET Array<UserProfile>
 app.get('/usersProfile', function (req,res,next){
+  try{    
     userProfileCtrl.getUsersProfile(req, res);	
+ }catch(err){
+    console.log('ERROR INESPERADO: '+err);
+    return res.sendStatus(500);
+ }
 });
 
 //GET UserProfile
 app.get('/userProfileById/:id', function (req, res, next) {
+ try{
     userProfileCtrl.getUserProfileById(req, res);
+ }catch(err){
+    console.log('ERROR INESPERADO: '+err);
+    return res.sendStatus(500);
+ }
 });
 
 //POST UserProfile
 app.post('/userProfile', function (req,res,next){
-    userProfileCtrl.saveUserProfile(req, res);	
+  try{ 
+     userProfileCtrl.saveUserProfile(req, res);	
+  }catch(err){
+     console.log('ERROR INESPERADO: '+err);
+     return res.sendStatus(500);
+  }
 });
 
 //PUT UserProfile
 app.put('/userProfile', function (req,res,next){
+ try{
     userProfileCtrl.updateUserProfile(req, res);
+ }catch(err){
+    console.log('ERROR INESPERADO: '+err);
+    return res.sendStatus(500);
+ }
 });
 
 //DELETE ALL UsersProfile
 app.delete('/usersProfile', function (req,res,next){
-    userProfileCtrl.deleteUsersProfile(res);
+ try{ 
+   userProfileCtrl.deleteUsersProfile(res);
+ }catch(err){
+   console.log('ERROR INESPERADO: '+err);
+   return res.sendStatus(500);
+ }
 });
 
 app.all('*', function (req,res,next) {

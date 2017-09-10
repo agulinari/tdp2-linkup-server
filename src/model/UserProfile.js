@@ -8,6 +8,10 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
+var ObjectIdSchema = Schema.ObjectId;
+var ObjectId = mongoose.Types.ObjectId;
+
+
 
 
 /**
@@ -55,7 +59,7 @@ Settings: {
 
 */
 const UserProfileSchema = new Schema({
-  _id: {type: String},
+  _id: {type:ObjectIdSchema, default: new ObjectId()},
   birthday: String,
   comments: String,
   education: String,
@@ -64,7 +68,7 @@ const UserProfileSchema = new Schema({
   gender: String, //Male: M, Female: F, SheMale: FM
   images: [{"image": String, 
 	    "order": Number,
-	    "_id": String}],
+	    "_id": {type:ObjectIdSchema, default: new ObjectId()}}],
   interests : [{ "interest" : String}],// Falta ver como es la estructura de los intereses que devuelve la api de facebook
   lastName: String,
   occupation: String,
@@ -84,4 +88,4 @@ const UserProfileSchema = new Schema({
 },{ collection: 'usersProfile' });
 
 // make this available to our users in our Node applications
-module.exports = mongoose.model("userProfile", UserProfileSchema);
+module.exports = mongoose.model("UserProfile", UserProfileSchema);
