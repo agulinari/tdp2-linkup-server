@@ -90,7 +90,7 @@ exports.updateUserProfile = function (userProfileIn, callback) {
       	   userProfile.find({"fbid":id},function(err,values){
  
          	if(values != null && values.length != 0){ 
-      			userProfile.update({"fbid":id},function(err){
+      			userProfile.update({"fbid":id},userProfileData,function(err){
 				if(err){
 					console.log(err);			
 					callback(err,'Error update user profile');
