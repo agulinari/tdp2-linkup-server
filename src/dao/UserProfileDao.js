@@ -84,18 +84,18 @@ exports.updateUserProfile = function (userProfileIn, callback) {
       if((userProfileData != null && userProfileData != undefined) && 
          (userProfileIn.fbid != null && userProfileIn.fbid!= undefined)){
       	   
-           var id = userProfile.fbid;
+           var id = userProfileData.fbid;
       	   console.log("userProfile fbid a updatear: " + id);
 
-      	   UserProfile.find({"fbid":id},function(err,values){
+      	   userProfile.find({"fbid":id},function(err,values){
  
          	if(values.length != 0){ 
-      			UserProfile.update({"fbid":id},userProfile,function(err,numberAffected){
+      			userProfile.update({"fbid":id},function(err){
 				if(err){
 					console.log(err);			
 					callback(err,'Error update user profile');
 				}
-				console.log('Update %d usersProfile', numberAffected);
+				console.log('Updating usersProfile');
 				callback(null,userProfileData);	
 			});
 	
