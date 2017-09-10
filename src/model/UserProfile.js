@@ -51,33 +51,32 @@ Settings: {
 
 }
 
+{"birthday":"01/04/1983","comments":"","education":"Universidad de Buenos Aires","fbid":"10214664566027711","firstName":"Agustín","gender":"male","images":[{"image":"/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQOe\nEZtRvtB0j4kfE2Fp7bx58QU1iTw0/iHRdBsV+zReHoQ6vJyGKHNcNet7dPB2enKnJu1kpJpK26fN\nd9b8tpaNv5PHVnXxUvq+kkktXa65pa2tb+XRuz6rc//Z\n","order":0}],"interests":[],"lastName":"Linari","occupation":"","settings":{"invisible":false,"maxAge":85,"maxDistance":97,"minAge":58,"notifications":true,"onlyFriends":false,"searchFemales":false,"searchMales":true}}
+
 */
 const UserProfileSchema = new Schema({
-  fbId: String,
-  Name: String,
-  Occupation: String,
-  Education: String,
-  Comments: String,
-  Birthdate: String,
-  Sex: String, //Male: M, Female: F, SheMale: FM
-  Notifications: Number, //True: 1, False: 0
-  Invisible: Number, //True: 1, False: 0
-  accountType: String, //Value: Premium or Basic
-  Images: [{ Image: { Id: String, 
-		      Order: Number, 
-		      Data: String //Data persist an String and this convert to base 64
-		    }}],
-  Interests : [{ "Interest" : {name: String}}],// Falta ver como es la estructura de los intereses que devuelve la api de facebook
-  Settings: {maxRange : Number,
-	     minAge: Number,
+  birthday: String,
+  comments: String,
+  education: String,
+  fbid: String,
+  firstName: String,
+  gender: String, //Male: M, Female: F, SheMale: FM
+  images: [{"image": String, 
+	    "order": Number }],
+  interests : [{ "interest" : String}],// Falta ver como es la estructura de los intereses que devuelve la api de facebook
+  lastName: String,
+  occupation: String,
+  settings: {invisible: {type: Boolean}, //True: 1, False: 0
+	     maxRange : Number,
 	     maxAge: Number,
-             onlyFriends: Number, //True: 1, False: 0
-	     searchMales: Number, //True: 1, False: 0
-	     searchFemales: Number, //True: 1, False: 0
-	     searchSheMales: Number, //True: 1, False: 0
-             location: [{lon : {type:Number},
-			 lat : {type:Number}}]}
-},{ collection: 'usersProfile' });
+             maxDistance : Number,
+	     minAge: Number,
+	     notifications: {type: Boolean}, //True: 1, False: 0
+             onlyFriends: {type: Boolean}, //True: 1, False: 0
+	     searchMales: {type: Boolean}, //True: 1, False: 0
+	     searchFemales: {type: Boolean} //True: 1, False: 0
+	     }
+},{ collection: 'usersProfile' },{versionKey: false});
 
 // make this available to our users in our Node applications
 module.exports = mongoose.model("UserProfile", UserProfileSchema);

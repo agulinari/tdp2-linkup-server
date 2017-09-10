@@ -57,7 +57,30 @@ exports.saveUserProfile = function (userProfile, callback) {
     }
     */
 
-    dao.saveUser(userProfile, function (err, response) {
+    dao.saveUserProfile(userProfile, function (err, response) {
+        if (err) {
+            callback(err, response);
+            return;
+        }
+        callback(null, response);
+    });
+};
+
+/**
+ * Update userProfile 
+ * @param {Request} Request
+ * @param {Function} callback  The function to call when retrieval is complete.
+ */
+exports.updateUserProfile = function (userProfile, callback) {
+    /*
+    var isValid = jsonValidator.isUserProfileValid(userProfile);
+    if (!isValid) {
+        callback(new BadRequest("Invalid UserProfile's json format"));
+        return;
+    }
+    */
+
+    dao.updateUserProfile(userProfile, function (err, response) {
         if (err) {
             callback(err, response);
             return;

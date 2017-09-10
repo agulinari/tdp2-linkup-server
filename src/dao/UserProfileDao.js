@@ -9,7 +9,7 @@ var UserProfile = require('../model/UserProfile');
  **/
 exports.getUserProfileById = function(id, callback) {
     console.log('Retrieving UserProfile with id: ' + id);
-    UserProfile.find({"fbId":id},function (err, value) {
+    UserProfile.find({"fbid":id},function (err, value) {
         if (err){
             console.log('Error: ' + err);
             callback(err,null);
@@ -28,4 +28,53 @@ exports.getUsersProfile = function(term,offset,count,callback) {
       }
 	callback(null, values);
     }).sort('name').skip(offset).limit(count);    
+};
+
+exports.saveUserProfile = function (userProfile, callback) {
+            
+      var userProfileData = new UserProfile(userProfile);
+
+      console.log("userProfile fbid a insertar: " + userProfileData.fbId);
+
+      UserProfile.find({"fbid":userProfileData.fbId},function(err,values){
+
+	if(err){
+		console.log('Error: Buscando usuario a insertar: '+ err);
+		callback(err,'Error buscando usuario a insertar');	
+	}	
+
+	if(values.length == 0){
+	      
+	    userProfileData.save(function (err) {
+
+	    	if(err) {
+           		console.error('Error haciendo save del perfil de usuario!');
+	    		callback(err,'Error save perfil de usuario');
+            	}
+	    
+	        callback(null,'userProfile created');
+      	     });
+	}else{
+		callback(null,'userProfile already exist');
+	}
+      });
+};
+
+exports.updateUserProfile = function (userProfile, callback) {
+
+      var userProfileData = new UserProfile(userProfile);
+      
+      var id = userProfile.fbid;
+      console.log("userProfile fbid a updatear: " + userProfileData.fbId);
+
+       UserProfile.update({"fbid":id},userProfile,
+		function(err,numberAffected){
+			if(err){
+				console.log(err);			
+				callback(err,'Error update user profile');
+			}
+			console.log('Update %d usersProfile', numberAffected);
+			callback(null,'userProfile update');	
+		});
+
 };
