@@ -66,17 +66,20 @@ const UserProfileSchema = new Schema({
   interests : [{ "interest" : String}],// Falta ver como es la estructura de los intereses que devuelve la api de facebook
   lastName: String,
   occupation: String,
-  settings: {invisible: {type: Boolean}, //True: 1, False: 0
+  settings: {
+	     fbid: String,
+             invisible: {type: Boolean}, //True: 1, False: 0
 	     maxRange : Number,
 	     maxAge: Number,
              maxDistance : Number,
 	     minAge: Number,
+	     accountType: String,
 	     notifications: {type: Boolean}, //True: 1, False: 0
              onlyFriends: {type: Boolean}, //True: 1, False: 0
 	     searchMales: {type: Boolean}, //True: 1, False: 0
 	     searchFemales: {type: Boolean} //True: 1, False: 0
 	     }
-},{ collection: 'usersProfile' },{versionKey: false});
+},{ collection: 'usersProfile' });
 
 // make this available to our users in our Node applications
 module.exports = mongoose.model("UserProfile", UserProfileSchema);
