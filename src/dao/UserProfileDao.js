@@ -1,6 +1,8 @@
 'use strict';
 
 var UserProfile = require('../model/UserProfile');
+var NotFound = require("../error/NotFound");
+var BadRequest = require("../error/BadRequest");
 
 /**
  * Retrieves an List of Subjects
@@ -14,7 +16,12 @@ exports.getUserProfileById = function(id, callback) {
             console.log('Error: ' + err);
             callback(err,null);
         }
-	    callback(null, value);
+	    if(value.length == 0){
+	            err = new NotFound("No se encontro el usuario");
+		    callback(err, null);
+	    }else{
+	            callback(null, value);
+            }
     });
 };
 
@@ -33,48 +40,72 @@ exports.getUsersProfile = function(term,offset,count,callback) {
 exports.saveUserProfile = function (userProfile, callback) {
             
       var userProfileData = new UserProfile(userProfile);
+       
+       if((userProfileData != null && userProfileData != undefined) && 
+         (userProfile.fbid != null && userProfile.fbid!= undefined)){	
 
-      console.log("userProfile fbid a insertar: " + userProfileData.fbId);
+      		console.log("userProfile fbid a insertar: " + userProfileData.fbid);
 
-      UserProfile.find({"fbid":userProfileData.fbId},function(err,values){
+      		UserProfile.find({"fbid":userProfileData.fbid},function(err,values){
 
-	if(err){
-		console.log('Error: Buscando usuario a insertar: '+ err);
-		callback(err,'Error buscando usuario a insertar');	
-	}	
+			if(err){
+				console.log('Error: Buscando usuario a insertar: '+ err);
+				callback(err,null);	
+			}	
 
-	if(values.length == 0){
+			if(values.length == 0){
 	      
-	    userProfileData.save(function (err) {
+		    	      userProfileData.save(function (err) {
 
-	    	if(err) {
-           		console.error('Error haciendo save del perfil de usuario!');
-	    		callback(err,'Error save perfil de usuario');
-            	}
+		    		 if(err) {
+        	   		    console.error('Error haciendo save del perfil de usuario!');
+		    		    callback(err,'Error save perfil de usuario');
+        	 		 }
 	    
-	        callback(null,'userProfile created');
-      	     });
-	}else{
-		callback(null,'userProfile already exist');
-	}
-      });
+	        	         callback(null,userProfile);
+      	     	    	      });
+			}else{
+			      err = new BadRequest("UserProfile already exist");
+			      callback(err,null);
+		        }
+      		});
+       }else{
+       	   err = BadRequest("No se pudo procesar el request");
+	   callback(err,null);
+       }
+	
 };
 
 exports.updateUserProfile = function (userProfile, callback) {
 
       var userProfileData = new UserProfile(userProfile);
       
-      var id = userProfile.fbid;
-      console.log("userProfile fbid a updatear: " + userProfileData.fbId);
+      if((userProfileData != null && userProfileData != undefined) && 
+         (userProfile.fbid != null && userProfile.fbid!= undefined)){
+      	   
+           var id = userProfile.fbid;
+      	   console.log("userProfile fbid a updatear: " + id);
 
-       UserProfile.update({"fbid":id},userProfile,
-		function(err,numberAffected){
-			if(err){
-				console.log(err);			
-				callback(err,'Error update user profile');
-			}
-			console.log('Update %d usersProfile', numberAffected);
-			callback(null,'userProfile update');	
-		});
-
+      	   UserProfile.find({"fbid":id},function(err,values){
+ 
+         	if(values.length != 0){ 
+      			UserProfile.update({"fbid":id},userProfile,function(err,numberAffected){
+				if(err){
+					console.log(err);			
+					callback(err,'Error update user profile');
+				}
+				console.log('Update %d usersProfile', numberAffected);
+				callback(null,userProfile);	
+			});
+	
+	 	}else{			
+			console.log('No se encontro el perfil del usuario con id ', id);
+			err = new NotFound("UserProfile not exist");
+		        callback(err,null);	
+		}
+     	   });
+      }else{
+           err = BadRequest("No se pudo procesar el request");
+	   callback(err,null);
+      }
 };
