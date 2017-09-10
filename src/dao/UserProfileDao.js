@@ -15,11 +15,11 @@ exports.getUserProfileById = function(id, callback) {
             console.log('Error: ' + err);
             callback(err,null);
         }
-	    if(value.length == 0){
+	    if(value == null || value.length == 0){
 		    console.log('No se encontro el usuario con id: ' + id);
 	            err = new NotFound("No se encontro el usuario");
 		    callback(err, null);
-	    }else{
+	    }else if(value != null){
 		    console.log('Retrieving UserProfile with id: ' + id);
 	            callback(null, value);
             }
@@ -54,7 +54,7 @@ exports.saveUserProfile = function (userProfileIn, callback) {
 				callback(err,null);	
 			}	
 
-			if(values.length == 0){
+			if(values == null || values.length == 0){
 	      
 		    	      userProfileData.save(function (err) {
 
@@ -65,7 +65,7 @@ exports.saveUserProfile = function (userProfileIn, callback) {
 	    
 	        	         callback(null,userProfileData);
       	     	    	      });
-			}else{
+			}else if(values!=null){
 			      err = new BadRequest("UserProfile already exist");
 			      callback(err,null);
 		        }
@@ -89,7 +89,7 @@ exports.updateUserProfile = function (userProfileIn, callback) {
 
       	   userProfile.find({"fbid":id},function(err,values){
  
-         	if(values.length != 0){ 
+         	if(values != null && values.length != 0){ 
       			userProfile.update({"fbid":id},function(err){
 				if(err){
 					console.log(err);			
@@ -99,7 +99,7 @@ exports.updateUserProfile = function (userProfileIn, callback) {
 				callback(null,userProfileData);	
 			});
 	
-	 	}else{			
+	 	}else if(values!=null){			
 			console.log('No se encontro el perfil del usuario con id ', id);
 			err = new NotFound("UserProfile not exist");
 		        callback(err,null);	
