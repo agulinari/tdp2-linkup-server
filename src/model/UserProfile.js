@@ -73,7 +73,7 @@ const UserProfileSchema = new Schema({
 	     maxAge: Number,
              maxDistance : Number,
 	     minAge: Number,
-	     accountType: String,
+	     accountType: {type: String, default: "Basic"},
 	     notifications: {type: Boolean}, //True: 1, False: 0
              onlyFriends: {type: Boolean}, //True: 1, False: 0
 	     searchMales: {type: Boolean}, //True: 1, False: 0

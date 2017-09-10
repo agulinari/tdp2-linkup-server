@@ -89,3 +89,27 @@ exports.updateUserProfile = function (userProfile, callback) {
     });
 };
 
+/**
+ * Update deleteUsersProfile 
+ * @param {Request} Request
+ * @param {Function} callback  The function to call when retrieval is complete.
+ */
+exports.deleteUsersProfile = function (callback) {
+    /*
+    var isValid = jsonValidator.isUserProfileValid(userProfile);
+    if (!isValid) {
+        callback(new BadRequest("Invalid UserProfile's json format"));
+        return;
+    }
+    */
+
+    dao.deleteUsersProfile(function (err, response) {
+        if (err) {
+            callback(err, response);
+            return;
+        }
+        callback(null, response);
+    });
+};
+
+

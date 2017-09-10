@@ -10,16 +10,18 @@ var BadRequest = require("../error/BadRequest");
  * @param {Function} callback  The function to call when retrieval is complete.
  **/
 exports.getUserProfileById = function(id, callback) {
-    console.log('Retrieving UserProfile with id: ' + id);
+    
     UserProfile.find({"fbid":id},function (err, value) {
         if (err){
             console.log('Error: ' + err);
             callback(err,null);
         }
 	    if(value.length == 0){
+		    console.log('No se encontro el usuario con id: ' + id);
 	            err = new NotFound("No se encontro el usuario");
 		    callback(err, null);
 	    }else{
+		    console.log('Retrieving UserProfile with id: ' + id);
 	            callback(null, value);
             }
     });
@@ -108,4 +110,19 @@ exports.updateUserProfile = function (userProfile, callback) {
            err = BadRequest("No se pudo procesar el request");
 	   callback(err,null);
       }
+};
+
+
+exports.deleteUsersProfile = function (callback) {
+
+      	   UserProfile.remove({},function(err,values){
+ 
+         	if(err){
+			console.log(err);
+			callback(err,null);			
+		}
+		
+		console.log("borrando users profile");
+		callback(null);	
+	   });
 };

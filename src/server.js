@@ -36,6 +36,11 @@ app.put('/userProfile', function (req,res,next){
     userProfileCtrl.updateUserProfile(req, res);
 });
 
+//DELETE ALL UsersProfile
+app.delete('/usersProfile', function (req,res,next){
+    userProfileCtrl.deleteUsersProfile(res);
+});
+
 app.all('*', function (req,res,next) {
     return res.sendStatus(401);
     next();

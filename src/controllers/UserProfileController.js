@@ -52,3 +52,14 @@ exports.updateUserProfile = function(req, res) {
     });
 };
 
+//DELETE - Delete All UsersProfile in db
+exports.deleteUsersProfile = function(res) {
+    console.log('DELETE /deleteUsersProfile');
+    service.deleteUsersProfile(function (err, response) {
+        if (err) {
+            return errorHandler.throwError(res, err);
+        }
+        return res.json(response);
+    });
+};
+
