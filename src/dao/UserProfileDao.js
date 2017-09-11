@@ -53,7 +53,7 @@ exports.saveUserProfile = function (userProfile, callback) {
 				console.log('Error: Buscando usuario a insertar: '+ err);
 				callback(err,null);	
 			}	
-
+                        console.log("Cantidad de usuarios: "+values.length);
 			if(values == null || values.length == 0){
 
 			     // function(err,result){
@@ -93,7 +93,9 @@ exports.updateUserProfile = function (userProfile, callback) {
       	   UserProfile.find({"fbid":id},function(err,value){
  
          	if(value != null && value.length != 0){ 
-                        userProfileData._id = userProfile._id;
+                        //delete userProfile._id;
+                        console.log("Id a realizar update:"+userProfile._id);
+                        userProfileData._id = value._id;
                         UserProfile.update({"fbid":id},userProfileData,function(err){
 				if(err){
 					console.log(err);			

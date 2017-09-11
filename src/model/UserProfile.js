@@ -59,7 +59,7 @@ Settings: {
 
 */
 const UserProfileSchema = new Schema({
-  _id: {type:ObjectIdSchema, default: new ObjectId()},
+  //_id: {type:ObjectIdSchema, default: new ObjectId()},
   birthday: String,
   comments: String,
   education: String,
@@ -68,7 +68,7 @@ const UserProfileSchema = new Schema({
   gender: String, //Male: M, Female: F, SheMale: FM
   images: [{"image": String, 
 	    "order": Number,
-	    "_id": {type:ObjectIdSchema, default: new ObjectId()}}],
+	    }], //"_id": {type:ObjectIdSchema, default: new ObjectId()}
   interests : [{ "interest" : String}],// Falta ver como es la estructura de los intereses que devuelve la api de facebook
   lastName: String,
   occupation: String,
