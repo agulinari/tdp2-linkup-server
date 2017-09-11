@@ -82,12 +82,14 @@ exports.saveUserProfile = function (userProfile, callback) {
 
 exports.updateUserProfile = function (userProfile, callback) {
 
-      var userProfileData = new UserProfile(userProfile);
+      //var userProfileData = new UserProfile(userProfile);
+      var userProfileData = Object.assign({},userProfile);
+      console.log(JSON.stringify(userProfileData));
       
       if((userProfileData != null && userProfileData != undefined)){// && 
          //(userProfile.fbid != null && userProfile.fbid!= undefined)){
       	   
-           //var id = userProfileData.fbid;
+           var id = userProfileData.fbid;
       	   //console.log("userProfile fbid a updatear: " + id);
 
       	  // UserProfile.find({"fbid":id},function(err,value){
@@ -95,7 +97,7 @@ exports.updateUserProfile = function (userProfile, callback) {
            //if(value != null && value.length != 0){ 
                         //console.log("Id a realizar update:"+value._id);
                         //userProfileData._id = value._id;
-                        UserProfile.update({"_id":undefined},userProfileData,function(err){
+                        UserProfile.findOneAndUpdate({"fbid":id},userProfileData,function(err){
 				if(err){
 					console.log(err);			
 					callback(err,'Error update user profile');
