@@ -87,16 +87,15 @@ exports.updateUserProfile = function (userProfile, callback) {
       if((userProfileData != null && userProfileData != undefined)){// && 
          //(userProfile.fbid != null && userProfile.fbid!= undefined)){
       	   
-           var id = userProfileData.fbid;
+           //var id = userProfileData.fbid;
       	   //console.log("userProfile fbid a updatear: " + id);
 
       	  // UserProfile.find({"fbid":id},function(err,value){
  
-         //	if(value != null && value.length != 0){ 
-                        //delete userProfile._id;
-                        console.log("Id a realizar update:"+userProfile._id);
-             //           userProfileData._id = value._id;
-                        UserProfile.update({"fbid":id},userProfileData,function(err){
+           //if(value != null && value.length != 0){ 
+                        //console.log("Id a realizar update:"+value._id);
+                        //userProfileData._id = value._id;
+                        UserProfile.update({"_id":undefined},userProfileData,function(err){
 				if(err){
 					console.log(err);			
 					callback(err,'Error update user profile');
@@ -105,11 +104,11 @@ exports.updateUserProfile = function (userProfile, callback) {
 				callback(null,userProfileData);	
 			});
 	
-	 //	}else if(value!=null){			
-	//		console.log('No se encontro el perfil del usuario con id ', id);
-	//		err = new NotFound("UserProfile not exist");
-	//	        callback(err,null);	
-	//	}
+	    //}else if(value!=null){			
+		//	console.log('No se encontro el perfil del usuario con id ', id);
+		//	err = new NotFound("UserProfile not exist");
+		 //       callback(err,null);	
+	   // }
      	   //});
       }else{
            err = BadRequest("No se pudo procesar el request");
