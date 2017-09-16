@@ -1,7 +1,7 @@
 {
-    "name": "weather-server",
+    "name": "linkup-server",
     "version": "0.0.1",
-    "description": "A weather rest server",
+    "description": "A people matching rest app server",
     "private": "true",
     "main":"server.js",
     "scripts": {
@@ -20,6 +20,7 @@
         "geo-tz": "3.3.3",
         "chai": "^3.5.0",
         "chai-http": "^2.0.1",
-        "mocha": "2.4.5"
+        "mocha": "2.4.5",
+        "geopoint" : "^1.0.1"
     }
 }

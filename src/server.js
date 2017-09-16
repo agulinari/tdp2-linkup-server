@@ -65,6 +65,17 @@ app.delete('/usersProfile', function (req,res,next){
  }
 });
 
+var candidateCtrl = require(process.cwd() + '/src/controllers/CandidateController');
+app.get('/candidate/:id', function (req,res,next) {
+    console.log('GET /candidate/' + req.params.id);
+    try{    
+        candidateCtrl.getCandidates(req, res);	
+    } catch (err) {
+        console.log('ERR GET /candidate/:id: ' + err);
+        return res.sendStatus(500);
+    }
+});
+
 app.all('*', function (req,res,next) {
     return res.sendStatus(401);
     next();

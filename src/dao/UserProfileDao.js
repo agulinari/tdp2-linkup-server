@@ -10,19 +10,48 @@ var BadRequest = require("../error/BadRequest");
  * @param {Function} callback  The function to call when retrieval is complete.
  **/
 exports.getUserProfileById = function(id, callback) {
-    UserProfile.findOne({"fbid":id},function (err, value) {
-        if (err){
-            console.log('Error: ' + err);
+    UserProfile.findOne({"fbid":id}, function(err, value) {
+        if (err) {
             callback(err,null);
+            return;
         }
-	    if(value == null || value.length == 0){
-		    console.log('No se encontro el usuario con id: ' + id);
-	            err = new NotFound("No se encontro el usuario");
+        /*
+        No es aca donde se debe handlear esto
+	    if(value == null) {
+            err = new NotFound("No se encontro el usuario");
 		    callback(err, null);
-	    }else if(value != null){
-		    console.log('Retrieving UserProfile with id: ' + id);
-	            callback(null, value);
-            }
+            return; //pablo no te olvides de este return
+	    }
+	    */
+		console.log('Retrieving UserProfile with id: ' + id);
+        callback(null, value);        
+    });
+};
+
+exports.getUserProfileByCriteria = function(criteria, callback) {
+    var query = {
+        birthday: {
+            $lte: criteria.minDate,
+            $gte: criteria.maxDate
+        },
+        "settings.onlyFriends" : criteria.onlyFriends,
+        "settings.invisible" : criteria.invisible
+    };
+    if (!criteria.searchMales || !criteria.searchFemales) {
+        query.gender = criteria.searchMales ? 'male' : 'female';       
+    }
+    
+    //console.log('query: ' + JSON.stringify(query));
+    UserProfile.find(query, function (err, value) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+	    if(value == null){
+		    callback(new NotFound("find value es null"), null);
+		    return;
+	    }
+        callback(null, value);
     });
 };
 
