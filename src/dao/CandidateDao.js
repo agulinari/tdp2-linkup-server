@@ -8,8 +8,8 @@ exports.getUserProfileByCriteria = function(criteria, callback) {
     var projection = "-settings -_id -__v -images";
     var query = {
         birthday: {
-            $lte: criteria.minDate,
-            $gte: criteria.maxDate
+            $gte: criteria.minDate,
+            $lte: criteria.maxDate
         },
         "settings.onlyFriends" : criteria.onlyFriends,
         "settings.invisible" : criteria.invisible
