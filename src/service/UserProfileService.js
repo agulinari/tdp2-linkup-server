@@ -1,7 +1,7 @@
 var dao = require('../dao/UserProfileDao');
 var utils = require('../utils/Utils');
 //var BadRequest = require("../error/BadRequest");
-//var NotFound = require("../error/NotFound");
+var NotFound = require("../error/NotFound");
 var jsonValidator = require('../utils/JsonValidator');
 
 exports.getUsersProfile = function (term,offset,count, callback) {

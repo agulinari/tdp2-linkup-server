@@ -15,14 +15,6 @@ exports.getUserProfileById = function(id, callback) {
             callback(err,null);
             return;
         }
-        /*
-        No es aca donde se debe handlear esto
-	    if(value == null) {
-            err = new NotFound("No se encontro el usuario");
-		    callback(err, null);
-            return; //pablo no te olvides de este return
-	    }
-	    */
 		console.log('Retrieving UserProfile with id: ' + id);
         callback(null, value);        
     });
