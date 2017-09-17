@@ -92,22 +92,27 @@ function canBeCandidate(user, candidate) {
 
 function satisfiesCandidateCriteria(user, candidate) {
     if (!candidate.settings.searchMales && user.gender == 'male') {
+        console.log('No satisface busqueda hombres.');
         return false;
     }
     if (!candidate.settings.searchFemales && user.gender == 'female') {
+        console.log('No satisface busqueda mujeres.');
         return false;
     }
     if (candidate.settings.onlyFriends && !user.settings.onlyFriends) {
+        console.log('No satisface busqueda solo amigos.');
         return false;
     }
     
     //User age is in the candidate age range
     if (user.birthdate < getDateFromAge(candidate.birthday,
                                         candidate.settings.minAge)) {
+        console.log('No esta en el rango de edad.');
         return false;
     }
     if (user.birthdate > getDateFromAge(candidate.birthday,
                                         candidate.settings.maxAge)) {
+        console.log('No esta en el rango de edad.');
         return false;
     }
     return true;
@@ -116,7 +121,9 @@ function satisfiesCandidateCriteria(user, candidate) {
 function isCloseEnough(distance, loc1, loc2) {
     var gp1 = new GeoPoint(loc1.latitude, loc1.longitude, false);   // in radian
     var gp2 = new GeoPoint(loc2.latitude, loc2.longitude, false);   // in radian   
-    return gp1.distanceTo(gp2, true) <= distance;   // in kilometers
+    var retVal = (gp1.distanceTo(gp2, true) <= distance);   // in kilometers
+    console.log('Esta en el rango de distancia solicitado: '+retVal);
+    return retVal;
 };
 
 function getDateFromAge(birthdate, age) {
