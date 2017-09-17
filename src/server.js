@@ -66,12 +66,59 @@ app.delete('/usersProfile', function (req,res,next){
 });
 
 var candidateCtrl = require(process.cwd() + '/src/controllers/CandidateController');
-app.get('/candidate/:id', function (req,res,next) {
+app.get('/candidate/:id', function (req, res, next) {
     console.log('GET /candidate/' + req.params.id);
     try{    
         candidateCtrl.getCandidates(req, res);	
     } catch (err) {
         console.log('ERR GET /candidate/:id: ' + err);
+        return res.sendStatus(500);
+    }
+});
+
+var rejectionCtrl = require(process.cwd() + '/src/controllers/RejectionController');
+
+app.get('/rejection/:idUser/:idCandidate', function (req, res, next) {
+    console.log('GET /rejection ' + JSON.stringify(req.params));
+    try{    
+        rejectionCtrl.getRejection(req, res);	
+    } catch (err) {
+        console.log('GET /rejection/:idUser/:idCandidate '
+                    + JSON.stringify(req.params) + '\n'+ err);
+        return res.sendStatus(500);
+    }
+});
+
+app.delete('/rejection/:idUser/:idCandidate', function (req, res, next) {
+    console.log('DELETE /rejection ' + JSON.stringify(req.params));
+    try{    
+        rejectionCtrl.deleteRejection(req, res);	
+    } catch (err) {
+        console.log('DELETE /rejection/:idUser/:idCandidate '
+                    + JSON.stringify(req.params) + '\n'+ err);
+        return res.sendStatus(500);
+    }
+});
+
+app.delete('/rejection/:idUser', function (req, res, next) {
+    console.log('DELETE /rejection ' + JSON.stringify(req.params));
+    try{    
+        rejectionCtrl.deleteAllRejections(req, res);	
+    } catch (err) {
+        console.log('DELETE /rejection/:idUser '
+                    + JSON.stringify(req.params) + '\n'+ err);
+        return res.sendStatus(500);
+    }
+});
+
+app.post('/rejection', function (req, res, next) {
+    console.log('POST /rejection ' + JSON.stringify(req.body));
+    try{    
+        rejectionCtrl.postRejection(req, res);	
+    } catch (err) {
+        console.log('ERR POST /rejection '
+                    + JSON.stringify(req.body) + '\n'
+                    + err);
         return res.sendStatus(500);
     }
 });
