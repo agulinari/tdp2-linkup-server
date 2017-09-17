@@ -38,6 +38,11 @@ exports.getUserProfileById = function (id, callback) {
 	        callback(err);
             return;
         }
+        if(response == null) {
+            err = new NotFound("No se encontro el usuario");
+		    callback(err, null);
+            return;
+	    }
         response.metadata = utils.getMetadata(1);
         callback(null, response);
     });
