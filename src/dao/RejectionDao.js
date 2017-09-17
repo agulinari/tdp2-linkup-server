@@ -39,7 +39,13 @@ exports.saveRejection = function(fbidUser, fbidCandidate, callback) {
             callback(new RejectionError(msg), null);
             return;
         }
-        newRejection.save(callback);
+        newRejection.save(function(err, value) {
+            if (err) {
+                callback(err,null);
+                return;
+            }
+            callback(null, value); 
+        });
     });
 };
 
@@ -54,7 +60,7 @@ exports.deleteRejection = function(fbidUser, fbidCandidate, callback) {
         "fbidUser": fbidUser,
         "fbidCandidate": fbidCandidate
     };
-    Rejection.deleteOne(query, function (err, value) {
+    Rejection.deleteMany(query, function (err, value) {
         if (err) {
             callback(err,null);
             return;

@@ -33,6 +33,7 @@ exports.getRejection = function (fbidUser, fbidCandidate, callback) {
 exports.saveRejection = function (fbidUser, fbidCandidate, callback) {
     var user = {};
     var candidate = {};
+    var rejection = {};
     async.waterfall([
         function getUser(next) {
             userDao.getUserProfileById(fbidUser, next);
@@ -52,6 +53,11 @@ exports.saveRejection = function (fbidUser, fbidCandidate, callback) {
                 return;
             }
             rejectionDao.saveRejection(fbidUser, fbidCandidate, next);
+        },
+        function deleteLinkFromCandidate(response, next) {
+            rejection = response;
+            console.log('TODO: delete link if exists from candidate');
+            next(null, rejection);
         }
     ],
     function (err, rejection) {
