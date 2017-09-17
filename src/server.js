@@ -76,6 +76,18 @@ app.get('/candidate/:id', function (req, res, next) {
     }
 });
 
+var imageCtrl = require(process.cwd() + '/src/controllers/ImageController');
+app.get('/image/:idUser/:idImage', function (req, res, next) {
+    var url = '/image/' + req.params.idUser + '/' + req.params.idImage;
+    console.log('GET ' + url);
+    try{    
+        imageCtrl.getImage(req, res);	
+    } catch (err) {
+        console.log('ERR GET ' + url + '\n' + err);
+        return res.sendStatus(500);
+    }
+});
+
 var rejectionCtrl = require(process.cwd() + '/src/controllers/RejectionController');
 
 app.get('/rejection/:idUser/:idCandidate', function (req, res, next) {

@@ -38,7 +38,7 @@ exports.getUserProfileById = function (id, callback) {
 	        callback(err);
             return;
         }
-        response.metadata = utils.getMetadata(response.length);
+        response.metadata = utils.getMetadata(1);
         callback(null, response);
     });
 };
