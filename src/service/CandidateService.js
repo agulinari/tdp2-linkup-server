@@ -1,6 +1,7 @@
 var async = require('async');
 var utils = require('../utils/Utils');
 var userDao = require('../dao/UserProfileDao');
+var candidateDao = require('../dao/CandidateDao');
 var GeoPoint = require('geopoint');
 var NotFound = require("../error/NotFound");
 
@@ -24,7 +25,7 @@ exports.getCandidates = function (id, callback) {
                 maxDate : getDateFromAge(user.birthday, user.settings.maxAge),
                 invisible : false
             };
-            userDao.getUserProfileByCriteria(criteria, next);
+            candidateDao.getUserProfileByCriteria(criteria, next);
         },
         function filterByCandidateCriteria(response, next) {
             var users = response;
