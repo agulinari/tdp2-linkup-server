@@ -1,7 +1,6 @@
 var async = require('async');
 var utils = require('../utils/Utils');
 var userDao = require('../dao/UserProfileDao');
-var candidateDao = require('../dao/CandidateDao');
 var GeoPoint = require('geopoint');
 var NotFound = require("../error/NotFound");
 
@@ -25,7 +24,7 @@ exports.getCandidates = function (id, callback) {
                 maxDate : getDateFromAge(user.birthday, user.settings.maxAge),
                 invisible : false
             };
-            candidateDao.getUserProfileByCriteria(criteria, next);
+            userDao.getUserProfileByCriteria(criteria, next);
         },
         function filterByCandidateCriteria(response, next) {
             var users = response;
@@ -91,6 +90,10 @@ function canBeCandidate(user, candidate) {
 };
 
 function satisfiesCandidateCriteria(user, candidate) {
+    if (user.fbid == candidate.fbid) {
+        return false;
+    }
+
     if (!candidate.settings.searchMales && user.gender == 'male') {
         console.log('No satisface busqueda hombres.');
         return false;
