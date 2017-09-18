@@ -44,13 +44,24 @@ exports.deleteRejection = function(req, res) {
     });
 };
 
-//DELETE - Deletes all Rejections from db
-exports.deleteAllRejections = function(req, res) {
+//DELETE - Deletes all User Rejections from db
+exports.deleteAllUserRejections = function(req, res) {
     var idUser = req.params.idUser;
-    service.deleteAllRejections(idUser, function(err, response) {
+    service.deleteAllUserRejections(idUser, function(err, response) {
         if (err) {
             return errorHandler.throwError(res, err);
         }
         return res.json(response);
     });
 };
+
+//DELETE - Deletes all Rejections from db
+exports.deleteRejections = function(req, res) {
+    service.deleteRejections(function(err, response) {
+        if (err) {
+            return errorHandler.throwError(res, err);
+        }
+        return res.json(response);
+    });
+};
+

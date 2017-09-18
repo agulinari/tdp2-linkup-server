@@ -70,11 +70,11 @@ exports.deleteRejection = function(fbidUser, fbidCandidate, callback) {
 };
 
 /**
- * Deletes all Rejections
+ * Deletes all user's Rejections
  * @param {String} fbidUser User facebook ID.
  * @param {Function} callback The function to call when deletion is complete.
  **/
-exports.deleteAllRejections = function(fbidUser, callback) {
+exports.deleteAllUserRejections = function(fbidUser, callback) {
     var query = {
         "fbidUser": fbidUser,
     };
@@ -87,4 +87,18 @@ exports.deleteAllRejections = function(fbidUser, callback) {
     });
 };
 
+/**
+ * Deletes all Rejections
+ * @param {String} fbidUser User facebook ID.
+ * @param {Function} callback The function to call when deletion is complete.
+ **/
+exports.deleteRejections = function(fbidUser, callback) {
+    Rejection.deleteMany(function (err, value) {
+        if (err) {
+            callback(err,null);
+            return;
+        }
+        callback(null, value);        
+    });
+};
 

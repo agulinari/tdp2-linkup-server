@@ -115,10 +115,20 @@ app.delete('/rejection/:idUser/:idCandidate', function (req, res, next) {
 app.delete('/rejection/:idUser', function (req, res, next) {
     console.log('DELETE /rejection ' + JSON.stringify(req.params));
     try{    
-        rejectionCtrl.deleteAllRejections(req, res);	
+        rejectionCtrl.deleteAllUserRejections(req, res);	
     } catch (err) {
         console.log('DELETE /rejection/:idUser '
                     + JSON.stringify(req.params) + '\n'+ err);
+        return res.sendStatus(500);
+    }
+});
+
+app.delete('/rejection', function (req, res, next) {
+    console.log('DELETE /rejection');
+    try{    
+        rejectionCtrl.deleteRejections(req, res);	
+    } catch (err) {
+        console.log('DELETE /rejection' + '\n'+ err);
         return res.sendStatus(500);
     }
 });

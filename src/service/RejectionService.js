@@ -95,12 +95,30 @@ exports.deleteRejection = function (fbidUser, fbidCandidate, callback) {
 };
 
 /**
- * Delete all Rejections
+ * Delete all user's Rejections
  * @param {String} fbidUser
  * @param {Function} callback  The function to call when deletion is complete.
  */
-exports.deleteAllRejections = function (fbidUser, callback) {
-    rejectionDao.deleteAllRejections(fbidUser, function (err, data) {
+exports.deleteAllUserRejections = function (fbidUser, callback) {
+    rejectionDao.deleteAllUserRejections(fbidUser, function (err, data) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        var response = {
+            'data': data,
+            metadata : utils.getMetadata(1)
+        }
+        callback(null, response);
+    });
+};
+
+/**
+ * Delete all Rejections
+ * @param {Function} callback  The function to call when deletion is complete.
+ */
+exports.deleteRejections = function (callback) {
+    rejectionDao.deleteRejections(function (err, data) {
         if (err) {
             callback(err, null);
             return;
