@@ -91,12 +91,33 @@ app.get('/image/:idUser/:idImage', function (req, res, next) {
 var rejectionCtrl = require(process.cwd() + '/src/controllers/RejectionController');
 
 app.get('/rejection/:idUser/:idCandidate', function (req, res, next) {
-    console.log('GET /rejection ' + JSON.stringify(req.params));
+    console.log('GET /rejection/:idUser/:idCandidate ' + JSON.stringify(req.params));
     try{    
-        rejectionCtrl.getRejection(req, res);	
+        rejectionCtrl.getUserCandidateRejection(req, res);	
     } catch (err) {
         console.log('GET /rejection/:idUser/:idCandidate '
                     + JSON.stringify(req.params) + '\n'+ err);
+        return res.sendStatus(500);
+    }
+});
+
+app.get('/rejection/:idUser', function (req, res, next) {
+    console.log('GET /rejection/' + req.params.idUser);
+    try{    
+        rejectionCtrl.getUserRejections(req, res);	
+    } catch (err) {
+        console.log('GET /rejection/' + req.params.idUser + '\n'+ err);
+        return res.sendStatus(500);
+    }
+});
+
+app.get('/rejection', function (req, res, next) {
+    console.log('GET /rejection');
+    try{    
+        rejectionCtrl.getRejections(req, res);
+        //rejectionCtrl.deleteRejections(req, res);
+    } catch (err) {
+        console.log('GET /rejection\n'+ err);
         return res.sendStatus(500);
     }
 });
@@ -115,7 +136,7 @@ app.delete('/rejection/:idUser/:idCandidate', function (req, res, next) {
 app.delete('/rejection/:idUser', function (req, res, next) {
     console.log('DELETE /rejection ' + JSON.stringify(req.params));
     try{    
-        rejectionCtrl.deleteAllUserRejections(req, res);	
+        rejectionCtrl.deleteUserRejections(req, res);	
     } catch (err) {
         console.log('DELETE /rejection/:idUser '
                     + JSON.stringify(req.params) + '\n'+ err);
@@ -126,7 +147,7 @@ app.delete('/rejection/:idUser', function (req, res, next) {
 app.delete('/rejection', function (req, res, next) {
     console.log('DELETE /rejection');
     try{    
-        rejectionCtrl.deleteRejections(req, res);	
+        rejectionCtrl.deleteRejections(req, res);
     } catch (err) {
         console.log('DELETE /rejection' + '\n'+ err);
         return res.sendStatus(500);

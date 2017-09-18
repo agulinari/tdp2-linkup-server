@@ -25,6 +25,40 @@ exports.findRejection = function(fbidUser, fbidCandidate, callback) {
     });
 };
 
+/**
+ * Retrieves user's Rejections
+ * @param {String} fbidUser User facebook ID.
+ * @param {Function} callback The function to call when retrieval is complete.
+ **/
+exports.findUserRejections = function(fbidUser, callback) {
+    var query = {
+        "fbidUser": fbidUser,
+    };
+    var proj = "fbidUser fbidCandidate -_id";
+    Rejection.find(query, proj, function (err, value) {
+        if (err) {
+            callback(err,null);
+            return;
+        }
+        callback(null, value);        
+    });
+};
+
+/**
+ * Retrieves Rejections
+ * @param {Function} callback The function to call when retrieval is complete.
+ **/
+exports.findRejections = function(callback) {
+    var proj = "fbidUser fbidCandidate -_id";
+    Rejection.find(null, proj, function (err, value) {
+        if (err) {
+            callback(err,null);
+            return;
+        }
+        callback(null, value);        
+    });
+};
+
 exports.saveRejection = function(fbidUser, fbidCandidate, callback) {
     var newRejection = new Rejection();
     newRejection.fbidUser = fbidUser;
@@ -74,7 +108,7 @@ exports.deleteRejection = function(fbidUser, fbidCandidate, callback) {
  * @param {String} fbidUser User facebook ID.
  * @param {Function} callback The function to call when deletion is complete.
  **/
-exports.deleteAllUserRejections = function(fbidUser, callback) {
+exports.deleteUserRejections = function(fbidUser, callback) {
     var query = {
         "fbidUser": fbidUser,
     };
@@ -92,7 +126,7 @@ exports.deleteAllUserRejections = function(fbidUser, callback) {
  * @param {String} fbidUser User facebook ID.
  * @param {Function} callback The function to call when deletion is complete.
  **/
-exports.deleteRejections = function(fbidUser, callback) {
+exports.deleteRejections = function(callback) {
     Rejection.deleteMany(function (err, value) {
         if (err) {
             callback(err,null);

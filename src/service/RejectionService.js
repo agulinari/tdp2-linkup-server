@@ -11,7 +11,7 @@ var NotFound = require("../error/NotFound");
  * @param {String} fbidCandidate
  * @param {Function} callback  The function to call when retrieval is complete.
  */
-exports.getRejection = function (fbidUser, fbidCandidate, callback) {
+exports.getUserCandidateRejection = function (fbidUser, fbidCandidate, callback) {
     rejectionDao.findRejection(fbidUser, fbidCandidate, function (err, rejection) {
         if (err) {
             callback(err, null);
@@ -20,6 +20,43 @@ exports.getRejection = function (fbidUser, fbidCandidate, callback) {
         var response = {
             'rejection': rejection,
             metadata : utils.getMetadata(1)
+        }
+        callback(null, response);
+    });
+};
+
+/**
+ * Get User Rejections
+ * @param {String} fbidUser
+ * @param {Function} callback  The function to call when retrieval is complete.
+ */
+exports.getUserRejections = function (fbidUser, callback) {
+    rejectionDao.findUserRejections(fbidUser, function (err, rejections) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        var response = {
+            'rejections': rejections,
+            metadata : utils.getMetadata(rejections.length)
+        }
+        callback(null, response);
+    });
+};
+
+/**
+ * Get Rejections
+ * @param {Function} callback  The function to call when retrieval is complete.
+ */
+exports.getRejections = function (callback) {
+    rejectionDao.findRejections(function (err, rejections) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        var response = {
+            'rejections': rejections,
+            metadata : utils.getMetadata(rejections.length)
         }
         callback(null, response);
     });
@@ -99,8 +136,8 @@ exports.deleteRejection = function (fbidUser, fbidCandidate, callback) {
  * @param {String} fbidUser
  * @param {Function} callback  The function to call when deletion is complete.
  */
-exports.deleteAllUserRejections = function (fbidUser, callback) {
-    rejectionDao.deleteAllUserRejections(fbidUser, function (err, data) {
+exports.deleteUserRejections = function (fbidUser, callback) {
+    rejectionDao.deleteUserRejections(fbidUser, function (err, data) {
         if (err) {
             callback(err, null);
             return;
