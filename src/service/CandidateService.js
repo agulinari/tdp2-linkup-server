@@ -2,6 +2,7 @@ var async = require('async');
 var utils = require('../utils/Utils');
 var userDao = require('../dao/UserProfileDao');
 var rejectionDao = require('../dao/RejectionDao');
+var linkDao = require('../dao/LinkDao');
 var GeoPoint = require('geopoint');
 var NotFound = require("../error/NotFound");
 
@@ -58,8 +59,16 @@ exports.getCandidates = function (id, callback) {
                 next(null, candidates);
                 return;
             }
-            console.log('TODO: filtrar candidatos linkeados');
-            next(null, candidates);
+            linkDao.findUserLinks(user.fbid, function (err, links) {
+                if (err) {
+                    next(err, null);
+                    return;
+                }
+                candidates = candidates.filter(function (c) {
+                    return !isLinked(c.fbid, links);
+                });
+                next(null, candidates);
+            });
         },
         function filterMatchedCandidates(candidates, next) {
             if (candidates.length == 0) {
@@ -149,6 +158,15 @@ function getDateFromAge(birthdate, age) {
 function isRejected(fbidCandidate, rejections) {
     for (var r of rejections) {
         if (r.fbidCandidate == fbidCandidate) {
+            return true;
+        }
+    }
+    return false;
+};
+
+function isLinked(fbidCandidate, links) {
+    for (var l of links) {
+        if (l.fbidCandidate == fbidCandidate) {
             return true;
         }
     }
