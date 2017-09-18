@@ -69,7 +69,7 @@ exports.saveRejection = function(fbidUser, fbidCandidate, callback) {
             return;
         }
         if (rejection != null) {
-            var msg = "User " + fbidUser + ' already rejected ' + Candidate;
+            var msg = "User " + fbidUser + ' already rejected ' + fbidCandidate;
             callback(new RejectionError(msg), null);
             return;
         }
