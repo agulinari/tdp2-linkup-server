@@ -20,7 +20,7 @@ const UserProfileSchema = new Schema({
     gender: String, //Male: M, Female: F, SheMale: FM
     images: [
         {
-            "image": String, 
+            "image": String,
 	        "order": Number,
 	    }
 	],

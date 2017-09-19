@@ -15,9 +15,9 @@ exports.getUserProfileByCriteria = function(criteria, callback) {
         "settings.invisible" : criteria.invisible
     };
     if (!criteria.searchMales || !criteria.searchFemales) {
-        query.gender = criteria.searchMales ? 'male' : 'female';       
+        query.gender = criteria.searchMales ? 'male' : 'female';
     }
-    
+
     //console.log('query: ' + JSON.stringify(query));
     UserProfile.find(query, projection, function (err, value) {
         if (err) {

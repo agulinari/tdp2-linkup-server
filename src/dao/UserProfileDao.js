@@ -16,7 +16,7 @@ exports.getUserProfileById = function(id, callback) {
             return;
         }
 		console.log('Retrieving UserProfile with id: ' + id);
-        callback(null, value);        
+        callback(null, value);
     });
 };
 
@@ -30,9 +30,9 @@ exports.getUserProfileByCriteria = function(criteria, callback) {
         "settings.invisible" : criteria.invisible
     };
     if (!criteria.searchMales || !criteria.searchFemales) {
-        query.gender = criteria.searchMales ? 'male' : 'female';       
+        query.gender = criteria.searchMales ? 'male' : 'female';
     }
-    
+
     //console.log('query: ' + JSON.stringify(query));
     UserProfile.find(query, function (err, value) {
         if (err) {
@@ -62,9 +62,9 @@ exports.getUsersProfile = function(term,offset,count,callback) {
 exports.saveUserProfile = function (userProfile, callback) {
             
       var userProfileData = new UserProfile(userProfile);
-       
-       if((userProfileData != null && userProfileData != undefined) && 
-         (userProfile.fbid != null && userProfile.fbid!= undefined)){	
+
+       if((userProfileData != null && userProfileData != undefined) &&
+         (userProfile.fbid != null && userProfile.fbid!= undefined)){
 
       		console.log("userProfile fbid a insertar: " + userProfileData.fbid);
 
@@ -72,8 +72,8 @@ exports.saveUserProfile = function (userProfile, callback) {
 
 			if(err){
 				console.log('Error: Buscando usuario a insertar: '+ err);
-				callback(err,null);	
-			}	
+				callback(err,null);
+			}
                         console.log("Cantidad de usuarios: "+values.length);
 			if(values == null || values.length == 0){
 
@@ -85,7 +85,7 @@ exports.saveUserProfile = function (userProfile, callback) {
         	 		    //}
 	    
 	        	          // callback(null,userProfileData);
-      	     	    	     // }	      
+      	     	    	     // }
 
 		    	      userProfileData.save();
 			      callback(null,userProfileData);
@@ -98,7 +98,7 @@ exports.saveUserProfile = function (userProfile, callback) {
        	   err = BadRequest("No se pudo procesar el request");
 	   callback(err,null);
        }
-	
+
 };
 
 exports.updateUserProfile = function (userProfile, callback) {
@@ -107,30 +107,30 @@ exports.updateUserProfile = function (userProfile, callback) {
       var userProfileData = Object.assign({},userProfile);
       console.log(JSON.stringify(userProfileData));
       
-      if((userProfileData != null && userProfileData != undefined)){// && 
+      if((userProfileData != null && userProfileData != undefined)){// &&
          //(userProfile.fbid != null && userProfile.fbid!= undefined)){
-      	   
+
            var id = userProfileData.fbid;
       	   //console.log("userProfile fbid a updatear: " + id);
 
       	  // UserProfile.find({"fbid":id},function(err,value){
- 
-           //if(value != null && value.length != 0){ 
+
+           //if(value != null && value.length != 0){
                         //console.log("Id a realizar update:"+value._id);
                         //userProfileData._id = value._id;
                         UserProfile.findOneAndUpdate({"fbid":id},userProfileData,function(err){
 				if(err){
-					console.log(err);			
+					console.log(err);
 					callback(err,'Error update user profile');
 				}
 				console.log('Updating usersProfile');
-				callback(null,userProfileData);	
+				callback(null,userProfileData);
 			});
-	
-	    //}else if(value!=null){			
+
+	    //}else if(value!=null){
 		//	console.log('No se encontro el perfil del usuario con id ', id);
 		//	err = new NotFound("UserProfile not exist");
-		 //       callback(err,null);	
+		 //       callback(err,null);
 	   // }
      	   //});
       }else{
@@ -143,13 +143,13 @@ exports.updateUserProfile = function (userProfile, callback) {
 exports.deleteUsersProfile = function (callback) {
 
       	   UserProfile.remove({},function(err,values){
- 
+
          	if(err){
 			console.log(err);
-			callback(err,null);			
+			callback(err,null);
 		}
-		
+
 		console.log("borrando users profile");
-		callback(null);	
+		callback(null);
 	   });
 };

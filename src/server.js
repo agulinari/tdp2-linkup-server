@@ -17,7 +17,7 @@ var userProfileCtrl = require(process.cwd() + '/src/controllers/UserProfileContr
 
 //GET Array<UserProfile>
 app.get('/usersProfile', function (req,res,next){
-  try{    
+  try{
     userProfileCtrl.getUsersProfile(req, res);	
  }catch(err){
     console.log('ERROR INESPERADO: '+err);
@@ -37,8 +37,8 @@ app.get('/userProfileById/:id', function (req, res, next) {
 
 //POST UserProfile
 app.post('/userProfile', function (req,res,next){
-  try{ 
-     userProfileCtrl.saveUserProfile(req, res);	
+  try{
+     userProfileCtrl.saveUserProfile(req, res);
   }catch(err){
      console.log('ERROR INESPERADO: '+err);
      return res.sendStatus(500);
@@ -57,7 +57,7 @@ app.put('/userProfile', function (req,res,next){
 
 //DELETE ALL UsersProfile
 app.delete('/usersProfile', function (req,res,next){
- try{ 
+ try{
    userProfileCtrl.deleteUsersProfile(res);
  }catch(err){
    console.log('ERROR INESPERADO: '+err);
@@ -68,8 +68,8 @@ app.delete('/usersProfile', function (req,res,next){
 var candidateCtrl = require(process.cwd() + '/src/controllers/CandidateController');
 app.get('/candidate/:id', function (req, res, next) {
     console.log('GET /candidate/' + req.params.id);
-    try{    
-        candidateCtrl.getCandidates(req, res);	
+    try{
+        candidateCtrl.getCandidates(req, res);
     } catch (err) {
         console.log('ERR GET /candidate/:id: ' + err);
         return res.sendStatus(500);
@@ -80,8 +80,8 @@ var imageCtrl = require(process.cwd() + '/src/controllers/ImageController');
 app.get('/image/:idUser/:idImage', function (req, res, next) {
     var url = '/image/' + req.params.idUser + '/' + req.params.idImage;
     console.log('GET ' + url);
-    try{    
-        imageCtrl.getImage(req, res);	
+    try{
+        imageCtrl.getImage(req, res);
     } catch (err) {
         console.log('ERR GET ' + url + '\n' + err);
         return res.sendStatus(500);
@@ -92,7 +92,7 @@ var rejectionCtrl = require(process.cwd() + '/src/controllers/RejectionControlle
 
 app.get('/rejection/:idUser/:idCandidate', function (req, res, next) {
     console.log('GET /rejection/:idUser/:idCandidate ' + JSON.stringify(req.params));
-    try{    
+    try{
         rejectionCtrl.getUserCandidateRejection(req, res);
     } catch (err) {
         console.log('GET /rejection/:idUser/:idCandidate '
@@ -124,8 +124,8 @@ app.get('/rejection', function (req, res, next) {
 
 app.delete('/rejection/:idUser/:idCandidate', function (req, res, next) {
     console.log('DELETE /rejection ' + JSON.stringify(req.params));
-    try{    
-        rejectionCtrl.deleteRejection(req, res);	
+    try{
+        rejectionCtrl.deleteRejection(req, res);
     } catch (err) {
         console.log('DELETE /rejection/:idUser/:idCandidate '
                     + JSON.stringify(req.params) + '\n'+ err);
@@ -135,7 +135,7 @@ app.delete('/rejection/:idUser/:idCandidate', function (req, res, next) {
 
 app.delete('/rejection/:idUser', function (req, res, next) {
     console.log('DELETE /rejection ' + JSON.stringify(req.params));
-    try{    
+    try{
         rejectionCtrl.deleteUserRejections(req, res);
     } catch (err) {
         console.log('DELETE /rejection/:idUser '
@@ -156,8 +156,8 @@ app.delete('/rejection', function (req, res, next) {
 
 app.post('/rejection', function (req, res, next) {
     console.log('POST /rejection ' + JSON.stringify(req.body));
-    try{    
-        rejectionCtrl.postRejection(req, res);	
+    try{
+        rejectionCtrl.postRejection(req, res);
     } catch (err) {
         console.log('ERR POST /rejection '
                     + JSON.stringify(req.body) + '\n'
@@ -166,20 +166,9 @@ app.post('/rejection', function (req, res, next) {
     }
 });
 
-<<<<<<< HEAD
-var userLinkCtrl = require(process.cwd() + '/src/controllers/UserLinkController');
-app.post('/link/:idUser/:idCandidate', function(req, res, next){
-    console.log('POST /link ' + JSON.stringify(req.body));
-    try{
-        userLinkCtrl.postLink(req, res);
-    } catch (err) {
-         console.log('POST /link/:idUser/:idCandidate '
-                    + JSON.stringify(req.params) + '\n'+ err);
-=======
-
 var linkCtrl = require(process.cwd() + '/src/controllers/LinkController');
 
-app.post('/link', function (req, res, next) {
+app.post('/link/:idUser/:idCandidate', function (req, res, next) {
     console.log('POST /link ' + JSON.stringify(req.body));
     try{
         linkCtrl.postLink(req, res);
@@ -252,7 +241,6 @@ app.delete('/link', function (req, res, next) {
         linkCtrl.deleteLinks(req, res);
     } catch (err) {
         console.log('DELETE /link' + '\n'+ err);
->>>>>>> origin/master
         return res.sendStatus(500);
     }
 });

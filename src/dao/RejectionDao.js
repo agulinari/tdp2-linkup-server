@@ -21,7 +21,7 @@ exports.findRejection = function(fbidUser, fbidCandidate, callback) {
             callback(err,null);
             return;
         }
-        callback(null, value);        
+        callback(null, value);
     });
 };
 
@@ -78,7 +78,7 @@ exports.saveRejection = function(fbidUser, fbidCandidate, callback) {
                 callback(err,null);
                 return;
             }
-            callback(null, value); 
+            callback(null, value);
         });
     });
 };
@@ -99,7 +99,7 @@ exports.deleteRejection = function(fbidUser, fbidCandidate, callback) {
             callback(err,null);
             return;
         }
-        callback(null, value);        
+        callback(null, value);
     });
 };
 
@@ -117,7 +117,7 @@ exports.deleteUserRejections = function(fbidUser, callback) {
             callback(err,null);
             return;
         }
-        callback(null, value);        
+        callback(null, value);
     });
 };
 

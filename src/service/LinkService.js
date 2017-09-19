@@ -1,9 +1,16 @@
 var async = require('async');
 var userDao = require('../dao/UserProfileDao');
+var matchDao = require('../dao/UserMatchDao');
 var linkDao = require('../dao/LinkDao');
+var UserLink = require('../model/UserLink'); //Esta tiene un array de users
+var userMatchDao = require('../dao/UserMatchDao');
 var utils = require('../utils/Utils');
 var LinkError = require("../error/LinkError");
 var NotFound = require("../error/NotFound");
+
+var async = require('async');
+var utils = require('../utils/Utils');
+
 
 /**
  * Get Link
@@ -166,5 +173,55 @@ exports.deleteLinks = function (callback) {
         }
         callback(null, response);
     });
+};
+
+/**
+* Servicio para linkear con un candidato. Si el candidato linkeo tambien, se inicia el match y devuelve match true,
+caso contrario solo linkea devolviendo match false.
+*/
+exports.linkCandidate = function (idUser,idCandidate, callback) {
+
+
+    if(idUser!=null && idCandidate!=null){ //Valido si existen los usuarios para hacer el link
+
+        //Los usuarios existen, ahora debo validar si:
+        //      1. El usuario que hace el link no debe tener al candidato en la lista de rechazados (rejects).
+        //      2. El usuario que hace el link no debe tener al candidato en la lista de matcheados (matches).
+        //Obs: Como todavia la lista de rechazados y de matcheados no esta disponible, suponemos que no se dan ambos casos.
+
+        //Busco si el usuario que hace link esta en la lista de aceptados (usersLink) del candidato.
+        //El candidate es el idUser y el user es el idCandidate.
+        linkDao.getUserLinkByIdUserAndIdCandidate(idCandidate,idUser, function(err, userLinkCandidate){
+
+            if(err){
+                callback(err, response);
+                return;
+            }
+
+            var response = null;
+
+            linkDao.saveOrUpdateUserLink(idUser,idCandidate);
+            //Si el usuario fue aceptado, guardo en la lista de aceptados el candidato aceptado el usuario
+            //e inicio el match.Para este caso armo el response con el match true.
+            if(userLinkCandidate!=null){
+
+                userMatchDao.saveOrUpdateUserMatch(idUser,idCandidate);
+                userMatchDao.saveOrUpdateUserMatch(idCandidate,idUser);
+                console.log('Encontrado');
+                response = {'remainingSuperlinks': 0, 'Match':true,metadata : utils.getMetadata(1)};
+            }else{ //No fue aceptado. Armo el response con el match false. Aca me fijo si hizo superlink y descuento la cantidad.
+                response = {'remainingSuperlinks': 0, 'Match':false,metadata : utils.getMetadata(1)};
+                console.log('No encontrado');
+            }
+
+            callback(null, response);
+
+        });
+
+    }else{
+        console.log('No encontro el usuario');
+        callback(new NotFound("No se encontro el usuario"), null);
+        return;
+    }
 };
 

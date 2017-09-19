@@ -40,8 +40,8 @@ exports.getCandidates = function (id, callback) {
         },
         function filterRejectedCandidates(candidates, next) {
             if (candidates.length == 0) {
-                next(null, candidates); 
-                return;           
+                next(null, candidates);
+                return;
             }
             rejectionDao.findUserRejections(user.fbid, function (err, rejections) {
                 if (err) {
@@ -96,7 +96,7 @@ function canBeCandidate(user, candidate) {
     //use the min distance
     var distance = user.settings.maxDistance < candidate.settings.maxDistance
                    ? user.settings.maxDistance : candidate.settings.maxDistance;
-    
+
     /*
      * Test
      * obelisco {latitude: -34.603800, longitude: -58.381576}
@@ -124,7 +124,7 @@ function satisfiesCandidateCriteria(user, candidate) {
         console.log('No satisface busqueda solo amigos.');
         return false;
     }
-    
+
     //User age is in the candidate age range
     if (user.birthdate < getDateFromAge(candidate.birthday,
                                         candidate.settings.minAge)) {
@@ -141,7 +141,7 @@ function satisfiesCandidateCriteria(user, candidate) {
 
 function isCloseEnough(distance, loc1, loc2) {
     var gp1 = new GeoPoint(loc1.latitude, loc1.longitude, false);   // in radian
-    var gp2 = new GeoPoint(loc2.latitude, loc2.longitude, false);   // in radian   
+    var gp2 = new GeoPoint(loc2.latitude, loc2.longitude, false);   // in radian
     var retVal = (gp1.distanceTo(gp2, true) <= distance);   // in kilometers
     console.log('Esta en el rango de distancia solicitado: '+retVal);
     return retVal;

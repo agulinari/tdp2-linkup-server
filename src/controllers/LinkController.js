@@ -37,7 +37,7 @@ exports.getLinks = function(req, res) {
 
 //POST - Insert a new Link in db
 exports.postLink = function(req, res) {
-    var l = req.body.link;
+   // var l = req.body.link;
     /*
     var isValid = jsonValidator.isLinkValid(rejection);
     if (!isValid) {
@@ -45,8 +45,16 @@ exports.postLink = function(req, res) {
         return;
     }
     */
-    service.saveLink(l.fbidUser, l.fbidCandidate, function(err, response) {
+   /*    service.saveLink(l.fbidUser, l.fbidCandidate, function(err, response) {
         if (err) {
+            return errorHandler.throwError(res, err);
+        }
+        return res.json(response);
+    });*/
+
+    service.linkCandidate(req.params.idUser,req.params.idCandidate, function (err, response) {
+        if (err) {
+            console.log(err);
             return errorHandler.throwError(res, err);
         }
         return res.json(response);

@@ -20,8 +20,8 @@ exports.getUsersProfile = function (term,offset,count, callback) {
         }
         response.metadata = utils.getMetadata(response.length);
         callback(null, response);
-    }); 
-    
+    });
+
 };
 
 
@@ -96,7 +96,7 @@ exports.updateUserProfile = function (userProfile, callback) {
 };
 
 /**
- * Update deleteUsersProfile 
+ * Update deleteUsersProfile
  * @param {Request} Request
  * @param {Function} callback  The function to call when retrieval is complete.
  */

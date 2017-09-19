@@ -38,8 +38,8 @@ exports.getImage = function (idUser, idImage, callback) {
         },
         function filterRejectedCandidates(candidates, next) {
             if (candidates.length == 0) {
-                next(null, candidates); 
-                return;           
+                next(null, candidates);
+                return;
             }
             console.log('TODO: filtrar candidatos rechazados');
             next(null, candidates);
