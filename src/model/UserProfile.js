@@ -28,7 +28,8 @@ const UserProfileSchema = new Schema({
     lastName: String,
     location: {
         "longitude": Number,
-        "latitude": Number 
+        "latitude": Number,
+        "name": String
     },
     occupation: String,
     settings: {

@@ -3,10 +3,31 @@ var jsonValidator = require('../utils/JsonValidator');
 var errorHandler = require('../utils/ErrorHandler');
 
 //GET - Returns a Rejection from db
-exports.getRejection = function(req, res) {
+exports.getUserCandidateRejection = function(req, res) {
     var idUser = req.params.idUser;
     var idCandidate = req.params.idCandidate;
-    service.getRejection(idUser, idCandidate, function(err, response) {
+    service.getUserCandidateRejection(idUser, idCandidate, function(err, response) {
+        if (err) {
+            return errorHandler.throwError(res, err);
+        }
+        return res.json(response);
+    });
+};
+
+//GET - Returns a Rejection from db
+exports.getUserRejections = function(req, res) {
+    var idUser = req.params.idUser;
+    service.getUserRejections(idUser, function(err, response) {
+        if (err) {
+            return errorHandler.throwError(res, err);
+        }
+        return res.json(response);
+    });
+};
+
+//GET - Returns a Rejection from db
+exports.getRejections = function(req, res) {
+    service.getRejections(function(err, response) {
         if (err) {
             return errorHandler.throwError(res, err);
         }
@@ -44,13 +65,24 @@ exports.deleteRejection = function(req, res) {
     });
 };
 
-//DELETE - Deletes all Rejections from db
-exports.deleteAllRejections = function(req, res) {
+//DELETE - Deletes all User Rejections from db
+exports.deleteUserRejections = function(req, res) {
     var idUser = req.params.idUser;
-    service.deleteAllRejections(idUser, function(err, response) {
+    service.deleteUserRejections(idUser, function(err, response) {
         if (err) {
             return errorHandler.throwError(res, err);
         }
         return res.json(response);
     });
 };
+
+//DELETE - Deletes all Rejections from db
+exports.deleteRejections = function(req, res) {
+    service.deleteRejections(function(err, response) {
+        if (err) {
+            return errorHandler.throwError(res, err);
+        }
+        return res.json(response);
+    });
+};
+

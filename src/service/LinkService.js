@@ -1,24 +1,24 @@
 var async = require('async');
 var userDao = require('../dao/UserProfileDao');
-var rejectionDao = require('../dao/RejectionDao');
+var linkDao = require('../dao/LinkDao');
 var utils = require('../utils/Utils');
-var RejectionError = require("../error/RejectionError");
+var LinkError = require("../error/LinkError");
 var NotFound = require("../error/NotFound");
 
 /**
- * Get Rejection
+ * Get Link
  * @param {String} fbidUser
  * @param {String} fbidCandidate
  * @param {Function} callback  The function to call when retrieval is complete.
  */
-exports.getUserCandidateRejection = function (fbidUser, fbidCandidate, callback) {
-    rejectionDao.findRejection(fbidUser, fbidCandidate, function (err, rejection) {
+exports.getUserCandidateLink = function (fbidUser, fbidCandidate, callback) {
+    linkDao.findLink(fbidUser, fbidCandidate, function (err, link) {
         if (err) {
             callback(err, null);
             return;
         }
         var response = {
-            'rejection': rejection,
+            'link': link,
             metadata : utils.getMetadata(1)
         }
         callback(null, response);
@@ -26,51 +26,51 @@ exports.getUserCandidateRejection = function (fbidUser, fbidCandidate, callback)
 };
 
 /**
- * Get User Rejections
+ * Get User Links
  * @param {String} fbidUser
  * @param {Function} callback  The function to call when retrieval is complete.
  */
-exports.getUserRejections = function (fbidUser, callback) {
-    rejectionDao.findUserRejections(fbidUser, function (err, rejections) {
+exports.getUserLinks = function (fbidUser, callback) {
+    linkDao.findUserLinks(fbidUser, function (err, links) {
         if (err) {
             callback(err, null);
             return;
         }
         var response = {
-            'rejections': rejections,
-            metadata : utils.getMetadata(rejections.length)
+            'links': links,
+            metadata : utils.getMetadata(links.length)
         }
         callback(null, response);
     });
 };
 
 /**
- * Get Rejections
+ * Get Links
  * @param {Function} callback  The function to call when retrieval is complete.
  */
-exports.getRejections = function (callback) {
-    rejectionDao.findRejections(function (err, rejections) {
+exports.getLinks = function (callback) {
+    linkDao.findLink(function (err, links) {
         if (err) {
             callback(err, null);
             return;
         }
         var response = {
-            'rejections': rejections,
-            metadata : utils.getMetadata(rejections.length)
+            'links': links,
+            metadata : utils.getMetadata(links.length)
         }
         callback(null, response);
     });
 };
 
 /**
- * Save Rejection
+ * Save Link
  * @param {Request} Request
- * @param {Function} callback  The function to call when retrieval is complete.
+ * @param {Function} callback  The function to call when store is complete.
  */
-exports.saveRejection = function (fbidUser, fbidCandidate, callback) {
+exports.saveLink = function (fbidUser, fbidCandidate, callback) {
     var user = {};
     var candidate = {};
-    var rejection = {};
+    var link = {};
     async.waterfall([
         function getUser(next) {
             userDao.getUserProfileById(fbidUser, next);
@@ -83,28 +83,28 @@ exports.saveRejection = function (fbidUser, fbidCandidate, callback) {
             }
             userDao.getUserProfileById(fbidCandidate, next);
         },
-        function findRejections(response, next) {
+        function storeLink(response, next) {
             candidate = response;
             if (candidate == null) {
 		        next(new NotFound("No se encontro el candidato"), null);
                 return;
             }
-            rejectionDao.saveRejection(fbidUser, fbidCandidate, next);
+            linkDao.saveLink(fbidUser, fbidCandidate, next);
         },
-        function deleteLinkFromCandidate(response, next) {
-            rejection = response;
-            console.log('TODO: delete link if exists from candidate');
-            next(null, rejection);
+        function testMatch(response, next) {
+            link = response;
+            console.log('TODO: test match conditions');
+            next(null, link);
         }
     ],
-    function (err, rejection) {
+    function (err, link) {
         if (err) {
             callback(err);
             return;
         }
-        console.log(JSON.stringify(rejection));
+        console.log(JSON.stringify(link));
         var response = {
-            'rejection': rejection,
+            'link': link,
             metadata : utils.getMetadata(1)
         }
         callback(null, response);
@@ -112,13 +112,13 @@ exports.saveRejection = function (fbidUser, fbidCandidate, callback) {
 };
 
 /**
- * Delete Rejection
+ * Delete Link
  * @param {String} fbidUser
  * @param {String} fbidCandidate
  * @param {Function} callback  The function to call when deletion is complete.
  */
-exports.deleteRejection = function (fbidUser, fbidCandidate, callback) {
-    rejectionDao.deleteRejection(fbidUser, fbidCandidate, function (err, data) {
+exports.deleteLink = function (fbidUser, fbidCandidate, callback) {
+    linkDao.deleteLink(fbidUser, fbidCandidate, function (err, data) {
         if (err) {
             callback(err, null);
             return;
@@ -132,12 +132,12 @@ exports.deleteRejection = function (fbidUser, fbidCandidate, callback) {
 };
 
 /**
- * Delete all user's Rejections
+ * Delete all user's Links
  * @param {String} fbidUser
  * @param {Function} callback  The function to call when deletion is complete.
  */
-exports.deleteUserRejections = function (fbidUser, callback) {
-    rejectionDao.deleteUserRejections(fbidUser, function (err, data) {
+exports.deleteUserLinks = function (fbidUser, callback) {
+    linkDao.deleteUserLinks(fbidUser, function (err, data) {
         if (err) {
             callback(err, null);
             return;
@@ -151,11 +151,11 @@ exports.deleteUserRejections = function (fbidUser, callback) {
 };
 
 /**
- * Delete all Rejections
+ * Delete all Links
  * @param {Function} callback  The function to call when deletion is complete.
  */
-exports.deleteRejections = function (callback) {
-    rejectionDao.deleteRejections(function (err, data) {
+exports.deleteLinks = function (callback) {
+    linkDao.deleteLinks(function (err, data) {
         if (err) {
             callback(err, null);
             return;
