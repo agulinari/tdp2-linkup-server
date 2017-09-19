@@ -1,0 +1,6 @@
+[{"fbidUser":"A","acceptedUsers":
+[{"fbidCandidate":"C","typeOfLink":"Link","countOfSuperLinks":0,"_id" : ObjectId("59bf02031a28818596131fa5")}]},
+{"fbidUser":"B","acceptedUsers":
+[{"fbidCandidate":"C","typeOfLink":"Link","countOfSuperLinks":0,"_id" : ObjectId("59bf02031a28818596131fa2")},
+{"fbidCandidate":"A","typeOfLink":"Link","countOfSuperLinks":0,"_id" : ObjectId("59bf02031a28818596131fa3")}]},
+]

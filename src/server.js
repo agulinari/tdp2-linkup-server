@@ -135,6 +135,18 @@ app.post('/rejection', function (req, res, next) {
     }
 });
 
+var userLinkCtrl = require(process.cwd() + '/src/controllers/UserLinkController');
+app.post('/link/:idUser/:idCandidate', function(req, res, next){
+    console.log('POST /link ' + JSON.stringify(req.body));
+    try{
+        userLinkCtrl.postLink(req, res);
+    } catch (err) {
+         console.log('POST /link/:idUser/:idCandidate '
+                    + JSON.stringify(req.params) + '\n'+ err);
+        return res.sendStatus(500);
+    }
+});
+
 app.all('*', function (req,res,next) {
     return res.sendStatus(401);
     next();
