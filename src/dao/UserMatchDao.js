@@ -4,11 +4,43 @@ var UserMatch = require('../model/UserMatch');
 var NotFound = require("../error/NotFound");
 var BadRequest = require("../error/BadRequest");
 
-exports.saveOrUpdateUserMatch = function (idUser,idCandidate, callback) {
+exports.findMatchs = function(fbidUser, fbidCandidate, callback) {
+    var query = {
+        "fbidUser": fbidUser,
+    };
+    
+    var matches = '';
+    
+    UserMatch.findOne(query, function (err, value) {
+        if (err) {
+            callback(err,null);
+            return;
+        }
+        console.log("Valores match: "+value);
+        matches = (value!=null && value!=undefined)?value.matches:'';
+        callback(null,matches);
+    });
+    
+   
+};
+
+exports.deleteMatchs = function(callback) {
+
+    UserMatch.deleteMany(function (err, value) {
+        if (err) {
+            callback(err,null);
+            return;
+        }
+        callback(null, value);
+    });
+    
+   
+};
+
+exports.saveOrUpdateUserMatch = function (idUser,idCandidate,itemMatchCandidate, callback) {
 
     if(idUser!=null && idCandidate!=null){
 
-        var itemMatchCandidate = {"fbidUser": idCandidate, "time": Date.now()};
         var conditions = {
             "fbidUser":idUser,
             "matches.fbidUser" : {$ne: idCandidate}

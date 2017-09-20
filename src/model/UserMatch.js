@@ -17,6 +17,11 @@ const UserMatchSchema = new Schema({
     matches: [
         {
             fbidUser: String,
+            genero: String,
+            nombre: String,
+            apellido: String,
+            edad: String,
+            idMiniImagen: String,
             time : {
                 type : Date,
                 default: Date.now

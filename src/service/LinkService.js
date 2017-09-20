@@ -2,6 +2,8 @@ var async = require('async');
 var userDao = require('../dao/UserProfileDao');
 var matchDao = require('../dao/UserMatchDao');
 var linkDao = require('../dao/LinkDao');
+var userProfileDao = require('../dao/UserProfileDao');
+var userProfile = require('../model/UserProfile'); 
 var UserLink = require('../model/UserLink'); //Esta tiene un array de users
 var userMatchDao = require('../dao/UserMatchDao');
 var utils = require('../utils/Utils');
@@ -194,7 +196,7 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
         linkDao.getUserLinkByIdUserAndIdCandidate(idCandidate,idUser, function(err, userLinkCandidate){
 
             if(err){
-                callback(err, response);
+                callback(err, userLinkCandidate);
                 return;
             }
 
@@ -204,9 +206,34 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
             //Si el usuario fue aceptado, guardo en la lista de aceptados el candidato aceptado el usuario
             //e inicio el match.Para este caso armo el response con el match true.
             if(userLinkCandidate!=null){
-
-                userMatchDao.saveOrUpdateUserMatch(idUser,idCandidate);
-                userMatchDao.saveOrUpdateUserMatch(idCandidate,idUser);
+                
+                userProfileDao.getUserProfileById(idCandidate,function(err, value){
+                    if(err){
+                        callback(err, value);
+                        return;
+                    }
+                    console.log("UserProfile usuario: "+value);
+                    if(value!=null && value!=undefined){
+                        var itemMatchCandidate = {"fbidUser": idCandidate,"genero": value.gender,"nombre":value.firstName,
+                                                  "apellido":value.lastName,"edad":value.birthday,"time": Date.now()};
+                        userMatchDao.saveOrUpdateUserMatch(idUser,idCandidate,itemMatchCandidate);
+                    }
+                });
+                
+                userProfileDao.getUserProfileById(idUser,function(err,value){
+                    if(err){
+                        callback(err, value);
+                        return;
+                    }
+                    console.log("UserProfile candidato: "+value);
+                    if(value!=null && value!=undefined){
+                        var itemMatchCandidate = {"fbidUser": idUser,"genero": value.gender,"nombre":value.firstName,
+                                                  "apellido":value.lastName,"edad":value.birthday,"time": Date.now()};
+                        userMatchDao.saveOrUpdateUserMatch(idCandidate,idUser,itemMatchCandidate);
+                    }
+                        
+                });
+                            
                 console.log('Encontrado');
                 response = {'remainingSuperlinks': 0, 'Match':true,metadata : utils.getMetadata(1)};
             }else{ //No fue aceptado. Armo el response con el match false. Aca me fijo si hizo superlink y descuento la cantidad.
