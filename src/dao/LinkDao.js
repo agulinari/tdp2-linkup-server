@@ -95,7 +95,7 @@ exports.deleteLink = function(fbidUser, fbidCandidate, callback) {
         "fbidUser": fbidUser,
         "fbidCandidate": fbidCandidate
     };
-    Link.deleteMany(query, function (err, value) {
+    UserLink.deleteMany(query, function (err, value) {
         if (err) {
             callback(err,null);
             return;
@@ -110,10 +110,15 @@ exports.deleteLink = function(fbidUser, fbidCandidate, callback) {
  * @param {Function} callback The function to call when deletion is complete.
  **/
 exports.deleteUserLinks = function(fbidUser, callback) {
-    var query = {
-        "fbidUser": fbidUser,
+
+    var conditions = {
+            "fbidUser":fbidUser
     };
-    Link.deleteMany(query, function (err, value) {
+    var update = {
+            $set: { "acceptedUsers": []}
+    };
+
+    UserLink.findOneAndUpdate(conditions,update, function (err, value) {
         if (err) {
             callback(err,null);
             return;
@@ -128,7 +133,7 @@ exports.deleteUserLinks = function(fbidUser, callback) {
  * @param {Function} callback The function to call when deletion is complete.
  **/
 exports.deleteLinks = function(callback) {
-    Link.deleteMany(function (err, value) {
+    UserLink.deleteMany(function (err, value) {
         if (err) {
             callback(err,null);
             return;
@@ -179,11 +184,12 @@ exports.getUserLinkByIdUserAndIdCandidate = function(idUser,idCandidate, callbac
     });
 };
 
-exports.saveOrUpdateUserLink = function (idUser,idCandidate, callback) {
+exports.saveOrUpdateUserLink = function (idUser,idCandidate,tipoLinkParam, callback) {
 
     if(idUser!=null && idCandidate!=null){
 
-        var itemAcceptedUser = {"fbidCandidate": idCandidate,"typeOfLink": "Link","countOfSuperLinks": 0, "time": Date.now()};
+        var tipoLink = (tipoLinkParam!=null && tipoLinkParam!=undefined)?tipoLinkParam : "Link";
+        var itemAcceptedUser = {"fbidCandidate": idCandidate,"typeOfLink": tipoLink,"countOfSuperLinks": 0, "time": Date.now()};
 
         var conditions = {
             "fbidUser":idUser,

@@ -179,7 +179,7 @@ exports.deleteLinks = function (callback) {
 * Servicio para linkear con un candidato. Si el candidato linkeo tambien, se inicia el match y devuelve match true,
 caso contrario solo linkea devolviendo match false.
 */
-exports.linkCandidate = function (idUser,idCandidate, callback) {
+exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
 
 
     if(idUser!=null && idCandidate!=null){ //Valido si existen los usuarios para hacer el link
@@ -200,7 +200,7 @@ exports.linkCandidate = function (idUser,idCandidate, callback) {
 
             var response = null;
 
-            linkDao.saveOrUpdateUserLink(idUser,idCandidate);
+            linkDao.saveOrUpdateUserLink(idUser,idCandidate,tipoDeLink);
             //Si el usuario fue aceptado, guardo en la lista de aceptados el candidato aceptado el usuario
             //e inicio el match.Para este caso armo el response con el match true.
             if(userLinkCandidate!=null){

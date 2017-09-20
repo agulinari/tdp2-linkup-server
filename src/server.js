@@ -168,7 +168,7 @@ app.post('/rejection', function (req, res, next) {
 
 var linkCtrl = require(process.cwd() + '/src/controllers/LinkController');
 
-app.post('/link/:idUser/:idCandidate', function (req, res, next) {
+app.post('/link', function (req, res, next) {
     console.log('POST /link ' + JSON.stringify(req.body));
     try{
         linkCtrl.postLink(req, res);

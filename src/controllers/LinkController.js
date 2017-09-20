@@ -37,14 +37,14 @@ exports.getLinks = function(req, res) {
 
 //POST - Insert a new Link in db
 exports.postLink = function(req, res) {
-   // var l = req.body.link;
-    /*
-    var isValid = jsonValidator.isLinkValid(rejection);
+    var linkReq = req.body.acceptance;
+   /*
+    var isValid = jsonValidator.isLinkValid(linkReq);
     if (!isValid) {
         callback(new BadRequest("Invalid Link's json format"));
         return;
-    }
-    */
+    }*/
+
    /*    service.saveLink(l.fbidUser, l.fbidCandidate, function(err, response) {
         if (err) {
             return errorHandler.throwError(res, err);
@@ -52,7 +52,7 @@ exports.postLink = function(req, res) {
         return res.json(response);
     });*/
 
-    service.linkCandidate(req.params.idUser,req.params.idCandidate, function (err, response) {
+    service.linkCandidate(linkReq.fbidUser,linkReq.fbidCandidate,linkReq.tipoDeLink, function (err, response) {
         if (err) {
             console.log(err);
             return errorHandler.throwError(res, err);
