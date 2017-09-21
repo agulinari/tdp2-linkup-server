@@ -19,6 +19,7 @@ exports.findMatchs = function(fbidUser, fbidCandidate, callback) {
         console.log("Valores match: "+value);
         matches = (value!=null && value!=undefined)?value.matches:'';
         callback(null,matches);
+        return;
     });
     
    
@@ -32,6 +33,7 @@ exports.deleteMatchs = function(callback) {
             return;
         }
         callback(null, value);
+        return;
     });
     
    
@@ -68,15 +70,16 @@ exports.saveOrUpdateUserMatch = function (idUser,idCandidate,itemMatchCandidate,
                         return;
                     }
                     console.log("ESTA ACTUALIZANDO");
-                    return;
+                    callback(null,doc);
                 });
             }
-            return;
+
         });
 
     }else{
         err = BadRequest("No se pudo procesar el request");
         callback(err,null);
+        return;
     }
 };
 

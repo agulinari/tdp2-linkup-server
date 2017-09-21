@@ -18,7 +18,7 @@ var NotFound = require("../error/NotFound");
  * @param {Function} callback  The function to call when retrieval is complete.
  */
 exports.getUserCandidateLink = function (fbidUser, fbidCandidate, callback) {
-    linkDao.findLink(fbidUser, fbidCandidate, function (err, link) {
+    linkDao.findLink(fbidUser, fbidCandidate,callback, function (err, link) {
         if (err) {
             callback(err, null);
             return;
@@ -28,6 +28,7 @@ exports.getUserCandidateLink = function (fbidUser, fbidCandidate, callback) {
             metadata : utils.getMetadata(1)
         }
         callback(null, response);
+        return;
     });
 };
 
@@ -37,7 +38,7 @@ exports.getUserCandidateLink = function (fbidUser, fbidCandidate, callback) {
  * @param {Function} callback  The function to call when retrieval is complete.
  */
 exports.getUserLinks = function (fbidUser, callback) {
-    linkDao.findUserLinks(fbidUser, function (err, links) {
+    linkDao.findUserLinks(fbidUser,callback, function (err, links) {
         if (err) {
             callback(err, null);
             return;
@@ -47,6 +48,7 @@ exports.getUserLinks = function (fbidUser, callback) {
             metadata : utils.getMetadata(links.length)
         }
         callback(null, response);
+        return;
     });
 };
 
@@ -65,6 +67,7 @@ exports.getLinks = function (callback) {
             metadata : utils.getMetadata(links.length)
         }
         callback(null, response);
+        return;
     });
 };
 
@@ -124,7 +127,7 @@ exports.saveLink = function (fbidUser, fbidCandidate, callback) {
  * @param {Function} callback  The function to call when deletion is complete.
  */
 exports.deleteLink = function (fbidUser, fbidCandidate, callback) {
-    linkDao.deleteLink(fbidUser, fbidCandidate, function (err, data) {
+    linkDao.deleteLink(fbidUser, fbidCandidate,callback, function (err, data) {
         if (err) {
             callback(err, null);
             return;
@@ -134,6 +137,7 @@ exports.deleteLink = function (fbidUser, fbidCandidate, callback) {
             metadata : utils.getMetadata(1)
         }
         callback(null, response);
+        return;
     });
 };
 
@@ -143,7 +147,7 @@ exports.deleteLink = function (fbidUser, fbidCandidate, callback) {
  * @param {Function} callback  The function to call when deletion is complete.
  */
 exports.deleteUserLinks = function (fbidUser, callback) {
-    linkDao.deleteUserLinks(fbidUser, function (err, data) {
+    linkDao.deleteUserLinks(fbidUser,callback, function (err, data) {
         if (err) {
             callback(err, null);
             return;
@@ -153,6 +157,7 @@ exports.deleteUserLinks = function (fbidUser, callback) {
             metadata : utils.getMetadata(1)
         }
         callback(null, response);
+        return;
     });
 };
 
@@ -161,7 +166,7 @@ exports.deleteUserLinks = function (fbidUser, callback) {
  * @param {Function} callback  The function to call when deletion is complete.
  */
 exports.deleteLinks = function (callback) {
-    linkDao.deleteLinks(function (err, data) {
+    linkDao.deleteLinks(callback,function (err, data) {
         if (err) {
             callback(err, null);
             return;
@@ -171,6 +176,7 @@ exports.deleteLinks = function (callback) {
             metadata : utils.getMetadata(1)
         }
         callback(null, response);
+        return;
     });
 };
 
@@ -182,7 +188,6 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
 
 
     if(idUser!=null && idCandidate!=null){ //Valido si existen los usuarios para hacer el link
-
         //Los usuarios existen, ahora debo validar si:
         //      1. El usuario que hace el link no debe tener al candidato en la lista de rechazados (rejects).
         //      2. El usuario que hace el link no debe tener al candidato en la lista de matcheados (matches).
@@ -190,62 +195,69 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
 
         //Busco si el usuario que hace link esta en la lista de aceptados (usersLink) del candidato.
         //El candidate es el idUser y el user es el idCandidate.
-        linkDao.getUserLinkByIdUserAndIdCandidate(idCandidate,idUser, function(err, userLinkCandidate){
-
-            if(err){
-                callback(err, userLinkCandidate);
-                return;
-            }
 
             var response = null;
+            var userLinkCandidate = null;
 
-            linkDao.saveOrUpdateUserLink(idUser,idCandidate,tipoDeLink);
+
             //Si el usuario fue aceptado, guardo en la lista de aceptados el candidato aceptado el usuario
             //e inicio el match.Para este caso armo el response con el match true.
-            if(userLinkCandidate!=null){
-                
-                userProfileDao.getUserProfileById(idCandidate,function(err, value){
-                    if(err){
-                        callback(err, value);
-                        return;
-                    }
-                    console.log("UserProfile usuario: "+value);
-                    if(value!=null && value!=undefined){
-                        var itemMatchCandidate = {"fbidUser": idCandidate,"genero": value.gender,"nombre":value.firstName,
-                                                  "apellido":value.lastName,"edad":value.birthday,"time": Date.now()};
-                        userMatchDao.saveOrUpdateUserMatch(idUser,idCandidate,itemMatchCandidate);
-                    }
-                });
-                
-                userProfileDao.getUserProfileById(idUser,function(err,value){
-                    if(err){
-                        callback(err, value);
-                        return;
-                    }
-                    console.log("UserProfile candidato: "+value);
-                    if(value!=null && value!=undefined){
-                        var itemMatchCandidate = {"fbidUser": idUser,"genero": value.gender,"nombre":value.firstName,
-                                                  "apellido":value.lastName,"edad":value.birthday,"time": Date.now()};
-                        userMatchDao.saveOrUpdateUserMatch(idCandidate,idUser,itemMatchCandidate);
-                    }
+
+                async.waterfall([
+                    function obtenerLinkUsuarioCandidato(next){
+                        linkDao.getUserLinkByIdUserAndIdCandidate(idCandidate,idUser,next);
+                    },
+                    function guardarActualizarLink(value,next){
+                        userLinkCandidate = value;
+                        linkDao.saveOrUpdateUserLink(idUser,idCandidate,tipoDeLink,next);
+                    },
+                    function obtenerCandidato(value,next){
+                        if(userLinkCandidate!=null){
+                            console.log("userLinkCandidate"+userLinkCandidate);
+                           userProfileDao.getUserProfileById(idCandidate,next);
+                        }
+                        console.log("op1");
+                    },
+                    function saveMatchCandidateUser(value,next){
+                         if(userLinkCandidate!=null){
+                                console.log("UserProfile candidato: "+value);
+                                if(value!=null && value!=undefined){
+                                        var itemMatchCandidate = {"fbidUser": idCandidate,"genero": value.gender,"nombre":value.firstName,
+                                                                "apellido":value.lastName,"edad":value.birthday,"time": Date.now()};
+                                        userMatchDao.saveOrUpdateUserMatch(idUser,idCandidate,itemMatchCandidate,next);
+                                }
+                          }
+                              console.log("op2");
+                    },
+                    function obtenerUsuario(value,next){
+                        if(userLinkCandidate!=null){
+                            userProfileDao.getUserProfileById(idUser,next);
+                         }
                         
-                });
-                            
-                console.log('Encontrado');
-                response = {'remainingSuperlinks': 0, 'Match':true,metadata : utils.getMetadata(1)};
-            }else{ //No fue aceptado. Armo el response con el match false. Aca me fijo si hizo superlink y descuento la cantidad.
-                response = {'remainingSuperlinks': 0, 'Match':false,metadata : utils.getMetadata(1)};
-                console.log('No encontrado');
-            }
+                    },
+                    function saveMatchUserCandidate(value,next){
+                                console.log("UserProfile usuario: "+value);
+                        if(userLinkCandidate!=null){
+                                if(value!=null && value!=undefined){
+                                var itemMatchCandidate = {"fbidUser": idUser,"genero": value.gender,"nombre":value.firstName,
+                                                          "apellido":value.lastName,"edad":value.birthday,"time": Date.now()};
+                                    userMatchDao.saveOrUpdateUserMatch(idCandidate,idUser,itemMatchCandidate,next);
+                                }
+                        }
+                              console.log("op3");
+                    }],function (err, matches) {
+                            if (err) {
+                                callback(err);
+                                return;
+                            }
+                            console.log(JSON.stringify(matches));
+                            response = (userLinkCandidate!=null)?{'remainingSuperlinks': 0, 'Match':true,metadata : utils.getMetadata(1)}:
+                                                                {'remainingSuperlinks': 0, 'Match':false,metadata : utils.getMetadata(1)};
+                            callback(null, response);
+                            console.log("fin");
+                            return;
+                      });
 
-            callback(null, response);
-
-        });
-
-    }else{
-        console.log('No encontro el usuario');
-        callback(new NotFound("No se encontro el usuario"), null);
-        return;
     }
-};
+  };
 

@@ -55,6 +55,7 @@ exports.deleteLink = function(fbidUser, fbidCandidate, callback) {
             return;
         }
         callback(null, value);
+        return;
     });
 };
 
@@ -78,6 +79,7 @@ exports.deleteUserLinks = function(fbidUser, callback) {
             return;
         }
         callback(null, value);
+        return;
     });
 };
 
@@ -93,6 +95,7 @@ exports.deleteLinks = function(callback) {
             return;
         }
         callback(null, value);
+        return;
     });
 };
 
@@ -111,7 +114,7 @@ exports.getUserLinkByIdUserAndIdCandidate = function(idUser,idCandidate, callbac
 
     Link.findOne(conditions, function(err, value) {
 
-        var retValue = null;
+        var retValue = value;
 
         if (err) {
             callback(err,null);
@@ -133,7 +136,9 @@ exports.getUserLinkByIdUserAndIdCandidate = function(idUser,idCandidate, callbac
         }
 
         console.log('Retrieving UserLink with id: ' + idCandidate);
+        console.log("Ingreso a linkeo:"+retValue);
         callback(null, retValue);
+        return;
 
     });
 };
@@ -141,7 +146,7 @@ exports.getUserLinkByIdUserAndIdCandidate = function(idUser,idCandidate, callbac
 exports.saveOrUpdateUserLink = function (idUser,idCandidate,tipoLinkParam, callback) {
 
     if(idUser!=null && idCandidate!=null){
-
+        console.log('INGRESO A GUARDAR');
         var tipoLink = (tipoLinkParam!=null && tipoLinkParam!=undefined)?tipoLinkParam : "Link";
         var itemAcceptedUser = {"fbidCandidate": idCandidate,"typeOfLink": tipoLink,"countOfSuperLinks": 0, "time": Date.now()};
 
@@ -155,6 +160,11 @@ exports.saveOrUpdateUserLink = function (idUser,idCandidate,tipoLinkParam, callb
 
         Link.findOne({"fbidUser":idUser}, function(err,data){
 
+            if (err) {
+                callback(err,null);
+                return;
+            }
+
             if(data==null){
                 console.log('GUARDA');
                 var userLink = new Link();
@@ -165,19 +175,23 @@ exports.saveOrUpdateUserLink = function (idUser,idCandidate,tipoLinkParam, callb
                 Link.update(conditions, update, function(err, doc) {
                     if(err){
                         console.log(err);
+                        callback(err,null);
                         return;
                     }
-                // doSave = false;
+
 
                     console.log("ESTA ACTUALIZANDO");
+                    callback(null, doc);
                     return;
                 });
             }
-            return;
+
+
         });
     }else{
         err = BadRequest("No se pudo procesar el request");
         callback(err,null);
+        return;
     }
 };
 
