@@ -4,14 +4,11 @@ var matchDao = require('../dao/UserMatchDao');
 var linkDao = require('../dao/LinkDao');
 var userProfileDao = require('../dao/UserProfileDao');
 var userProfile = require('../model/UserProfile'); 
-var UserLink = require('../model/UserLink'); //Esta tiene un array de users
+
 var userMatchDao = require('../dao/UserMatchDao');
 var utils = require('../utils/Utils');
 var LinkError = require("../error/LinkError");
 var NotFound = require("../error/NotFound");
-
-var async = require('async');
-var utils = require('../utils/Utils');
 
 
 /**

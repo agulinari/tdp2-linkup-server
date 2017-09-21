@@ -11,14 +11,21 @@ const Schema = mongoose.Schema;
 var ObjectIdSchema = Schema.ObjectId;
 var ObjectId = mongoose.Types.ObjectId;
 
-const LinkSchema = new Schema({
+const UserLinkSchema = new Schema({
+
     fbidUser: String,
-    fbidCandidate: String,
-    time : {
-        type : Date,
-        default: Date.now
-    }
+    acceptedUsers: [
+        {
+            fbidCandidate: String,
+            typeOfLink: {type: String, default: "Link"},
+            countOfSuperLinks: {type: Number, default: 0},
+            time : {
+                type : Date,
+                default: Date.now
+            }
+        }
+    ]
 },{ collection: 'links' });
 
 // make this available to our users in our Node applications
-module.exports = mongoose.model("Link", LinkSchema);
+module.exports = mongoose.model("Link", UserLinkSchema);

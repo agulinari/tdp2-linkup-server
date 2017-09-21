@@ -1,30 +1,8 @@
 'use strict';
 
 var Link = require('../model/Link');
-var UserLink = require('../model/UserLink');
 var NotFound = require("../error/NotFound");
 var BadRequest = require("../error/BadRequest");
-
-/**
- * Retrieves a Link
- * @param {String} fbidUser User facebook ID.
- * @param {String} fbidCandidate Candidate facebook ID.
- * @param {Function} callback The function to call when retrieval is complete.
- **/
-exports.findLink = function(fbidUser, fbidCandidate, callback) {
-    var query = {
-        "fbidUser": fbidUser,
-        "fbidCandidate": fbidCandidate
-    };
-    var proj = "fbidUser fbidCandidate time -_id";
-    Link.findOne(query, proj, function (err, value) {
-        if (err) {
-            callback(err,null);
-            return;
-        }
-        callback(null, value);
-    });
-};
 
 /**
  * Retrieves user's Links
@@ -36,7 +14,7 @@ exports.findUserLinks = function(fbidUser, callback) {
         "fbidUser": fbidUser,
     };
     var proj = "-_id -fbidUser -acceptedUsers.time -acceptedUsers._id -__v";
-    UserLink.find(query, proj, function (err, value) {
+    Link.find(query, proj, function (err, value) {
         if (err) {
             callback(err,null);
             return;
@@ -51,36 +29,12 @@ exports.findUserLinks = function(fbidUser, callback) {
  **/
 exports.findLinks = function(callback) {
     var proj = "-_id -acceptedUsers.time -acceptedUsers._id -__v";
-    UserLink.find(null, proj, function (err, value) {
+    Link.find(null, proj, function (err, value) {
         if (err) {
             callback(err,null);
             return;
         }
         callback(null, value);
-    });
-};
-
-exports.saveLink = function(fbidUser, fbidCandidate, callback) {
-    var newLink = new Link();
-    newLink.fbidUser = fbidUser;
-    newLink.fbidCandidate = fbidCandidate;
-    exports.findLink(fbidUser, fbidCandidate, function (err, link) {
-        if (err) {
-            callback(err, null);
-            return;
-        }
-        if (link != null) {
-            var msg = "User " + fbidUser + ' already linked ' + fbidCandidate;
-            callback(new LinkError(msg), null);
-            return;
-        }
-        newLink.save(function(err, value) {
-            if (err) {
-                callback(err,null);
-                return;
-            }
-            callback(null, value);
-        });
     });
 };
 
@@ -95,7 +49,7 @@ exports.deleteLink = function(fbidUser, fbidCandidate, callback) {
         "fbidUser": fbidUser,
         "fbidCandidate": fbidCandidate
     };
-    UserLink.deleteMany(query, function (err, value) {
+    Link.deleteMany(query, function (err, value) {
         if (err) {
             callback(err,null);
             return;
@@ -118,7 +72,7 @@ exports.deleteUserLinks = function(fbidUser, callback) {
             $set: { "acceptedUsers": []}
     };
 
-    UserLink.findOneAndUpdate(conditions,update, function (err, value) {
+    Link.findOneAndUpdate(conditions,update, function (err, value) {
         if (err) {
             callback(err,null);
             return;
@@ -133,7 +87,7 @@ exports.deleteUserLinks = function(fbidUser, callback) {
  * @param {Function} callback The function to call when deletion is complete.
  **/
 exports.deleteLinks = function(callback) {
-    UserLink.deleteMany(function (err, value) {
+    Link.deleteMany(function (err, value) {
         if (err) {
             callback(err,null);
             return;
@@ -155,7 +109,7 @@ exports.getUserLinkByIdUserAndIdCandidate = function(idUser,idCandidate, callbac
         "acceptedUsers.fbidCandidate" : {$eq: idCandidate}
     };
 
-    UserLink.findOne(conditions, function(err, value) {
+    Link.findOne(conditions, function(err, value) {
 
         var retValue = null;
 
@@ -199,16 +153,16 @@ exports.saveOrUpdateUserLink = function (idUser,idCandidate,tipoLinkParam, callb
             $addToSet: { "acceptedUsers": itemAcceptedUser}
         };
 
-        UserLink.findOne({"fbidUser":idUser}, function(err,data){
+        Link.findOne({"fbidUser":idUser}, function(err,data){
 
             if(data==null){
                 console.log('GUARDA');
-                var userLink = new UserLink();
+                var userLink = new Link();
                 userLink.fbidUser = idUser;
                 userLink.acceptedUsers = [itemAcceptedUser];
                 userLink.save();
             }else{
-                UserLink.update(conditions, update, function(err, doc) {
+                Link.update(conditions, update, function(err, doc) {
                     if(err){
                         console.log(err);
                         return;
