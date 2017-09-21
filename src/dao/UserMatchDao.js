@@ -63,6 +63,8 @@ exports.saveOrUpdateUserMatch = function (idUser,idCandidate,itemMatchCandidate,
                 userMatch.fbidUser = idUser;
                 userMatch.matches = [itemMatchCandidate];
                 userMatch.save();
+                console.log("ESTA GUARDANDO");
+                callback(null,data);
             }else{
                 UserMatch.update(conditions, update, function(err, doc) {
                     if(err){

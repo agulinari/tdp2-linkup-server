@@ -204,47 +204,59 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
             //e inicio el match.Para este caso armo el response con el match true.
 
                 async.waterfall([
-                    function obtenerLinkUsuarioCandidato(next){
-                        linkDao.getUserLinkByIdUserAndIdCandidate(idCandidate,idUser,next);
+                    function obtenerLinkUsuarioCandidato(callback){
+                        linkDao.getUserLinkByIdUserAndIdCandidate(idCandidate,idUser,callback);
                     },
-                    function guardarActualizarLink(value,next){
+                    function guardarActualizarLink(value,callback){
                         userLinkCandidate = value;
-                        linkDao.saveOrUpdateUserLink(idUser,idCandidate,tipoDeLink,next);
+                        linkDao.saveOrUpdateUserLink(idUser,idCandidate,tipoDeLink,callback);
                     },
-                    function obtenerCandidato(value,next){
+                    function obtenerCandidato(value,callback){
                         if(userLinkCandidate!=null){
                             console.log("userLinkCandidate"+userLinkCandidate);
-                           userProfileDao.getUserProfileById(idCandidate,next);
+                            userProfileDao.getUserProfileById(idCandidate,callback);
+                        }else{
+                            console.log("op1");
+                            callback(null,"op1");
                         }
-                        console.log("op1");
                     },
-                    function saveMatchCandidateUser(value,next){
+                    function saveMatchCandidateUser(value,callback){
                          if(userLinkCandidate!=null){
                                 console.log("UserProfile candidato: "+value);
                                 if(value!=null && value!=undefined){
                                         var itemMatchCandidate = {"fbidUser": idCandidate,"genero": value.gender,"nombre":value.firstName,
                                                                 "apellido":value.lastName,"edad":value.birthday,"time": Date.now()};
-                                        userMatchDao.saveOrUpdateUserMatch(idUser,idCandidate,itemMatchCandidate,next);
+                                        userMatchDao.saveOrUpdateUserMatch(idUser,idCandidate,itemMatchCandidate,callback);
+                                }else{
+                                    callback(null,"op2");
                                 }
-                          }
+                          }else{
                               console.log("op2");
+                              callback(null,"op2");
+                          }
                     },
-                    function obtenerUsuario(value,next){
+                    function obtenerUsuario(value,callback){
                         if(userLinkCandidate!=null){
-                            userProfileDao.getUserProfileById(idUser,next);
+                            userProfileDao.getUserProfileById(idUser,callback);
+                         }else{
+                             callback(null,"op3");
                          }
                         
                     },
-                    function saveMatchUserCandidate(value,next){
+                    function saveMatchUserCandidate(value,callback){
                                 console.log("UserProfile usuario: "+value);
                         if(userLinkCandidate!=null){
                                 if(value!=null && value!=undefined){
                                 var itemMatchCandidate = {"fbidUser": idUser,"genero": value.gender,"nombre":value.firstName,
                                                           "apellido":value.lastName,"edad":value.birthday,"time": Date.now()};
-                                    userMatchDao.saveOrUpdateUserMatch(idCandidate,idUser,itemMatchCandidate,next);
+                                    userMatchDao.saveOrUpdateUserMatch(idCandidate,idUser,itemMatchCandidate,callback);
+                                }else{
+                                    callback(null,"op4");
                                 }
+                        }else{
+                            console.log("op4");
+                            callback(null,"op4");
                         }
-                              console.log("op3");
                     }],function (err, matches) {
                             if (err) {
                                 callback(err);

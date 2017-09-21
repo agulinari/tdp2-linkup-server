@@ -171,6 +171,8 @@ exports.saveOrUpdateUserLink = function (idUser,idCandidate,tipoLinkParam, callb
                 userLink.fbidUser = idUser;
                 userLink.acceptedUsers = [itemAcceptedUser];
                 userLink.save();
+                callback(null, data);
+                return;
             }else{
                 Link.update(conditions, update, function(err, doc) {
                     if(err){

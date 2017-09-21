@@ -17,6 +17,7 @@ exports.getUserProfileById = function(id, callback) {
         }
 		console.log('Retrieving UserProfile with id: ' + id);
         callback(null, value);
+        return;
     });
 };
 
