@@ -46,7 +46,7 @@ exports.getUserLinks = function (fbidUser, callback) {
             return;
         }
         var response = {
-            'links': links,
+            links,
             metadata : utils.getMetadata(links.length)
         }
         callback(null, response);
@@ -58,13 +58,13 @@ exports.getUserLinks = function (fbidUser, callback) {
  * @param {Function} callback  The function to call when retrieval is complete.
  */
 exports.getLinks = function (callback) {
-    linkDao.findLink(function (err, links) {
+    linkDao.findLinks(callback,function (err, links) {
         if (err) {
             callback(err, null);
             return;
         }
         var response = {
-            'links': links,
+            links,
             metadata : utils.getMetadata(links.length)
         }
         callback(null, response);
