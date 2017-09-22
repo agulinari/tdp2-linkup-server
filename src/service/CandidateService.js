@@ -48,6 +48,7 @@ exports.getCandidates = function (id, callback) {
                     next(err, null);
                     return;
                 }
+                
                 candidates = candidates.filter(function (c) {
                     return !isRejected(c.fbid, rejections);
                 });
@@ -64,9 +65,11 @@ exports.getCandidates = function (id, callback) {
                     next(err, null);
                     return;
                 }
+                console.log(candidates.length);
                 candidates = candidates.filter(function (c) {
                     return !isLinked(c.fbid, links);
                 });
+                console.log(candidates.length);
                 next(null, candidates);
             });
         },
@@ -165,7 +168,7 @@ function isRejected(fbidCandidate, rejections) {
 };
 
 function isLinked(fbidCandidate, links) {
-    for (var l of links) {
+    for (var l of links.acceptedUsers) {
         if (l.fbidCandidate == fbidCandidate) {
             return true;
         }
