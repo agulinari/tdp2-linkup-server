@@ -14,7 +14,7 @@ exports.findUserLinks = function(fbidUser, callback) {
         "fbidUser": fbidUser,
     };
     var proj = "-_id -fbidUser -acceptedUsers.time -acceptedUsers._id -__v";
-    Link.find(query, proj, function (err, value) {
+    Link.findOne(query, proj, function (err, value) {
         if (err) {
             callback(err,null);
             return;
