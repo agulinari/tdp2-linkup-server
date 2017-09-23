@@ -1,77 +1,98 @@
 var async = require('async');
-var utils = require('../utils/Utils');
 var userDao = require('../dao/UserProfileDao');
-var candidateDao = require('../dao/CandidateDao');
+var imageDao = require('../dao/ImageDao');
 var NotFound = require("../error/NotFound");
 
-exports.getImage = function (idUser, idImage, callback) {
-    var user = {};
+/**
+ * Get User's Image by ID
+ * @param {String} fbidUser
+ * @param {String} idImage
+ * @param {Function} callback
+ */
+exports.getImage = function (fbidUser, idImage, callback) {
+    imageDao.findImage(fbidUser, idImage, function (err, image) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        callback(null, image);
+    });
+};
+
+/**
+ * Get User's Images
+ * @param {String} fbidUser
+ * @param {Function} callback
+ */
+exports.getImages = function (fbidUser, callback) {
+    imageDao.findImages(fbidUser, function (err, images) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        callback(null, images);
+    });
+};
+
+/**
+ * Save Image
+ * @param {String} fbidUser
+ * @param {String} idImage
+ * @param {String} data
+ * @param {Function} callback
+ */
+exports.saveImage = function (fbidUser, idImage, data, callback) {
+    var image = {};
     async.waterfall([
         function getUser(next) {
-            userDao.getUserProfileById(id, next);
+            userDao.getUserProfileById(fbidUser, next);
         },
-        function getCandidatesByUserCriteria(response, next) {
-            user = response;
+        function save(user, next) {
             if (user == null) {
 		        next(new NotFound("No se encontro el usuario"), null);
                 return;
             }
-            var criteria = {
-                searchMales : user.settings.searchMales,
-                searchFemales : user.settings.searchFemales,
-                onlyFriends : user.settings.onlyFriends,
-                minDate : getDateFromAge(user.birthday, user.settings.minAge),
-                maxDate : getDateFromAge(user.birthday, user.settings.maxAge),
-                invisible : false
-            };
-            candidateDao.getUserProfileByCriteria(criteria, next);
-        },
-        function filterByCandidateCriteria(response, next) {
-            var users = response;
-            var candidates = [];
-            users.forEach(function (candidate) {
-                if (canBeCandidate(user, candidate)) {
-                    candidates.push(candidate);
-                }
-            });
-            next(null, candidates);
-        },
-        function filterRejectedCandidates(candidates, next) {
-            if (candidates.length == 0) {
-                next(null, candidates);
-                return;
-            }
-            console.log('TODO: filtrar candidatos rechazados');
-            next(null, candidates);
-        },
-        function filterLinkedCandidates(candidates, next) {
-            if (candidates.length == 0) {
-                next(null, candidates);
-                return;
-            }
-            console.log('TODO: filtrar candidatos linkeados');
-            next(null, candidates);
-        },
-        function filterMatchedCandidates(candidates, next) {
-            if (candidates.length == 0) {
-                next(null, candidates);
-                return;
-            }
-            console.log('TODO: filtrar candidatos matcheados');
-            next(null, candidates);
+            imageDao.saveImage(fbidUser, idImage, data, next);
         }
     ],
-    function (err, response) {
+    function (err, image) {
         if (err) {
             callback(err);
             return;
         }
-        var response = {
-            'candidates': response,
-            metadata : utils.getMetadata(response.length)
-        }
-        callback(null, response);
+        console.log(JSON.stringify(image));
+        callback(null, image);
     });
 };
 
+/**
+ * Delete Image
+ * @param {String} fbidUser
+ * @param {String} idImage
+ * @param {Function} callback
+ */
+exports.deleteImage = function (fbidUser, idImage, callback) {
+    imageDao.deleteImage(fbidUser, idImage, function (err, data) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        callback(null, data);
+    });
+};
+
+/**
+ * Delete user's Images
+ * @param {String} fbidUser
+ * @param {Function} callback
+ */
+exports.deleteImages = function (fbidUser, callback) {
+    imageDao.deleteImages(fbidUser, function (err, data) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        callback(null, data);
+    });
+};
 
