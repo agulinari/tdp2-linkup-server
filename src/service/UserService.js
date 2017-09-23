@@ -31,14 +31,42 @@ exports.getUser = function (fbidUser, callback) {
             callback(err, null);
             return;
         }
-        if(user == null) {
+        if (user == null) {
             err = new NotFound("No se encontro el usuario");
 		    callback(err, null);
             return;
 	    }
-        callback(null, user);
+	    
+	    imageDao.findImages(fbidUser, function(err, images) {
+	        if (err) {
+                callback(err, null);
+                return;
+            }
+            user = user.toObject();
+            var index = getImageIndex(user.avatar.image.idImage, images);
+            user.avatar.image.data = images[index].data;
+            user.images.forEach(function(e) {
+                index = getImageIndex(e.image.idImage, images);
+                if (index!= null) {
+                    e.image.data = images[index].data;
+                }
+            });
+
+
+            callback(null, user);	    
+	    });
+
     });
 };
+
+function getImageIndex(idImage, images) {
+    for (var i= 0; i < images.length; ++i) {
+        if (images[i].idImage == idImage) {
+            return i;
+        }
+    }
+    return null;
+}
 
 /**
  * Save User
