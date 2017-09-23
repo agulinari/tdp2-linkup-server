@@ -20,7 +20,10 @@ const UserSchema = new Schema({
     gender: String,
     avatar: String,
     images: [
-        {"image": {"idImage": String} }
+        {
+            _id:false,
+            "image": {"idImage": String}
+        }
 	],
     interests : [{ "interest" : String}],
     lastName: String,
