@@ -63,9 +63,9 @@ exports.saveUser = function (userData, callback) {
                 fbid: userData.fbid,
                 firstName: userData.firstName, 
                 location: {
-                    longitude: userData.longitude,
-                    latitude: userData.latitude,
-                    name: userData.name
+                    longitude: userData.location.longitude,
+                    latitude: userData.location.latitude,
+                    name: userData.location.name
                 },
                 gender: userData.gender,
                 avatar: {image: {idImage: userData.avatar.image.idImage}},
@@ -76,13 +76,11 @@ exports.saveUser = function (userData, callback) {
                 settings: userData.settings
             };
             userData.images.forEach(function(e) {
-                console.log(e);
                 user.images.push({image: {idImage: e.image.idImage}});
             });
             userDao.saveUser(user, next);
         },
         function saveImages(user, next) {
-            console.log('hit save images');
             imageDao.saveImage(user.fbid,
                                user.avatar.image.idImage,
                                userData.avatar.image.data,
@@ -137,6 +135,7 @@ exports.saveUser = function (userData, callback) {
  * @param {Function} callback
  */
 exports.updateUser = function (userData, callback) {
+    console.log('userData long: ' + userData.longitude);
     async.waterfall([
         function getUser(next) {
             userDao.findUser(userData.fbid, next);
@@ -150,13 +149,13 @@ exports.updateUser = function (userData, callback) {
             user = {
                 birthday: userData.fbid,
                 comments: userData.comments,
-                education: userdata.education,
+                education: userData.education,
                 fbid: userData.fbid,
                 firstName: userData.firstName, 
                 location: {
-                    longitude: userData.longitude,
-                    latitude: userData.latitude,
-                    name: userData.name
+                    longitude: userData.location.longitude,
+                    latitude: userData.location.latitude,
+                    name: userData.location.name
                 },
                 gender: userData.gender,
                 avatar: {image: {idImage: userData.avatar.image.idImage}},
@@ -174,6 +173,7 @@ exports.updateUser = function (userData, callback) {
     ],
     function (err, user) {
         if (err) {
+            console.log(err);
             callback(err);
             return;
         }
