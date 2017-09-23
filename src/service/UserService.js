@@ -75,8 +75,9 @@ exports.saveUser = function (userData, callback) {
                 occupation: userData.occupation,
                 settings: userData.settings
             };
-            userData.images.forEach(function(image) {
-                user.images.push({idImage: image.idImage});
+            userData.images.forEach(function(e) {
+                console.log(e);
+                user.images.push({image: {idImage: e.image.idImage}});
             });
             userDao.saveUser(user, next);
         },
