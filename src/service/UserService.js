@@ -68,7 +68,7 @@ exports.saveUser = function (userData, callback) {
                     name: userData.name
                 },
                 gender: userData.gender,
-                avatar: userData.avatar.image.idImage,
+                avatar: {image: {idImage: userData.avatar.image.idImage}},
                 images: [],
                 interests : userData.interests,
                 lastName: userData.lastName,
@@ -84,7 +84,7 @@ exports.saveUser = function (userData, callback) {
         function saveImages(user, next) {
             console.log('hit save images');
             imageDao.saveImage(user.fbid,
-                               user.avatar,
+                               user.avatar.image.idImage,
                                userData.avatar.image.data,
                                function(err, image) {
                 if (err) {
@@ -159,7 +159,7 @@ exports.updateUser = function (userData, callback) {
                     name: userData.name
                 },
                 gender: userData.gender,
-                avatar: userData.avatar.image.idImage,
+                avatar: {image: {idImage: userData.avatar.image.idImage}},
                 images: [],
                 interests : userData.interests,
                 lastName: userData.lastName,

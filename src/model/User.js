@@ -18,7 +18,10 @@ const UserSchema = new Schema({
     fbid: String,
     firstName: String,
     gender: String,
-    avatar: String,
+    avatar: {
+        "image": {
+            "idImage": String}
+    },
     images: [
         {
             _id:false,
