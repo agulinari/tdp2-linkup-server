@@ -229,7 +229,7 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                                         itemMatchCandidate = {"fbid": idCandidate,"gender": value.gender,"name":value.firstName,
                                                                 "lastName":value.lastName,"age":value.birthday,"photo":"",
                                                                 "time": Date.now()};
-                                        imageDao.findImage(value.avatar.image.idImage,callback);
+                                        imageDao.findImage(idCandidate,value.avatar.image.idImage,callback);
                                         
                                 }else{
                                     callback(null,"op2");
@@ -260,10 +260,10 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                                 console.log("UserProfile usuario: "+value);
                         if(userLinkCandidate!=null){
                                 if(value!=null && value!=undefined){
-                                    itemMatchUser = {"fbid": idCandidate,"gender": value.gender,"name":value.firstName,
+                                    itemMatchUser = {"fbid": idUser,"gender": value.gender,"name":value.firstName,
                                                                 "lastName":value.lastName,"age":value.birthday,"photo":"",
                                                                 "time": Date.now()};
-                                    imageDao.findImage(value.avatar.image.idImage,callback);
+                                    imageDao.findImage(idUser,value.avatar.image.idImage,callback);
                                     
                                 }else{
                                     callback(null,"op5");
