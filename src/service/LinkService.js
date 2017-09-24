@@ -274,7 +274,7 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
             function saveMatchUser(value,callback){
                 if(userLinkCandidate!=null && itemMatchUser != null){
                             itemMatchUser.photo = value.data;
-                            matchDao.saveOrUpdateUserMatch(idCandidate,idUser,itemMatchCandidate,callback);
+                            matchDao.saveOrUpdateUserMatch(idCandidate,idUser,itemMatchUser,callback);
                 }else{
                     console.log("op6");
                     callback(null,"op6");
