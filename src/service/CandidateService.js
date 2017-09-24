@@ -15,7 +15,7 @@ exports.getCandidates = function (id, callback) {
         function getCandidatesByUserCriteria(response, next) {
             user = response;
             if (user == null) {
-		        next(new NotFound("No se encontro el usuario"), null);
+                next(new NotFound("No se encontro el usuario"), null);
                 return;
             }
             var criteria = {
@@ -48,7 +48,7 @@ exports.getCandidates = function (id, callback) {
                     next(err, null);
                     return;
                 }
-                
+
                 candidates = candidates.filter(function (c) {
                     return !isRejected(c.fbid, rejections);
                 });
@@ -82,7 +82,7 @@ exports.getCandidates = function (id, callback) {
             next(null, candidates);
         }
     ],
-    function (err, response) {
+                    function (err, response) {
         if (err) {
             callback(err);
             return;
@@ -98,7 +98,7 @@ exports.getCandidates = function (id, callback) {
 function canBeCandidate(user, candidate) {
     //use the min distance
     var distance = user.settings.maxDistance < candidate.settings.maxDistance
-                   ? user.settings.maxDistance : candidate.settings.maxDistance;
+    ? user.settings.maxDistance : candidate.settings.maxDistance;
 
     /*
      * Test
@@ -107,7 +107,7 @@ function canBeCandidate(user, candidate) {
      * distancia = 1,4 km approx
      */
     return satisfiesCandidateCriteria(user, candidate)
-           && isCloseEnough(distance, user.location, candidate.location);
+    && isCloseEnough(distance, user.location, candidate.location);
 };
 
 function satisfiesCandidateCriteria(user, candidate) {
@@ -168,9 +168,11 @@ function isRejected(fbidCandidate, rejections) {
 };
 
 function isLinked(fbidCandidate, links) {
-    for (var l of links.acceptedUsers) {
-        if (l.fbidCandidate == fbidCandidate) {
-            return true;
+    if(links!=null){
+        for (var l of links.acceptedUsers) {
+            if (l.fbidCandidate == fbidCandidate) {
+                return true;
+            }
         }
     }
     return false;
