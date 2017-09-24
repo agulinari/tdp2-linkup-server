@@ -18,12 +18,16 @@ exports.getCandidates = function (id, callback) {
                 next(new NotFound("No se encontro el usuario"), null);
                 return;
             }
+            var now = new Date();
+            var now_str = now.getFullYear() + '/'
+                        + now.getMonth() + 1 + '/'
+                        + now.getDate();
             var criteria = {
                 searchMales : user.settings.searchMales,
                 searchFemales : user.settings.searchFemales,
                 onlyFriends : user.settings.onlyFriends,
-                minDate : getDateFromAge(user.birthday, user.settings.minAge),
-                maxDate : getDateFromAge(user.birthday, user.settings.maxAge),
+                minDate : getDateFromAge(now_str, user.settings.minAge),
+                maxDate : getDateFromAge(now_str, user.settings.maxAge),
                 invisible : false
             };
             userDao.findUsersByCriteria(criteria, next);
@@ -129,13 +133,15 @@ function satisfiesCandidateCriteria(user, candidate) {
     }
 
     //User age is in the candidate age range
-    if (user.birthdate < getDateFromAge(candidate.birthday,
-                                        candidate.settings.minAge)) {
+    var now = new Date();
+    var now_str = now.getFullYear() + '/'
+                + now.getMonth() + 1 + '/'
+                + now.getDate();
+    if (user.birthdate < getDateFromAge(now_str, candidate.settings.minAge)) {
         console.log('No esta en el rango de edad.');
         return false;
     }
-    if (user.birthdate > getDateFromAge(candidate.birthday,
-                                        candidate.settings.maxAge)) {
+    if (user.birthdate > getDateFromAge(now_str, candidate.settings.maxAge)) {
         console.log('No esta en el rango de edad.');
         return false;
     }
