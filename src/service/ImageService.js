@@ -1,5 +1,5 @@
 var async = require('async');
-var userDao = require('../dao/UserProfileDao');
+var userDao = require('../dao/UserDao');
 var imageDao = require('../dao/ImageDao');
 var NotFound = require("../error/NotFound");
 
@@ -45,7 +45,7 @@ exports.saveImage = function (fbidUser, idImage, data, callback) {
     var image = {};
     async.waterfall([
         function getUser(next) {
-            userDao.getUserProfileById(fbidUser, next);
+            userDao.findUser(fbidUser, next);
         },
         function save(user, next) {
             if (user == null) {
