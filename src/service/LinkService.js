@@ -185,8 +185,7 @@ caso contrario solo linkea devolviendo match false.
 */
 exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
 
-
-    if(idUser!=null && idCandidate!=null){ //Valido si existen los usuarios para hacer el link
+    if (idUser!=null && idCandidate!=null) { //Valido si existen los usuarios para hacer el link
         //Los usuarios existen, ahora debo validar si:
         //      1. El usuario que hace el link no debe tener al candidato en la lista de rechazados (rejects).
         //      2. El usuario que hace el link no debe tener al candidato en la lista de matcheados (matches).
@@ -195,16 +194,15 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
         //Busco si el usuario que hace link esta en la lista de aceptados (usersLink) del candidato.
         //El candidate es el idUser y el user es el idCandidate.
 
-            var response = null;
-            var userLinkCandidate = null;
-            var itemMatchCandidate = null;
-            var itemMatchUser = null;
-            var photoImageCandidate = null;
-            var photoImageUser = null;
+        var response = null;
+        var userLinkCandidate = null;
+        var itemMatchCandidate = null;
+        var itemMatchUser = null;
 
 
-            //Si el usuario fue aceptado, guardo en la lista de aceptados el candidato aceptado el usuario
-            //e inicio el match.Para este caso armo el response con el match true.
+        //Si el usuario fue aceptado, guardo en la lista de aceptados el candidato aceptado el usuario
+        //e inicio el match.Para este caso armo el response con el match true.
+
 
                 async.waterfall([
                     function guardarActualizarLink(next){
@@ -309,6 +307,7 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                             return;
                       });
 
+
     }
-  };
+};
 
