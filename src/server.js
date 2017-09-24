@@ -377,6 +377,16 @@ app.get('/image/:idUser', function (req, res, next) {
     }
 });
 
+app.get('/image', function (req, res, next) {
+    console.log('GET /image');
+    try{
+        imageCtrl.getAllImages(req, res);
+    } catch (err) {
+        console.log('GET /image' + '\n'+ err);
+        return res.sendStatus(500);
+    }
+});
+
 app.post('/image', function (req, res, next) {
     console.log('POST /image ' + JSON.stringify(req.body));
     try{
@@ -406,6 +416,16 @@ app.delete('/image/:idUser', function (req, res, next) {
         imageCtrl.deleteImages(req, res);
     } catch (err) {
         console.log('DELETE /image/' + req.params.idUser + '\n'+ err);
+        return res.sendStatus(500);
+    }
+});
+
+app.delete('/image', function (req, res, next) {
+    console.log('DELETE /image');
+    try{
+        imageCtrl.deleteAllImages(req, res);
+    } catch (err) {
+        console.log('DELETE /image/' + '\n'+ err);
         return res.sendStatus(500);
     }
 });

@@ -43,6 +43,21 @@ exports.findImages = function(fbidUser, callback) {
     });
 };
 
+/**
+ * Retrieves all Images
+ * @param {Function} callback The function to call when retrieval is complete.
+ **/
+exports.findAllImages = function(callback) {
+    var proj = "fbidUser idImage data -_id";
+    Image.find(null, proj, function (err, value) {
+        if (err) {
+            callback(err,null);
+            return;
+        }
+        callback(null, value);
+    });
+};
+
 exports.saveImage = function(fbidUser, idImage, data, callback) {
     var newImage = new Image();
     newImage.fbidUser = fbidUser;
@@ -106,4 +121,17 @@ exports.deleteImages = function(fbidUser, callback) {
     });
 };
 
+/**
+ * Deletes all Images
+ * @param {Function} callback
+ **/
+exports.deleteAllImages = function(callback) {
+    Image.deleteMany(null, function (err, value) {
+        if (err) {
+            callback(err,null);
+            return;
+        }
+        callback(null, value);
+    });
+};
 

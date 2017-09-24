@@ -35,6 +35,20 @@ exports.getImages = function (fbidUser, callback) {
 };
 
 /**
+ * Get all Images
+ * @param {Function} callback
+ */
+exports.getAllImages = function (callback) {
+    imageDao.findAllImages(function (err, images) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        callback(null, images);
+    });
+};
+
+/**
  * Save Image
  * @param {String} fbidUser
  * @param {String} idImage
@@ -88,6 +102,20 @@ exports.deleteImage = function (fbidUser, idImage, callback) {
  */
 exports.deleteImages = function (fbidUser, callback) {
     imageDao.deleteImages(fbidUser, function (err, data) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        callback(null, data);
+    });
+};
+
+/**
+ * Delete all Images
+ * @param {Function} callback
+ */
+exports.deleteAllImages = function (callback) {
+    imageDao.deleteAllImages(function (err, data) {
         if (err) {
             callback(err, null);
             return;

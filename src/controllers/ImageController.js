@@ -34,6 +34,20 @@ exports.getImages = function(req, res) {
     });
 };
 
+//GET - Returns the user Images
+exports.getAllImages = function(req, res) {
+    service.getAllImages(function(err, images) {
+        if (err) {
+            return errorHandler.throwError(res, err);
+        }
+        var response = {
+            'images': images,
+            metadata : utils.getMetadata(images.length)
+        }
+        return res.json(response);
+    });
+};
+
 //POST - Save a new Image
 exports.postImage = function(req, res) {
     var imageData = req.body.image;
@@ -89,4 +103,18 @@ exports.deleteImages = function(req, res) {
         return res.json(response);
     });
 };
+
+exports.deleteAllImages = function(req, res) {
+    service.deleteAllImages(function(err, data) {
+        if (err) {
+            return errorHandler.throwError(res, err);
+        }
+        var response = {
+            'data': data,
+            metadata : utils.getMetadata(1)
+        }
+        return res.json(response);
+    });
+};
+
 
