@@ -1,5 +1,5 @@
 var async = require('async');
-var userDao = require('../dao/UserProfileDao');
+var userDao = require('../dao/UserDao');
 var rejectionDao = require('../dao/RejectionDao');
 var utils = require('../utils/Utils');
 var RejectionError = require("../error/RejectionError");
@@ -73,7 +73,7 @@ exports.saveRejection = function (fbidUser, fbidCandidate, callback) {
     var rejection = {};
     async.waterfall([
         function getUser(next) {
-            userDao.getUserProfileById(fbidUser, next);
+            userDao.findUser(fbidUser, next);
         },
         function getCandidate(response, next) {
             user = response;
@@ -81,7 +81,7 @@ exports.saveRejection = function (fbidUser, fbidCandidate, callback) {
 		        next(new NotFound("No se encontro el usuario"), null);
                 return;
             }
-            userDao.getUserProfileById(fbidCandidate, next);
+            userDao.findUser(fbidCandidate, next);
         },
         function findRejections(response, next) {
             candidate = response;

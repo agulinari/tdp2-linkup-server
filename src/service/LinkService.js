@@ -1,11 +1,10 @@
 var async = require('async');
-var userDao = require('../dao/UserProfileDao');
+var userDao = require('../dao/UserDao');
 var matchDao = require('../dao/UserMatchDao');
 var linkDao = require('../dao/LinkDao');
 var userProfileDao = require('../dao/UserProfileDao');
 var userProfile = require('../model/UserProfile'); 
 
-var userMatchDao = require('../dao/UserMatchDao');
 var utils = require('../utils/Utils');
 var LinkError = require("../error/LinkError");
 var NotFound = require("../error/NotFound");
@@ -82,7 +81,7 @@ exports.saveLink = function (fbidUser, fbidCandidate, callback) {
     var link = {};
     async.waterfall([
         function getUser(next) {
-            userDao.getUserProfileById(fbidUser, next);
+            userDao.findUser(fbidUser, next);
         },
         function getCandidate(response, next) {
             user = response;
@@ -90,7 +89,7 @@ exports.saveLink = function (fbidUser, fbidCandidate, callback) {
 		        next(new NotFound("No se encontro el usuario"), null);
                 return;
             }
-            userDao.getUserProfileById(fbidCandidate, next);
+            userDao.findUser(fbidCandidate, next);
         },
         function storeLink(response, next) {
             candidate = response;
@@ -214,7 +213,7 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                     function obtenerCandidato(value,callback){
                         if(userLinkCandidate!=null){
                             console.log("userLinkCandidate"+userLinkCandidate);
-                            userProfileDao.getUserProfileById(idCandidate,callback);
+                            userDao.findUser(idCandidate,callback);
                         }else{
                             console.log("op1");
                             callback(null,"op1");
@@ -224,9 +223,9 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                          if(userLinkCandidate!=null){
                                 console.log("UserProfile candidato: "+value);
                                 if(value!=null && value!=undefined){
-                                        var itemMatchCandidate = {"fbidUser": idCandidate,"genero": value.gender,"nombre":value.firstName,
-                                                                "apellido":value.lastName,"edad":value.birthday,"time": Date.now()};
-                                        userMatchDao.saveOrUpdateUserMatch(idUser,idCandidate,itemMatchCandidate,callback);
+                                        var itemMatchCandidate = {"fbidUser": idCandidate,"gender": value.gender,"name":value.firstName,
+                                                                "lastName":value.lastName,"age":value.birthday,"time": Date.now()};
+                                        matchDao.saveOrUpdateUserMatch(idUser,idCandidate,itemMatchCandidate,callback);
                                 }else{
                                     callback(null,"op2");
                                 }
@@ -237,7 +236,7 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                     },
                     function obtenerUsuario(value,callback){
                         if(userLinkCandidate!=null){
-                            userProfileDao.getUserProfileById(idUser,callback);
+                            userDao.findUser(idUser,callback);
                          }else{
                              callback(null,"op3");
                          }
@@ -247,9 +246,9 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                                 console.log("UserProfile usuario: "+value);
                         if(userLinkCandidate!=null){
                                 if(value!=null && value!=undefined){
-                                var itemMatchCandidate = {"fbidUser": idUser,"genero": value.gender,"nombre":value.firstName,
-                                                          "apellido":value.lastName,"edad":value.birthday,"time": Date.now()};
-                                    userMatchDao.saveOrUpdateUserMatch(idCandidate,idUser,itemMatchCandidate,callback);
+                                var itemMatchCandidate = {"fbidUser": idUser,"gender": value.gender,"name":value.firstName,
+                                                          "lastName":value.lastName,"age":value.birthday,"time": Date.now()};
+                                    matchDao.saveOrUpdateUserMatch(idCandidate,idUser,itemMatchCandidate,callback);
                                 }else{
                                     callback(null,"op4");
                                 }

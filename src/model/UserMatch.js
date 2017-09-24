@@ -17,15 +17,12 @@ const UserMatchSchema = new Schema({
     matches: [
         {
             fbidUser: String,
-            genero: String,
-            nombre: String,
-            apellido: String,
-            edad: String,
-            idMiniImagen: String,
-            time : {
-                type : Date,
-                default: Date.now
-            }
+            gender: String,
+            name: String,
+            lastName: String,
+            age: String,
+            idShortImage: String,
+            time : String
 	    }
 	]
 },{ collection: 'usersMatch' });
