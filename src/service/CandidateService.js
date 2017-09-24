@@ -20,8 +20,8 @@ exports.getCandidates = function (id, callback) {
             }
             var now = new Date();
             var now_str = now.getFullYear() + '/'
-                        + now.getMonth() + 1 + '/'
-                        + now.getDate();
+                + (now.getMonth() < 10 ? '0' : '') + (now.getMonth() + 1) + '/'
+                + (now.getDate() < 10 ? '0' : '') + now.getDate();
             var criteria = {
                 searchMales : user.settings.searchMales,
                 searchFemales : user.settings.searchFemales,
@@ -120,29 +120,33 @@ function satisfiesCandidateCriteria(user, candidate) {
     }
 
     if (!candidate.settings.searchMales && user.gender == 'male') {
-        console.log('No satisface busqueda hombres.');
+        //console.log('No satisface busqueda hombres.');
         return false;
     }
     if (!candidate.settings.searchFemales && user.gender == 'female') {
-        console.log('No satisface busqueda mujeres.');
+        //console.log('No satisface busqueda mujeres.');
         return false;
     }
     if (candidate.settings.onlyFriends && !user.settings.onlyFriends) {
-        console.log('No satisface busqueda solo amigos.');
+        //console.log('No satisface busqueda solo amigos.');
         return false;
     }
 
     //User age is in the candidate age range
     var now = new Date();
     var now_str = now.getFullYear() + '/'
-                + now.getMonth() + 1 + '/'
-                + now.getDate();
-    if (user.birthdate < getDateFromAge(now_str, candidate.settings.minAge)) {
-        console.log('No esta en el rango de edad.');
+                + (now.getMonth() < 10 ? '0' : '') + (now.getMonth() + 1) + '/'
+                + (now.getDate() < 10 ? '0' : '') + now.getDate();
+    console.log('now: ' + now_str);
+    console.log('user birthdate: ' + user.birthday);
+    console.log('candidate min: ' + getDateFromAge(now_str, candidate.settings.minAge));
+    if (user.birthday > getDateFromAge(now_str, candidate.settings.minAge)) {
+        console.log('No esta en el rango de edad Min.');
         return false;
     }
-    if (user.birthdate > getDateFromAge(now_str, candidate.settings.maxAge)) {
-        console.log('No esta en el rango de edad.');
+    
+    if (user.birthday < getDateFromAge(now_str, candidate.settings.maxAge)) {
+        console.log('No esta en el rango de edad Max.');
         return false;
     }
     return true;
@@ -152,7 +156,7 @@ function isCloseEnough(distance, loc1, loc2) {
     var gp1 = new GeoPoint(loc1.latitude, loc1.longitude, false);   // in radian
     var gp2 = new GeoPoint(loc2.latitude, loc2.longitude, false);   // in radian
     var retVal = (gp1.distanceTo(gp2, true) <= distance);   // in kilometers
-    console.log('Esta en el rango de distancia solicitado: '+ retVal);
+    //console.log('Esta en el rango de distancia solicitado: '+ retVal);
     return retVal;
 };
 
