@@ -16,6 +16,7 @@ exports.getUserMatches = function (fbidUser, callback) {
             return;
         }
         var response = {
+
             matches: (value==null)?[value]:value,
             metadata : utils.getMetadata(1)
         }
