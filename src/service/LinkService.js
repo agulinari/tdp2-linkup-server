@@ -185,8 +185,7 @@ caso contrario solo linkea devolviendo match false.
 */
 exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
 
-
-    if(idUser!=null && idCandidate!=null){ //Valido si existen los usuarios para hacer el link
+    if (idUser!=null && idCandidate!=null) { //Valido si existen los usuarios para hacer el link
         //Los usuarios existen, ahora debo validar si:
         //      1. El usuario que hace el link no debe tener al candidato en la lista de rechazados (rejects).
         //      2. El usuario que hace el link no debe tener al candidato en la lista de matcheados (matches).
@@ -195,107 +194,105 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
         //Busco si el usuario que hace link esta en la lista de aceptados (usersLink) del candidato.
         //El candidate es el idUser y el user es el idCandidate.
 
-            var response = null;
-            var userLinkCandidate = null;
-            var itemMatchCandidate = null;
-            var itemMatchUser = null;
+        var response = null;
+        var userLinkCandidate = null;
+        var itemMatchCandidate = null;
+        var itemMatchUser = null;
 
+        //Si el usuario fue aceptado, guardo en la lista de aceptados el candidato aceptado el usuario
+        //e inicio el match.Para este caso armo el response con el match true.
 
-            //Si el usuario fue aceptado, guardo en la lista de aceptados el candidato aceptado el usuario
-            //e inicio el match.Para este caso armo el response con el match true.
-
-                async.waterfall([
-                    function obtenerLinkUsuarioCandidato(callback){
-                        linkDao.getUserLinkByIdUserAndIdCandidate(idCandidate,idUser,callback);
-                    },
-                    function guardarActualizarLink(value,callback){
-                        userLinkCandidate = value;
-                        linkDao.saveOrUpdateUserLink(idUser,idCandidate,tipoDeLink,callback);
-                    },
-                    function obtenerCandidato(value,callback){
-                        if(userLinkCandidate!=null){
-                            console.log("userLinkCandidate"+userLinkCandidate);
-                            userDao.findUser(idCandidate,callback);
+        async.waterfall([
+            function obtenerLinkUsuarioCandidato(callback){
+                linkDao.getUserLinkByIdUserAndIdCandidate(idCandidate,idUser,callback);
+            },
+            function guardarActualizarLink(value,callback){
+                userLinkCandidate = value;
+                linkDao.saveOrUpdateUserLink(idUser,idCandidate,tipoDeLink,callback);
+            },
+            function obtenerCandidato(value,callback){
+                if(userLinkCandidate!=null){
+                    console.log("userLinkCandidate"+userLinkCandidate);
+                    userDao.findUser(idCandidate,callback);
+                }else{
+                    console.log("op1");
+                    callback(null,"op1");
+                }
+            },
+            function findImageCandidateUser(value,callback){
+                 if(userLinkCandidate!=null){
+                        console.log("UserProfile candidato: "+value);
+                        if(value!=null && value!=undefined){
+                                
+                                itemMatchCandidate = {"fbid": idCandidate,"gender": value.gender,"name":value.firstName,
+                                                        "lastName":value.lastName,"age":value.birthday,"photo":"",
+                                                        "time": Date.now()};
+                                imageDao.findImage(idCandidate,value.avatar.image.idImage,callback);
+                                
                         }else{
-                            console.log("op1");
-                            callback(null,"op1");
+                            callback(null,"op2");
                         }
-                    },
-                    function findImageCandidateUser(value,callback){
-                         if(userLinkCandidate!=null){
-                                console.log("UserProfile candidato: "+value);
-                                if(value!=null && value!=undefined){
-                                        
-                                        itemMatchCandidate = {"fbid": idCandidate,"gender": value.gender,"name":value.firstName,
-                                                                "lastName":value.lastName,"age":value.birthday,"photo":"",
-                                                                "time": Date.now()};
-                                        imageDao.findImage(idCandidate,value.avatar.image.idImage,callback);
-                                        
-                                }else{
-                                    callback(null,"op2");
-                                }
-                          }else{
-                              console.log("op2");
-                              callback(null,"op2");
-                          }
-                    },function saveMatchCandidate(value,callback){
-                        if(userLinkCandidate!=null && itemMatchCandidate!=null){
-                                itemMatchCandidate.photo = value.data;
-                                matchDao.saveOrUpdateUserMatch(idUser,idCandidate,itemMatchCandidate,callback);
+                  }else{
+                      console.log("op2");
+                      callback(null,"op2");
+                  }
+            },function saveMatchCandidate(value,callback){
+                if(userLinkCandidate!=null && itemMatchCandidate!=null){
+                        itemMatchCandidate.photo = value.data;
+                        matchDao.saveOrUpdateUserMatch(idUser,idCandidate,itemMatchCandidate,callback);
+                }else{
+                     console.log("op3");
+                     callback(null,"op3");
+                }    
+            },
+            function obtenerUsuario(value,callback){
+                if(userLinkCandidate!=null){
+                    userDao.findUser(idUser,callback);
+                 }else{
+                     console.log("op4");
+                     callback(null,"op4");
+                 }
+                
+            },
+            function findImageUser(value,callback){
+                        console.log("UserProfile usuario: "+value);
+                if(userLinkCandidate!=null){
+                        if(value!=null && value!=undefined){
+                            itemMatchUser = {"fbid": idUser,"gender": value.gender,"name":value.firstName,
+                                                        "lastName":value.lastName,"age":value.birthday,"photo":"",
+                                                        "time": Date.now()};
+                            imageDao.findImage(idUser,value.avatar.image.idImage,callback);
+                            
                         }else{
-                             console.log("op3");
-                             callback(null,"op3");
-                        }    
-                    },
-                    function obtenerUsuario(value,callback){
-                        if(userLinkCandidate!=null){
-                            userDao.findUser(idUser,callback);
-                         }else{
-                             console.log("op4");
-                             callback(null,"op4");
-                         }
-                        
-                    },
-                    function findImageUser(value,callback){
-                                console.log("UserProfile usuario: "+value);
-                        if(userLinkCandidate!=null){
-                                if(value!=null && value!=undefined){
-                                    itemMatchUser = {"fbid": idUser,"gender": value.gender,"name":value.firstName,
-                                                                "lastName":value.lastName,"age":value.birthday,"photo":"",
-                                                                "time": Date.now()};
-                                    imageDao.findImage(idUser,value.avatar.image.idImage,callback);
-                                    
-                                }else{
-                                    callback(null,"op5");
-                                }
-                        }else{
-                            console.log("op5");
                             callback(null,"op5");
                         }
-                    },
-                    function saveMatchUser(value,callback){
-                        if(userLinkCandidate!=null && itemMatchUser != null){
-                                    itemMatchUser.photo = value.data;
-                                    matchDao.saveOrUpdateUserMatch(idCandidate,idUser,itemMatchCandidate,callback);
-                        }else{
-                            console.log("op6");
-                            callback(null,"op6");
-                        }
-                       
+                }else{
+                    console.log("op5");
+                    callback(null,"op5");
+                }
+            },
+            function saveMatchUser(value,callback){
+                if(userLinkCandidate!=null && itemMatchUser != null){
+                            itemMatchUser.photo = value.data;
+                            matchDao.saveOrUpdateUserMatch(idCandidate,idUser,itemMatchCandidate,callback);
+                }else{
+                    console.log("op6");
+                    callback(null,"op6");
+                }
+               
+            }
+            ],function (err, matches) {
+                    if (err) {
+                        callback(err);
+                        return;
                     }
-                    ],function (err, matches) {
-                            if (err) {
-                                callback(err);
-                                return;
-                            }
-                            console.log(JSON.stringify(matches));
-                            response = (userLinkCandidate!=null)?{'remainingSuperlinks': 0, 'match':true,metadata : utils.getMetadata(1)}:
-                                                                {'remainingSuperlinks': 0, 'match':false,metadata : utils.getMetadata(1)};
-                            callback(null, response);
-                            console.log("fin");
-                            return;
-                      });
-
+                    console.log(JSON.stringify(matches));
+                    response = (userLinkCandidate!=null)?{'remainingSuperlinks': 0, 'match':true,metadata : utils.getMetadata(1)}:
+                                                        {'remainingSuperlinks': 0, 'match':false,metadata : utils.getMetadata(1)};
+                    callback(null, response);
+                    console.log("fin");
+                    return;
+              });
     }
-  };
+};
 

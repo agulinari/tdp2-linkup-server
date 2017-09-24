@@ -178,7 +178,7 @@ exports.updateUser = function (userData, callback) {
                 return;
             }
             user = {
-                birthday: userData.fbid,
+                birthday: userData.birthday,
                 comments: userData.comments,
                 education: userData.education,
                 fbid: userData.fbid,
