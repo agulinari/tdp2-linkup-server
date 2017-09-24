@@ -45,6 +45,25 @@ exports.findUserRejections = function(fbidUser, callback) {
 };
 
 /**
+ * Retrieves Rejections to the user by another users
+ * @param {String} fbidUser User facebook ID.
+ * @param {Function} callback The function to call when retrieval is complete.
+ **/
+exports.findWhoRejectedUser = function(fbidUser, callback) {
+    var query = {
+        "fbidCandidate": fbidUser,
+    };
+    var proj = "fbidUser fbidCandidate -_id";
+    Rejection.find(query, proj, function (err, value) {
+        if (err) {
+            callback(err,null);
+            return;
+        }
+        callback(null, value);
+    });
+};
+
+/**
  * Retrieves Rejections
  * @param {Function} callback The function to call when retrieval is complete.
  **/

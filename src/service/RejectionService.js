@@ -45,6 +45,25 @@ exports.getUserRejections = function (fbidUser, callback) {
 };
 
 /**
+ * Get Rejections to the user by users
+ * @param {String} fbidUser
+ * @param {Function} callback  The function to call when retrieval is complete.
+ */
+exports.getUserRejections = function (fbidUser, callback) {
+    rejectionDao.findWhoRejectedUser(fbidUser, function (err, rejections) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        var response = {
+            'rejections': rejections,
+            metadata : utils.getMetadata(rejections.length)
+        }
+        callback(null, response);
+    });
+};
+
+/**
  * Get Rejections
  * @param {Function} callback  The function to call when retrieval is complete.
  */

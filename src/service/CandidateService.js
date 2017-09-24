@@ -59,6 +59,23 @@ exports.getCandidates = function (id, callback) {
                 next(null, candidates);
             });
         },
+        function filterCandidatesRejections(candidates, next) {
+            if (candidates.length == 0) {
+                next(null, candidates);
+                return;
+            }
+            rejectionDao.findWhoRejectedUser(user.fbid, function (err, rejections) {
+                if (err) {
+                    next(err, null);
+                    return;
+                }
+                                
+                candidates = candidates.filter(function (c) {
+                    return !didReject(c.fbid, rejections);
+                });
+                next(null, candidates);
+            });
+        },
         function filterLinkedCandidates(candidates, next) {
             if (candidates.length == 0) {
                 next(null, candidates);
@@ -171,6 +188,15 @@ function getDateFromAge(birthdate, age) {
 function isRejected(fbidCandidate, rejections) {
     for (var r of rejections) {
         if (r.fbidCandidate == fbidCandidate) {
+            return true;
+        }
+    }
+    return false;
+};
+
+function didReject(fbidCandidate, rejections) {
+    for (var r of rejections) {
+        if (r.fbidUser == fbidCandidate) {
             return true;
         }
     }

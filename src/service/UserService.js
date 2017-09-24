@@ -44,13 +44,9 @@ exports.getUser = function (fbidUser, callback) {
             }
             user = user.toObject();
             var index = getImageIndex(user.avatar.image.idImage, images);
-            console.log(index);
             user.avatar.image.data = images[index].data;
-            console.log(user.images)
             user.images.forEach(function(e) {
-                console.log(e);
                 var idImage = e.image.idImage;
-                console.log(idImage);
                 index = getImageIndex(e.image.idImage, images);
                 if (index != null) {
                     e.image.data = images[index].data;
@@ -120,14 +116,12 @@ exports.saveUser = function (userData, callback) {
                     next(err,null);
                     return;
                 }
-                console.log('avatar saved');
                 if (0 == userData.images.length) {
                     next(null, user);
                     return;
                 }
                 var i = 0;
                 var imageCallback = function(err, image) {
-                    console.log(i);
                     if (err) {
                         next(err,null);
                         return;
@@ -155,7 +149,6 @@ exports.saveUser = function (userData, callback) {
             callback(err);
             return;
         }
-        console.log(JSON.stringify(user));
         callback(null, user);
     });
 };
@@ -166,7 +159,6 @@ exports.saveUser = function (userData, callback) {
  * @param {Function} callback
  */
 exports.updateUser = function (userData, callback) {
-    console.log('userData long: ' + userData.longitude);
     async.waterfall([
         function getUser(next) {
             userDao.findUser(userData.fbid, next);
@@ -208,7 +200,6 @@ exports.updateUser = function (userData, callback) {
             callback(err);
             return;
         }
-        console.log(JSON.stringify(user));
         callback(null, user);
     });
 };
