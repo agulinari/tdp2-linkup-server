@@ -238,13 +238,19 @@ exports.deleteUser = function (fbidUser, callback) {
  * Delete Users
  * @param {Function} callback
  */
-exports.deleteUsers = function (callback) {
+exports.deleteAllUsers = function (callback) {
     userDao.deleteUsers(function (err, data) {
         if (err) {
             callback(err, null);
             return;
         }
-        callback(null, data);
+        imageDao.deleteAllImages(fbidUser, function (err, data2) {
+            if (err) {
+                callback(err, null);
+                return;
+            }
+            callback(null, data);
+        });
     });
 };
 

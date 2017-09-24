@@ -109,7 +109,7 @@ exports.deleteUser = function(fbidUser, callback) {
  * Deletes all Users
  * @param {Function} callback
  **/
-exports.deleteUsers = function(callback) {
+exports.deleteAllUsers = function(callback) {
     User.deleteMany(null, function (err, value) {
         if (err) {
             callback(err,null);

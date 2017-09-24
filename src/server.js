@@ -124,7 +124,7 @@ app.delete('/user/:idUser', function (req, res, next) {
 app.delete('/user', function (req, res, next) {
     console.log('DELETE /user');
     try{
-        userCtrl.deleteUsers(req, res);
+        userCtrl.deleteAllUsers(req, res);
     } catch (err) {
         console.log('DELETE /user' + '\n'+ err);
         return res.sendStatus(500);
