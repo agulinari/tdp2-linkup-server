@@ -44,16 +44,18 @@ exports.getUser = function (fbidUser, callback) {
             }
             user = user.toObject();
             var index = getImageIndex(user.avatar.image.idImage, images);
+            console.log(index);
             user.avatar.image.data = images[index].data;
+            console.log(user.images)
             user.images.forEach(function(e) {
+                console.log(e);
                 var idImage = e.image.idImage;
-                index = (idImage!=null && idImage!=undefined)?getImageIndex(e.image.idImage, images):null;
-                if (index!= null) {
+                console.log(idImage);
+                index = getImageIndex(e.image.idImage, images);
+                if (index != null) {
                     e.image.data = images[index].data;
                 }
             });
-
-
             callback(null, user);	    
 	    });
 
@@ -169,7 +171,7 @@ exports.updateUser = function (userData, callback) {
         function getUser(next) {
             userDao.findUser(userData.fbid, next);
         },
-        function save(user, next) {
+        function update(user, next) {
             if (user == null) {
                 err = new NotFound("No se encontro el usuario");
 		        next(err, null);
@@ -194,8 +196,8 @@ exports.updateUser = function (userData, callback) {
                 occupation: userData.occupation,
                 settings: userData.settings
             };
-            userData.images.forEach(function(image) {
-                user.images.push({idImage: image.idImage});
+            userData.images.forEach(function(e) {
+                user.images.push({image: {idImage: e.image.idImage}});
             });
             userDao.updateUser(user, next);
         }    

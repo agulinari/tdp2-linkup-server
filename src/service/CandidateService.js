@@ -82,7 +82,7 @@ exports.getCandidates = function (id, callback) {
             next(null, candidates);
         }
     ],
-                    function (err, response) {
+    function (err, response) {
         if (err) {
             callback(err);
             return;
@@ -107,7 +107,7 @@ function canBeCandidate(user, candidate) {
      * distancia = 1,4 km approx
      */
     return satisfiesCandidateCriteria(user, candidate)
-    && isCloseEnough(distance, user.location, candidate.location);
+           && isCloseEnough(distance, user.location, candidate.location);
 };
 
 function satisfiesCandidateCriteria(user, candidate) {
@@ -146,7 +146,7 @@ function isCloseEnough(distance, loc1, loc2) {
     var gp1 = new GeoPoint(loc1.latitude, loc1.longitude, false);   // in radian
     var gp2 = new GeoPoint(loc2.latitude, loc2.longitude, false);   // in radian
     var retVal = (gp1.distanceTo(gp2, true) <= distance);   // in kilometers
-    console.log('Esta en el rango de distancia solicitado: '+retVal);
+    console.log('Esta en el rango de distancia solicitado: '+ retVal);
     return retVal;
 };
 
