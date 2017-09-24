@@ -199,87 +199,99 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
             var userLinkCandidate = null;
             var itemMatchCandidate = null;
             var itemMatchUser = null;
+            var photoImageCandidate = null;
+            var photoImageUser = null;
 
 
             //Si el usuario fue aceptado, guardo en la lista de aceptados el candidato aceptado el usuario
             //e inicio el match.Para este caso armo el response con el match true.
 
                 async.waterfall([
-                    function obtenerLinkUsuarioCandidato(callback){
-                        linkDao.getUserLinkByIdUserAndIdCandidate(idCandidate,idUser,callback);
+                    function guardarActualizarLink(next){
+                        console.log("Usuario candidato para link con user OP2: "+userLinkCandidate);
+                        console.log("Haciendo Link usuario con candidato.... OP2");
+                        linkDao.saveOrUpdateUserLink(idUser,idCandidate,tipoDeLink,next);
                     },
-                    function guardarActualizarLink(value,callback){
+                    function obtenerLinkUsuarioCandidato(value,next){
+                        console.log("Buscando usuarioLinkCandidate.... OP1");
+                        linkDao.getUserLinkByIdUserAndIdCandidate(idCandidate,idUser,next);
+                    },
+                    function obtenerCandidato(value,next){
                         userLinkCandidate = value;
-                        linkDao.saveOrUpdateUserLink(idUser,idCandidate,tipoDeLink,callback);
-                    },
-                    function obtenerCandidato(value,callback){
+                        console.log("Usuario candidato OP3: "+userLinkCandidate);
                         if(userLinkCandidate!=null){
+                            console.log("Buscando candidato.... OP3");
                             console.log("userLinkCandidate"+userLinkCandidate);
-                            userDao.findUser(idCandidate,callback);
+                            userDao.findUser(idCandidate,next);
                         }else{
-                            console.log("op1");
-                            callback(null,"op1");
+                            console.log("op3");
+                            next(null,"op3");
                         }
                     },
-                    function findImageCandidateUser(value,callback){
+                    function findImageCandidateUser(value,next){
                          if(userLinkCandidate!=null){
+                                console.log("Buscando imagen candidato.... OP4");
                                 console.log("UserProfile candidato: "+value);
                                 if(value!=null && value!=undefined){
-                                        
+                                        console.log("Armando item candidate...OP4");
                                         itemMatchCandidate = {"fbid": idCandidate,"gender": value.gender,"name":value.firstName,
                                                                 "lastName":value.lastName,"age":value.birthday,"photo":"",
                                                                 "time": Date.now()};
-                                        imageDao.findImage(idCandidate,value.avatar.image.idImage,callback);
+                                        imageDao.findImage(idCandidate,value.avatar.image.idImage,next);
                                         
                                 }else{
-                                    callback(null,"op2");
+                                    next(null,"op4");
                                 }
                           }else{
-                              console.log("op2");
-                              callback(null,"op2");
+                              console.log("op4");
+                              next(null,"op4");
                           }
-                    },function saveMatchCandidate(value,callback){
+                    },function saveMatchCandidate(value,next){
                         if(userLinkCandidate!=null && itemMatchCandidate!=null){
+                                console.log("Guardando match user-candidate..OP5");
                                 itemMatchCandidate.photo = value.data;
-                                matchDao.saveOrUpdateUserMatch(idUser,idCandidate,itemMatchCandidate,callback);
+                                matchDao.saveOrUpdateUserMatch(idUser,idCandidate,itemMatchCandidate,next);
                         }else{
-                             console.log("op3");
-                             callback(null,"op3");
+                             console.log("op5");
+                             next(null,"op5");
                         }    
                     },
-                    function obtenerUsuario(value,callback){
+                    function obtenerUsuario(value,next){
                         if(userLinkCandidate!=null){
-                            userDao.findUser(idUser,callback);
+                            console.log("Obteniendo usuario...OP6");
+                            userDao.findUser(idUser,next);
                          }else{
-                             console.log("op4");
-                             callback(null,"op4");
+                             console.log("op6");
+                             next(null,"op6");
                          }
                         
                     },
-                    function findImageUser(value,callback){
-                                console.log("UserProfile usuario: "+value);
+                    function findImageUser(value,next){
+                        console.log("Buscando imagen usuario.. OP7");
                         if(userLinkCandidate!=null){
                                 if(value!=null && value!=undefined){
+                                    console.log("Armando item usuario... OP7");
                                     itemMatchUser = {"fbid": idUser,"gender": value.gender,"name":value.firstName,
                                                                 "lastName":value.lastName,"age":value.birthday,"photo":"",
                                                                 "time": Date.now()};
-                                    imageDao.findImage(idUser,value.avatar.image.idImage,callback);
+                                    imageDao.findImage(idUser,value.avatar.image.idImage,next);
                                     
                                 }else{
-                                    callback(null,"op5");
+                                    next(null,"op7");
                                 }
                         }else{
-                            console.log("op5");
-                            callback(null,"op5");
+                            console.log("op7");
+                            next(null,"op7");
                         }
                     },
-                    function saveMatchUser(value,callback){
+                    function saveMatchUser(value,next){
                         if(userLinkCandidate!=null && itemMatchUser != null){
+                                    console.log("Guardando match candidate-user...OP8");
                                     itemMatchUser.photo = value.data;
-                                    matchDao.saveOrUpdateUserMatch(idCandidate,idUser,itemMatchCandidate,callback);
+                                    matchDao.saveOrUpdateUserMatch(idCandidate,idUser,itemMatchUser,next);
                         }else{
-                            console.log("op6");
-                            callback(null,"op6");
+                            console.log("op8");
+                            next(null,"op8");
                         }
                        
                     }
@@ -288,6 +300,7 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                                 callback(err);
                                 return;
                             }
+
                             console.log(JSON.stringify(matches));
                             response = (userLinkCandidate!=null)?{'remainingSuperlinks': 0, 'match':true,metadata : utils.getMetadata(1)}:
                                                                 {'remainingSuperlinks': 0, 'match':false,metadata : utils.getMetadata(1)};
