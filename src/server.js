@@ -154,6 +154,16 @@ app.get('/image/:idUser/:idImage', function (req, res, next) {
     }
 });
 
+app.delete('/image', function (req, res, next) {
+    console.log('DELETE ALL IMAGES');
+    try{
+        imageCtrl.deleteImages(req, res);
+    } catch (err) {
+        console.log('ERR DELETE ALL IMAGES ' + err);
+        return res.sendStatus(500);
+    }
+});
+
 var rejectionCtrl = require(process.cwd() + '/src/controllers/RejectionController');
 
 app.get('/rejection/:idUser/:idCandidate', function (req, res, next) {
