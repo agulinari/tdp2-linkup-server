@@ -44,7 +44,7 @@ exports.getUserLinks = function (fbidUser, callback) {
         }
         var response = {
             links,
-            metadata : utils.getMetadata(links.length)
+            metadata : utils.getMetadata((links!=null)?links.length:0)
         }
         callback(null, response);
         return;
@@ -224,7 +224,8 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                                 console.log("UserProfile candidato: "+value);
                                 if(value!=null && value!=undefined){
                                         var itemMatchCandidate = {"fbidUser": idCandidate,"gender": value.gender,"name":value.firstName,
-                                                                "lastName":value.lastName,"age":value.birthday,"time": Date.now()};
+                                                                "lastName":value.lastName,"age":value.birthday,"idShortImage":value.avatar.image.idImage,
+                                                                "time": Date.now()};
                                         matchDao.saveOrUpdateUserMatch(idUser,idCandidate,itemMatchCandidate,callback);
                                 }else{
                                     callback(null,"op2");
