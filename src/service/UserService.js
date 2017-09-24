@@ -46,7 +46,8 @@ exports.getUser = function (fbidUser, callback) {
             var index = getImageIndex(user.avatar.image.idImage, images);
             user.avatar.image.data = images[index].data;
             user.images.forEach(function(e) {
-                index = getImageIndex(e.image.idImage, images);
+                var idImage = e.image.idImage;
+                index = (idImage!=null && idImage!=undefined)?getImageIndex(e.image.idImage, images):null;
                 if (index!= null) {
                     e.image.data = images[index].data;
                 }

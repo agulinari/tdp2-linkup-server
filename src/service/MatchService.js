@@ -16,7 +16,7 @@ exports.getUserMatches = function (fbidUser, callback) {
             return;
         }
         var response = {
-            matches: [value],
+            matches: (value==null)?[value]:value,
             metadata : utils.getMetadata(1)
         }
         callback(null, response);
@@ -30,7 +30,7 @@ exports.deleteMatches = function (callback) {
             return;
         }
         var response = {
-            matches: [value],
+            matches: (value==null)?[value]:value,
             metadata : utils.getMetadata(1)
         }
         callback(null, response);
