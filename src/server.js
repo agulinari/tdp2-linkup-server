@@ -154,6 +154,17 @@ app.get('/image/:idUser/:idImage', function (req, res, next) {
     }
 });
 
+app.get('/image', function (req, res, next) {
+
+    console.log('GET ALL IMAGES');
+    try{
+        imageCtrl.getImages(req, res);
+    } catch (err) {
+        console.log('ERR GET ' + url + '\n' + err);
+        return res.sendStatus(500);
+    }
+});
+
 app.delete('/image', function (req, res, next) {
     console.log('DELETE ALL IMAGES');
     try{
