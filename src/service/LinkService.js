@@ -2,7 +2,7 @@ var async = require('async');
 var userDao = require('../dao/UserDao');
 var matchDao = require('../dao/UserMatchDao');
 var linkDao = require('../dao/LinkDao');
-var userProfileDao = require('../dao/UserProfileDao');
+var imageDao = require('../dao/ImageDao');
 var userProfile = require('../model/UserProfile'); 
 
 var utils = require('../utils/Utils');
@@ -197,6 +197,8 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
 
             var response = null;
             var userLinkCandidate = null;
+            var itemMatchCandidate = null;
+            var itemMatchUser = null;
 
 
             //Si el usuario fue aceptado, guardo en la lista de aceptados el candidato aceptado el usuario
@@ -219,14 +221,16 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                             callback(null,"op1");
                         }
                     },
-                    function saveMatchCandidateUser(value,callback){
+                    function findImageCandidateUser(value,callback){
                          if(userLinkCandidate!=null){
                                 console.log("UserProfile candidato: "+value);
                                 if(value!=null && value!=undefined){
-                                        var itemMatchCandidate = {"fbidUser": idCandidate,"gender": value.gender,"name":value.firstName,
-                                                                "lastName":value.lastName,"age":value.birthday,"idShortImage":value.avatar.image.idImage,
+                                        
+                                        itemMatchCandidate = {"fbidUser": idCandidate,"gender": value.gender,"name":value.firstName,
+                                                                "lastName":value.lastName,"age":value.birthday,"avatarImage":"",
                                                                 "time": Date.now()};
-                                        matchDao.saveOrUpdateUserMatch(idUser,idCandidate,itemMatchCandidate,callback);
+                                        imageDao.findImage(value.avatar.image.idImage,callback);
+                                        
                                 }else{
                                     callback(null,"op2");
                                 }
@@ -234,30 +238,55 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                               console.log("op2");
                               callback(null,"op2");
                           }
+                    },function saveMatchCandidate(value,callback){
+                        if(userLinkCandidate!=null && itemMatchCandidate!=null){
+                                itemMatchCandidate.avatarImage = value.data;
+                                matchDao.saveOrUpdateUserMatch(idUser,idCandidate,itemMatchCandidate,callback);
+                        }else{
+                             console.log("op3");
+                             callback(null,"op3");
+                        }    
                     },
                     function obtenerUsuario(value,callback){
                         if(userLinkCandidate!=null){
                             userDao.findUser(idUser,callback);
                          }else{
-                             callback(null,"op3");
+                             console.log("op4");
+                             callback(null,"op4");
                          }
                         
                     },
-                    function saveMatchUserCandidate(value,callback){
+                    function findImageUser(value,callback){
                                 console.log("UserProfile usuario: "+value);
                         if(userLinkCandidate!=null){
                                 if(value!=null && value!=undefined){
-                                var itemMatchCandidate = {"fbidUser": idUser,"gender": value.gender,"name":value.firstName,
-                                                          "lastName":value.lastName,"age":value.birthday,"time": Date.now()};
-                                    matchDao.saveOrUpdateUserMatch(idCandidate,idUser,itemMatchCandidate,callback);
+                                    itemMatchUser = {"fbidUser": idCandidate,"gender": value.gender,"name":value.firstName,
+                                                                "lastName":value.lastName,"age":value.birthday,"avatarImage":"",
+                                                                "time": Date.now()};
+                                    imageDao.findImage(value.avatar.image.idImage,callback);
+                                    
                                 }else{
-                                    callback(null,"op4");
+                                    callback(null,"op5");
                                 }
                         }else{
-                            console.log("op4");
-                            callback(null,"op4");
+                            console.log("op5");
+                            callback(null,"op5");
                         }
-                    }],function (err, matches) {
+                    },
+                    function saveMatchUser(value,callback){
+                        if(userLinkCandidate!=null && itemMatchUser != null){
+                                    itemMatchUser.avatarImage = value.data;
+                                    matchDao.saveOrUpdateUserMatch(idCandidate,idUser,itemMatchCandidate,callback);
+                        }else{
+                        callback(null,"op6");
+                        }
+                       
+                        console.log("op6");
+                        callback(null,"op6");
+                        
+                       
+                    }
+                    ],function (err, matches) {
                             if (err) {
                                 callback(err);
                                 return;
