@@ -87,8 +87,8 @@ exports.deleteUser = function(req, res) {
     });
 };
 
-exports.deleteUsers = function(req, res) {
-    service.deleteUsers(function(err, data) {
+exports.deleteAllUsers = function(req, res) {
+    service.deleteAllUsers(function(err, data) {
         if (err) {
             return errorHandler.throwError(res, err);
         }
