@@ -307,7 +307,6 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                             return;
                       });
 
-
     }
 };
 
