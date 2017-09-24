@@ -63,7 +63,7 @@ exports.getLinks = function (callback) {
         }
         var response = {
             links,
-            metadata : utils.getMetadata(links.length)
+            metadata : utils.getMetadata((links!=null)?links.length:0)
         }
         callback(null, response);
         return;
