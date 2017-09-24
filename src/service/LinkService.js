@@ -263,8 +263,8 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                                 return;
                             }
                             console.log(JSON.stringify(matches));
-                            response = (userLinkCandidate!=null)?{'remainingSuperlinks': 0, 'Match':true,metadata : utils.getMetadata(1)}:
-                                                                {'remainingSuperlinks': 0, 'Match':false,metadata : utils.getMetadata(1)};
+                            response = (userLinkCandidate!=null)?{'remainingSuperlinks': 0, 'match':true,metadata : utils.getMetadata(1)}:
+                                                                {'remainingSuperlinks': 0, 'match':false,metadata : utils.getMetadata(1)};
                             callback(null, response);
                             console.log("fin");
                             return;
