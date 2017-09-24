@@ -1,6 +1,6 @@
 var async = require('async');
 var utils = require('../utils/Utils');
-var userDao = require('../dao/UserProfileDao');
+var userDao = require('../dao/UserDao');
 var rejectionDao = require('../dao/RejectionDao');
 var linkDao = require('../dao/LinkDao');
 var GeoPoint = require('geopoint');
@@ -10,7 +10,7 @@ exports.getCandidates = function (id, callback) {
     var user = {};
     async.waterfall([
         function getUser(next) {
-            userDao.getUserProfileById(id, next);
+            userDao.findUser(id, next);
         },
         function getCandidatesByUserCriteria(response, next) {
             user = response;
@@ -26,7 +26,7 @@ exports.getCandidates = function (id, callback) {
                 maxDate : getDateFromAge(user.birthday, user.settings.maxAge),
                 invisible : false
             };
-            userDao.getUserProfileByCriteria(criteria, next);
+            userDao.findUsersByCriteria(criteria, next);
         },
         function filterByCandidateCriteria(response, next) {
             var users = response;
