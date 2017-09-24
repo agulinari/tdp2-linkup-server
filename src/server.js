@@ -142,39 +142,6 @@ app.get('/candidate/:id', function (req, res, next) {
     }
 });
 
-var imageCtrl = require(process.cwd() + '/src/controllers/ImageController');
-app.get('/image/:idUser/:idImage', function (req, res, next) {
-    var url = '/image/' + req.params.idUser + '/' + req.params.idImage;
-    console.log('GET ' + url);
-    try{
-        imageCtrl.getImage(req, res);
-    } catch (err) {
-        console.log('ERR GET ' + url + '\n' + err);
-        return res.sendStatus(500);
-    }
-});
-
-app.get('/image', function (req, res, next) {
-
-    console.log('GET ALL IMAGES');
-    try{
-        imageCtrl.getImages(req, res);
-    } catch (err) {
-        console.log('ERR GET ' + url + '\n' + err);
-        return res.sendStatus(500);
-    }
-});
-
-app.delete('/image', function (req, res, next) {
-    console.log('DELETE ALL IMAGES');
-    try{
-        imageCtrl.deleteImages(req, res);
-    } catch (err) {
-        console.log('ERR DELETE ALL IMAGES ' + err);
-        return res.sendStatus(500);
-    }
-});
-
 var rejectionCtrl = require(process.cwd() + '/src/controllers/RejectionController');
 
 app.get('/rejection/:idUser/:idCandidate', function (req, res, next) {
