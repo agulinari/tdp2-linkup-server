@@ -227,7 +227,7 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                                 if(value!=null && value!=undefined){
                                         
                                         itemMatchCandidate = {"fbidUser": idCandidate,"gender": value.gender,"name":value.firstName,
-                                                                "lastName":value.lastName,"age":value.birthday,"avatarImage":"",
+                                                                "lastName":value.lastName,"age":value.birthday,"photo":"",
                                                                 "time": Date.now()};
                                         imageDao.findImage(value.avatar.image.idImage,callback);
                                         
@@ -240,7 +240,7 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                           }
                     },function saveMatchCandidate(value,callback){
                         if(userLinkCandidate!=null && itemMatchCandidate!=null){
-                                itemMatchCandidate.avatarImage = value.data;
+                                itemMatchCandidate.photo = value.data;
                                 matchDao.saveOrUpdateUserMatch(idUser,idCandidate,itemMatchCandidate,callback);
                         }else{
                              console.log("op3");
@@ -261,7 +261,7 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                         if(userLinkCandidate!=null){
                                 if(value!=null && value!=undefined){
                                     itemMatchUser = {"fbidUser": idCandidate,"gender": value.gender,"name":value.firstName,
-                                                                "lastName":value.lastName,"age":value.birthday,"avatarImage":"",
+                                                                "lastName":value.lastName,"age":value.birthday,"photo":"",
                                                                 "time": Date.now()};
                                     imageDao.findImage(value.avatar.image.idImage,callback);
                                     
@@ -275,7 +275,7 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                     },
                     function saveMatchUser(value,callback){
                         if(userLinkCandidate!=null && itemMatchUser != null){
-                                    itemMatchUser.avatarImage = value.data;
+                                    itemMatchUser.photo = value.data;
                                     matchDao.saveOrUpdateUserMatch(idCandidate,idUser,itemMatchCandidate,callback);
                         }else{
                         callback(null,"op6");

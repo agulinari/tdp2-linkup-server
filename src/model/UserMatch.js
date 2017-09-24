@@ -21,7 +21,7 @@ const UserMatchSchema = new Schema({
             name: String,
             lastName: String,
             age: String,
-            avatarImage: String,
+            photo: String,
             time : String
 	    }
 	]
