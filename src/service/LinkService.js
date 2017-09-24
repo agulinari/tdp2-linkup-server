@@ -226,7 +226,7 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                                 console.log("UserProfile candidato: "+value);
                                 if(value!=null && value!=undefined){
                                         
-                                        itemMatchCandidate = {"fbidUser": idCandidate,"gender": value.gender,"name":value.firstName,
+                                        itemMatchCandidate = {"fbid": idCandidate,"gender": value.gender,"name":value.firstName,
                                                                 "lastName":value.lastName,"age":value.birthday,"photo":"",
                                                                 "time": Date.now()};
                                         imageDao.findImage(value.avatar.image.idImage,callback);
@@ -260,7 +260,7 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                                 console.log("UserProfile usuario: "+value);
                         if(userLinkCandidate!=null){
                                 if(value!=null && value!=undefined){
-                                    itemMatchUser = {"fbidUser": idCandidate,"gender": value.gender,"name":value.firstName,
+                                    itemMatchUser = {"fbid": idCandidate,"gender": value.gender,"name":value.firstName,
                                                                 "lastName":value.lastName,"age":value.birthday,"photo":"",
                                                                 "time": Date.now()};
                                     imageDao.findImage(value.avatar.image.idImage,callback);
@@ -278,12 +278,9 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                                     itemMatchUser.photo = value.data;
                                     matchDao.saveOrUpdateUserMatch(idCandidate,idUser,itemMatchCandidate,callback);
                         }else{
-                        callback(null,"op6");
+                            console.log("op6");
+                            callback(null,"op6");
                         }
-                       
-                        console.log("op6");
-                        callback(null,"op6");
-                        
                        
                     }
                     ],function (err, matches) {

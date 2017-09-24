@@ -16,7 +16,7 @@ const UserMatchSchema = new Schema({
     fbidUser: String,
     matches: [
         {
-            fbidUser: String,
+            fbid: String,
             gender: String,
             name: String,
             lastName: String,
