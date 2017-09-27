@@ -436,4 +436,7 @@ function listenForNotificationRequests() {
   });
 };
 
+// start listening
+listenForNotificationRequests();
+
 module.exports = app; // for testing
