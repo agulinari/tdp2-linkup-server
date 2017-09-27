@@ -417,4 +417,23 @@ admin.initializeApp({
   databaseURL: "https://linkuptdp.firebaseio.com"
 });
 
+ref = firebase.database().ref();
+
+function listenForNotificationRequests() {
+  var requests = ref.child('chats');
+  requests.on('child_added', function(requestSnapshot) {
+    var request = requestSnapshot.val();
+    console.log("Request: "+request);
+    /*sendNotificationToUser(
+      request.username,
+      request.message,
+      function() {
+        requestSnapshot.ref.remove();
+      }
+    );*/
+  }, function(error) {
+    console.error(error);
+  });
+};
+
 module.exports = app; // for testing
