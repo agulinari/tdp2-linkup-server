@@ -423,7 +423,7 @@ function listenForNotificationRequests() {
   var requests = ref.child('chats');
   requests.on('child_added', function(requestSnapshot) {
     var request = requestSnapshot.val();
-    console.log("Request: "+request);
+    console.log("Request: "+JSON.stringify(request));
     /*sendNotificationToUser(
       request.username,
       request.message,
