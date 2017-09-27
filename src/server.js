@@ -411,6 +411,8 @@ app.listen(app.get('port'), function() {
 
 var firebase = require("firebase-admin");
 var serviceAccount = require("./linkuptdp-firebase-key.json");
+var request = require("request");
+var API_KEY = "AIzaSyBD54n1MBXW9wwQBRJ8HhBk5qlEMnJoxSk";
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
@@ -420,13 +422,13 @@ firebase.initializeApp({
 ref = firebase.database().ref();
 
 function listenForNotificationRequests() {
-  var requests = ref.child('chats');
-  requests.on('child_changed', function(requestSnapshot) {
+  var requests = ref.child('notifications');
+  requests.on('child_added', function(requestSnapshot) {
     var request = requestSnapshot.val();
     console.log("Request: "+JSON.stringify(request));
-    /*sendNotificationToUser(
-      request.username,
-      request.message,
+    sendNotificationToUser(
+      "",
+      request.messageText,
       function() {
         requestSnapshot.ref.remove();
       }
@@ -435,6 +437,31 @@ function listenForNotificationRequests() {
     console.error(error);
   });
 };
+
+function sendNotificationToUser(username, message, onSuccess) {
+  request({
+    url: 'https://fcm.googleapis.com/fcm/send',
+    method: 'POST',
+    headers: {
+      'Content-Type' :' application/json',
+      'Authorization': 'key='+API_KEY
+    },
+    body: JSON.stringify({
+      notification: {
+        title: message
+      },
+      to : '/topics/chats'+username
+    })
+  }, function(error, response, body) {
+    if (error) { console.error(error); }
+    else if (response.statusCode >= 400) {
+      console.error('HTTP Error: '+response.statusCode+' - '+response.statusMessage);
+    }
+    else {
+      onSuccess();
+    }
+  });
+}
 
 // start listening
 listenForNotificationRequests();
