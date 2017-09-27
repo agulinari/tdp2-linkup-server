@@ -421,7 +421,7 @@ ref = firebase.database().ref();
 
 function listenForNotificationRequests() {
   var requests = ref.child('chats');
-  requests.on('child_added', function(requestSnapshot) {
+  requests.on('child_changed', function(requestSnapshot) {
     var request = requestSnapshot.val();
     console.log("Request: "+JSON.stringify(request));
     /*sendNotificationToUser(
