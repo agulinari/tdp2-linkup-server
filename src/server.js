@@ -411,7 +411,6 @@ app.listen(app.get('port'), function() {
 
 var firebase = require("firebase-admin");
 var serviceAccount = require("./linkuptdp-firebase-key.json");
-var request = require("request");
 var API_KEY = "AIzaSyBD54n1MBXW9wwQBRJ8HhBk5qlEMnJoxSk";
 
 firebase.initializeApp({
@@ -437,6 +436,8 @@ function listenForNotificationRequests() {
     console.error(error);
   });
 };
+
+var request = require("request");
 
 function sendNotificationToUser(username, message, onSuccess) {
   request({
