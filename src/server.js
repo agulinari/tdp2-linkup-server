@@ -412,6 +412,8 @@ app.listen(app.get('port'), function() {
 var admin = require("firebase-admin");
 var serviceAccount = require("./linkuptdp-firebase-key.json");
 
+var firebase = require('firebase-admin');
+
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://linkuptdp.firebaseio.com"
