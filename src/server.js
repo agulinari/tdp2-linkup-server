@@ -411,7 +411,7 @@ app.listen(app.get('port'), function() {
 
 var firebase = require("firebase-admin");
 var serviceAccount = require("./linkuptdp-firebase-key.json");
-var API_KEY = "AIzaSyBD54n1MBXW9wwQBRJ8HhBk5qlEMnJoxSk";
+var API_KEY = "AAAAVU9hATc:APA91bE6lGLOsFV13kyQOevjJV64VrrIM4FCeLLXCewE8pJa8XY27OYl8Kn6X7PqpvDB5uvmcrnszeZMU4ii0DONkpCTU_LD-iX0G_ZKDKseyxGHGYc1ozRX_iagbHA7lwQM9F0LtEyu";
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
