@@ -407,4 +407,14 @@ app.listen(app.get('port'), function() {
 	console.log('Node app is running on port:', app.get('port'));
 });
 
+//Se integra con firebase
+
+var admin = require("firebase-admin");
+var serviceAccount = require("linkuptdp-firebase-key.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://linkuptdp.firebaseio.com"
+});
+
 module.exports = app; // for testing
