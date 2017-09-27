@@ -409,13 +409,11 @@ app.listen(app.get('port'), function() {
 
 //Se integra con firebase
 
-var admin = require("firebase-admin");
+var firebase = require("firebase-admin");
 var serviceAccount = require("./linkuptdp-firebase-key.json");
 
-var firebase = require('firebase-admin');
-
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  credential: firebase.credential.cert(serviceAccount),
   databaseURL: "https://linkuptdp.firebaseio.com"
 });
 
