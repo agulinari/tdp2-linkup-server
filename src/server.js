@@ -432,7 +432,7 @@ function listenForNotificationRequests() {
       function() {
         requestSnapshot.ref.remove();
       }
-    );*/
+    );
   }, function(error) {
     console.error(error);
   });
