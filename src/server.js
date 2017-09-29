@@ -448,16 +448,11 @@ function listenForNotificationRequests() {
   });
 };
 
-
+var userService = require(process.cwd() + 'src/service/UserService');
 function sendNotificationToUser(fbidTo, message, onSuccess) {
 
-    var request = {
-        params: {
-            idUser: fbidTo
-        }
-    };
-
-    userCtrl.getUser(request,function (err, value){
+ 
+    userService.getUser(fbidTo,function (err, value){
 
         if(value!=null && value.token!=null){
 
