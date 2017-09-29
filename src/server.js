@@ -448,11 +448,15 @@ function listenForNotificationRequests() {
   });
 };
 
-var request = require("request");
 
 function sendNotificationToUser(fbidTo, message, onSuccess) {
 
-    request.params.idUser = fbidTo;
+    var request = {
+        params: {
+            idUser: fbidTo;
+        }
+    };
+    
     userCtrl.getUser(request,function (err, value){
 
         if(value!=null && value.token!=null){
