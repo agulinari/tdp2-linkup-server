@@ -448,12 +448,13 @@ function listenForNotificationRequests() {
   });
 };
 
-var request = require("request");
-
 function sendNotificationToUser(fbidTo, message, onSuccess) {
+	
+	var req = http.request(options, callback);
 
-    request.params('idUser') = fbidTo;
-    userCtrl.getUser(request,function (err, value){
+    req.params('idUser') = fbidTo;
+	
+    userCtrl.getUser(req,function (err, value){
 
         if(value!=null && value.token!=null){
 
@@ -470,11 +471,14 @@ function sendNotificationToUser(fbidTo, message, onSuccess) {
                 // the contents of response.
                 console.log("Successfully sent message:", response);
                 onSuccess();
+				req.end();
             }).catch(function(error) {
                 console.log("Error sending message:", error);
+				req.end();
                 return;
             });
         }
+		req.end();
         return;
     });
 }
