@@ -459,8 +459,8 @@ function sendNotificationToUser(fbidTo, message, onSuccess) {
 
             var token = value.token;
             var payload = {
-                notification: {
-                    title: "Mensaje Recivido",
+                data: {
+                    title: "Tienes un nuevo mensaje",
                     body: message
                 }
             };
