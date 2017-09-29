@@ -448,11 +448,22 @@ function listenForNotificationRequests() {
   });
 };
 
+<<<<<<< HEAD
 var userService = require(process.cwd() + '/src/service/UserService');
+=======
+>>>>>>> d4e343e7e15cc6be3ba12dd5b8e4bde842c7cb27
 function sendNotificationToUser(fbidTo, message, onSuccess) {
+	
+	var req = http.request(options, callback);
 
+<<<<<<< HEAD
  
     userService.getUser(fbidTo,function (err, value){
+=======
+    req.params('idUser') = fbidTo;
+	
+    userCtrl.getUser(req,function (err, value){
+>>>>>>> d4e343e7e15cc6be3ba12dd5b8e4bde842c7cb27
 
         if(value!=null && value.token!=null){
 
@@ -469,11 +480,14 @@ function sendNotificationToUser(fbidTo, message, onSuccess) {
                 // the contents of response.
                 console.log("Successfully sent message:", response);
                 onSuccess();
+				req.end();
             }).catch(function(error) {
                 console.log("Error sending message:", error);
+				req.end();
                 return;
             });
         }
+		req.end();
         return;
     });
 }
