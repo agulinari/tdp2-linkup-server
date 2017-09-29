@@ -452,8 +452,8 @@ var request = require("request");
 
 function sendNotificationToUser(fbidTo, message, onSuccess) {
 
-    var idUser = {'idUser':fbidTo};
-    userCtrl.getUser(idUser,function (err, value){
+    request.params('idUser') = fbidTo;
+    userCtrl.getUser(request,function (err, value){
 
         if(value!=null && value.token!=null){
 
