@@ -453,10 +453,10 @@ function sendNotificationToUser(fbidTo, message, onSuccess) {
 
     var request = {
         params: {
-            idUser: fbidTo;
+            idUser: fbidTo
         }
     };
-    
+
     userCtrl.getUser(request,function (err, value){
 
         if(value!=null && value.token!=null){
