@@ -87,6 +87,22 @@ exports.updateUser = function(userData, callback) {
 	});
 };
 
+exports.updateToken = function(fbid,token,callback){
+    User.update(
+    {
+        fbid: fbid
+    },
+    {
+        $set: { 'users.$.token': token}
+    }, function(err, count) {
+           if (err){
+            callback(err, null);
+            return;
+           }
+           callback(null, count);
+    });
+}
+
 /**
  * Deletes an User
  * @param {String} fbidUser User facebook ID.

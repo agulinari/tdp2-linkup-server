@@ -111,6 +111,18 @@ app.put('/user', function (req, res, next) {
     }
 });
 
+app.put('/token',function(req,res,nect){
+    console.log('PUT /token ' + JSON.stringify(req.body));
+    try{
+        userCtrl.putToken(req, res);
+    } catch (err) {
+        console.log('ERR PUT /token '
+                    + JSON.stringify(req.body) + '\n'
+                    + err);
+        return res.sendStatus(500);
+    }
+});
+
 app.delete('/user/:idUser', function (req, res, next) {
     console.log('DELETE /user ' + req.params.idUser);
     try{
@@ -425,8 +437,7 @@ function listenForNotificationRequests() {
   requests.on('child_added', function(requestSnapshot) {
     var request = requestSnapshot.val();
     console.log("Request: "+JSON.stringify(request));
-    sendNotificationToUser(
-      "",
+    sendNotificationToUser(request.fbidTo,
       request.messageText,
       function() {
         requestSnapshot.ref.remove();
@@ -439,29 +450,33 @@ function listenForNotificationRequests() {
 
 var request = require("request");
 
-function sendNotificationToUser(username, message, onSuccess) {
-  request({
-    url: 'https://fcm.googleapis.com/fcm/send',
-    method: 'POST',
-    headers: {
-      'Content-Type' :' application/json',
-      'Authorization': 'key='+API_KEY
-    },
-    body: JSON.stringify({
-      notification: {
-        title: message
-      },
-      to : '/topics/chats'+username
-    })
-  }, function(error, response, body) {
-    if (error) { console.error(error); }
-    else if (response.statusCode >= 400) {
-      console.error('HTTP Error: '+response.statusCode+' - '+response.statusMessage);
-    }
-    else {
-      onSuccess();
-    }
-  });
+function sendNotificationToUser(fbidTo, message, onSuccess) {
+
+    var idUser = {'idUser':fbidTo};
+    userCtrl.getUser(idUser,function (err, value){
+
+        if(value!=null && value.token!=null){
+
+            var token = value.token;
+            var payload = {
+                notification: {
+                    title: "Mensaje Recivido",
+                    body: message
+                }
+            };
+
+            firebase.messaging().sendToDevice(token, payload).then(function(response) {
+                // See the MessagingDevicesResponse reference documentation for
+                // the contents of response.
+                console.log("Successfully sent message:", response);
+                onSuccess();
+            }).catch(function(error) {
+                console.log("Error sending message:", error);
+                return;
+            });
+        }
+        return;
+    });
 }
 
 // start listening

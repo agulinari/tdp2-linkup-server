@@ -16,6 +16,7 @@ const UserSchema = new Schema({
     comments: String,
     education: String,
     fbid: String,
+    token: String,
     firstName: String,
     gender: String,
     avatar: {

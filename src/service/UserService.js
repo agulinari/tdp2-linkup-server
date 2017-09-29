@@ -33,12 +33,12 @@ exports.getUser = function (fbidUser, callback) {
         }
         if (user == null) {
             err = new NotFound("No se encontro el usuario");
-		    callback(err, null);
+            callback(err, null);
             return;
-	    }
-	    
-	    imageDao.findImages(fbidUser, function(err, images) {
-	        if (err) {
+        }
+
+        imageDao.findImages(fbidUser, function(err, images) {
+            if (err) {
                 callback(err, null);
                 return;
             }
@@ -53,7 +53,7 @@ exports.getUser = function (fbidUser, callback) {
                 }
             });
             callback(null, user);	    
-	    });
+        });
 
     });
 };
@@ -80,7 +80,7 @@ exports.saveUser = function (userData, callback) {
         function save(user, next) {
             if (user != null) {
                 err = new BadRequest("El usuario ya existe");
-		        next(err, null);
+                next(err, null);
                 return;
             }
             user = {
@@ -88,6 +88,7 @@ exports.saveUser = function (userData, callback) {
                 comments: userData.comments,
                 education: userData.education,
                 fbid: userData.fbid,
+                token: userData.token,
                 firstName: userData.firstName, 
                 location: {
                     longitude: userData.location.longitude,
@@ -143,7 +144,7 @@ exports.saveUser = function (userData, callback) {
             });
         },
     ],
-    function (err, user) {
+                    function (err, user) {
         if (err) {
             console.log(err);
             callback(err);
@@ -166,7 +167,7 @@ exports.updateUser = function (userData, callback) {
         function update(user, next) {
             if (user == null) {
                 err = new NotFound("No se encontro el usuario");
-		        next(err, null);
+                next(err, null);
                 return;
             }
             user = {
@@ -174,6 +175,7 @@ exports.updateUser = function (userData, callback) {
                 comments: userData.comments,
                 education: userData.education,
                 fbid: userData.fbid,
+                token: userData.token,
                 firstName: userData.firstName, 
                 location: {
                     longitude: userData.location.longitude,
@@ -194,7 +196,7 @@ exports.updateUser = function (userData, callback) {
             userDao.updateUser(user, next);
         }    
     ],
-    function (err, user) {
+                    function (err, user) {
         if (err) {
             console.log(err);
             callback(err);
@@ -203,6 +205,16 @@ exports.updateUser = function (userData, callback) {
         callback(null, user);
     });
 };
+
+exports.updateToken = function(fbid,token,callback){
+    userDao.updateToken(fbid, function(err, data){
+                if (err) {
+                    callback(err, null);
+                    return;
+                }
+        callback(null, data);
+    });
+}
 
 /**
  * Delete User

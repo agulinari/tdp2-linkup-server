@@ -73,6 +73,21 @@ exports.putUser = function(req, res) {
     });
 };
 
+exports.putToken = function(req, res){
+    var fbid = req.body.fbid;
+    var token = req.body.token;
+
+     service.updateToken(fbid,token, function(err, data) {
+        if (err) {
+            return errorHandler.throwError(res, err);
+        }
+        var response = {'data': data,
+            metadata : utils.getMetadata(1)
+        }
+        return res.json(response);
+    });
+}
+
 exports.deleteUser = function(req, res) {
     var idUser = req.params.idUser;
     service.deleteUser(idUser, function(err, data) {
