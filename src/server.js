@@ -470,14 +470,11 @@ function sendNotificationToUser(fbidTo, message, onSuccess) {
                 // the contents of response.
                 console.log("Successfully sent message:", response);
                 onSuccess();
-				req.end();
             }).catch(function(error) {
                 console.log("Error sending message:", error);
-				req.end();
                 return;
             });
         }
-		req.end();
         return;
     });
 }
