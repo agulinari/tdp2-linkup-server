@@ -448,7 +448,7 @@ function listenForNotificationRequests() {
   });
 };
 
-var userService = require(process.cwd() + 'src/service/UserService');
+var userService = require(process.cwd() + '/src/service/UserService');
 function sendNotificationToUser(fbidTo, message, onSuccess) {
 
  
