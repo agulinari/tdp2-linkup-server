@@ -460,7 +460,7 @@ function sendNotificationToUser(fbidTo, fbidFrom, message, onSuccess) {
             var token = value.token;
             var payload = {
                 data: {
-                    from: fbidFrom,
+                    fbid: fbidFrom,
                     title: "Tienes un nuevo mensaje",
                     body: message
                 }
