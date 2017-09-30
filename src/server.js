@@ -437,8 +437,8 @@ function listenForNotificationRequests() {
   requests.on('child_added', function(requestSnapshot) {
     var request = requestSnapshot.val();
     console.log("Request: "+JSON.stringify(request));
-    sendNotificationToUser(request.fbidTo, request.fbid,
-      request.message, request.firstName, request.motive,
+    sendNotificationToUser(request.fbidTo, request.fbid, request.messageTitle,
+      request.messageBody, request.firstName, request.motive,
       function() {
         requestSnapshot.ref.remove();
       }
@@ -464,8 +464,8 @@ function sendNotificationToUser(fbidTo, fbidFrom, title, message, firstName, mot
                     fbidTo: fbidTo,
                     title: title,
                     body: message,
-                    motive: motive,
-                    firstName: firstName
+                    firstName: firstName,
+                    motive: motive
                 }
             };
 
@@ -473,7 +473,7 @@ function sendNotificationToUser(fbidTo, fbidFrom, title, message, firstName, mot
                 // See the MessagingDevicesResponse reference documentation for
                 // the contents of response.
                 console.log("Successfully sent message:", response);
-                //onSuccess();
+                onSuccess();
             }).catch(function(error) {
                 console.log("Error sending message:", error);
                 return;
