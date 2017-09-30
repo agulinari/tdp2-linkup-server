@@ -438,7 +438,7 @@ function listenForNotificationRequests() {
     var request = requestSnapshot.val();
     console.log("Request: "+JSON.stringify(request));
     sendNotificationToUser(request.fbidTo, request.fbid,
-      request.message, request.firstName, request.category,
+      request.message, request.firstName, request.motive,
       function() {
         requestSnapshot.ref.remove();
       }
@@ -450,7 +450,7 @@ function listenForNotificationRequests() {
 
 var userService = require(process.cwd() + '/src/service/UserService');
 
-function sendNotificationToUser(fbidTo, fbidFrom, title, message, firstName, category, onSuccess) {
+function sendNotificationToUser(fbidTo, fbidFrom, title, message, firstName, motive, onSuccess) {
 	
  
     userService.getUser(fbidTo,function (err, value){
@@ -464,8 +464,8 @@ function sendNotificationToUser(fbidTo, fbidFrom, title, message, firstName, cat
                     fbidTo: fbidTo,
                     title: title,
                     body: message,
-                    firstName: firstName
-                
+                    firstName: firstName,
+                    motive: motive
                 }
             };
 
@@ -473,7 +473,7 @@ function sendNotificationToUser(fbidTo, fbidFrom, title, message, firstName, cat
                 // See the MessagingDevicesResponse reference documentation for
                 // the contents of response.
                 console.log("Successfully sent message:", response);
-                onSuccess();
+                //onSuccess();
             }).catch(function(error) {
                 console.log("Error sending message:", error);
                 return;
