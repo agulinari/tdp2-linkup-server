@@ -438,7 +438,7 @@ function listenForNotificationRequests() {
     var request = requestSnapshot.val();
     console.log("Request: "+JSON.stringify(request));
     sendNotificationToUser(request.fbidTo, request.fbid,
-      request.message, request.firstName, request.category
+      request.message, request.firstName, request.category,
       function() {
         requestSnapshot.ref.remove();
       }
