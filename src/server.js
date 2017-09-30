@@ -464,8 +464,8 @@ function sendNotificationToUser(fbidTo, fbidFrom, title, message, firstName, mot
                     fbidTo: fbidTo,
                     title: title,
                     body: message,
-                    firstName: firstName,
                     motive: motive
+                    firstName: firstName
                 }
             };
 
