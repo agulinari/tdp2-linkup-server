@@ -438,7 +438,7 @@ function listenForNotificationRequests() {
     var request = requestSnapshot.val();
     console.log("Request: "+JSON.stringify(request));
     sendNotificationToUser(request.fbidTo, request.fbid,
-      request.messageText,
+      request.message, request.firstName, request.category
       function() {
         requestSnapshot.ref.remove();
       }
@@ -450,7 +450,7 @@ function listenForNotificationRequests() {
 
 var userService = require(process.cwd() + '/src/service/UserService');
 
-function sendNotificationToUser(fbidTo, fbidFrom, message, onSuccess) {
+function sendNotificationToUser(fbidTo, fbidFrom, title, message, firstName, category, onSuccess) {
 	
  
     userService.getUser(fbidTo,function (err, value){
@@ -461,8 +461,11 @@ function sendNotificationToUser(fbidTo, fbidFrom, message, onSuccess) {
             var payload = {
                 data: {
                     fbid: fbidFrom,
-                    title: "Tienes un nuevo mensaje",
-                    body: message
+                    fbidTo: fbidTo,
+                    title: title,
+                    body: message,
+                    firstName: firstName,
+                    type: category
                 }
             };
 
