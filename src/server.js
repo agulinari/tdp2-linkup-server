@@ -437,7 +437,7 @@ function listenForNotificationRequests() {
   requests.on('child_added', function(requestSnapshot) {
     var request = requestSnapshot.val();
     console.log("Request: "+JSON.stringify(request));
-    sendNotificationToUser(request.fbidTo,
+    sendNotificationToUser(request.fbidTo, request.fbid,
       request.messageText,
       function() {
         requestSnapshot.ref.remove();
@@ -450,7 +450,7 @@ function listenForNotificationRequests() {
 
 var userService = require(process.cwd() + '/src/service/UserService');
 
-function sendNotificationToUser(fbidTo, message, onSuccess) {
+function sendNotificationToUser(fbidTo, fbidFrom, message, onSuccess) {
 	
  
     userService.getUser(fbidTo,function (err, value){
@@ -460,6 +460,7 @@ function sendNotificationToUser(fbidTo, message, onSuccess) {
             var token = value.token;
             var payload = {
                 data: {
+                    from: fbidFrom,
                     title: "Tienes un nuevo mensaje",
                     body: message
                 }
