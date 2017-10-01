@@ -3,7 +3,6 @@ var userDao = require('../dao/UserDao');
 var matchDao = require('../dao/UserMatchDao');
 var linkDao = require('../dao/LinkDao');
 var imageDao = require('../dao/ImageDao');
-var userProfile = require('../model/UserProfile'); 
 
 var utils = require('../utils/Utils');
 var LinkError = require("../error/LinkError");

@@ -201,7 +201,7 @@ exports.updateUser = function (userData, callback) {
             userDao.updateUser(user, next);
         }    
     ],
-                    function (err, user) {
+    function (err, user) {
         if (err) {
             console.log(err);
             callback(err);

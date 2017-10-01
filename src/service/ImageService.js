@@ -74,7 +74,6 @@ exports.saveImage = function (fbidUser, idImage, data, callback) {
             callback(err);
             return;
         }
-        console.log(JSON.stringify(image));
         callback(null, image);
     });
 };
