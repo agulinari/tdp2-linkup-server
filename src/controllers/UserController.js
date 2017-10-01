@@ -32,7 +32,7 @@ exports.getUser = function (req, res) {
 
 exports.postUser = function(req, res) {
     var userData = req.body.user;
-    console.log('HIT');
+    
     /*
     var isValid = jsonValidator.isUserValid(userData);
     if (!isValid) {

@@ -36,7 +36,7 @@ exports.getUser = function (fbidUser, callback) {
             callback(err, null);
             return;
         }
-        console.log(user);
+        
         imageDao.findImages(fbidUser, function(err, images) {
             if (err) {
                 callback(err, null);
@@ -102,9 +102,8 @@ exports.saveUser = function (userData, callback) {
                 lastName: userData.lastName,
                 occupation: userData.occupation,
                 settings: userData.settings,
-                control : {
-                    isActive: true
-                }
+                control : userData.control != undefined ? userData.control
+                                                        : true
             };
             userData.images.forEach(function(e) {
                 user.images.push({image: {idImage: e.image.idImage}});

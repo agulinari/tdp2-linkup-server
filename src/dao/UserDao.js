@@ -45,7 +45,8 @@ exports.findUsersByCriteria = function(criteria, callback) {
             $gte: criteria.maxDate
         },
         "settings.onlyFriends" : criteria.onlyFriends,
-        "settings.invisible" : criteria.invisible
+        "settings.invisible" : criteria.invisible,
+        "control.isActive" : criteria.isActive
     };
     if (!criteria.searchMales || !criteria.searchFemales) {
         query.gender = criteria.searchMales ? 'male' : 'female';

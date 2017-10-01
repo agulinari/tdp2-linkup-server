@@ -34,7 +34,7 @@ describe('Candidate service test', () => {
 
                 });
     });
-    
+   
     describe('GET /candidate/:idUser', () => {
         it('It should get all user\'s Candidates', (done) => {
             async.waterfall([
@@ -75,6 +75,53 @@ describe('Candidate service test', () => {
                     expect(containsCandidate(3, candidates)).to.equal(true);
                     expect(containsCandidate(4, candidates)).to.equal(true);
                     expect(containsCandidate(5, candidates)).to.equal(true);
+                    
+                    done();
+                });
+            });
+        });
+    });
+    
+    describe('GET /candidate/:idUser', () => {
+        it('It should filter inactive Candidates', (done) => {
+            async.waterfall([
+                function (next) {
+                    createUserByCriteria( {id:"0"}, next);
+                },
+                function (err, next) {
+                    createUserByCriteria( {id:"1"}, next);
+                },
+                function (err, next) {
+                    createUserByCriteria( {id:"2"}, next);
+                },
+                function (err, next) {
+                    createUserByCriteria( {id:"3", isActive: "false"}, next);
+                },
+                function (err, next) {
+                    createUserByCriteria( {id:"4"}, next);
+                },
+                function (err, next) {
+                    createUserByCriteria( {id:"5", isActive: "false"}, next);
+                }
+            ],
+            function (err, user) {
+                should.not.exist(err);
+                
+                chai.request(server)
+                .get('/candidate/0')
+                .end((err, res) => {
+                    //console.log(err);
+                    should.not.exist(err);
+                    res.should.have.status(200);
+                    var data = res.body;
+                    var candidates = data.candidates;
+                    expect(data.metadata.count).to.equal(3);
+                    expect(containsCandidate(0, candidates)).to.equal(false);
+                    expect(containsCandidate(1, candidates)).to.equal(true);
+                    expect(containsCandidate(2, candidates)).to.equal(true);
+                    expect(containsCandidate(3, candidates)).to.equal(false);
+                    expect(containsCandidate(4, candidates)).to.equal(true);
+                    expect(containsCandidate(5, candidates)).to.equal(false);
                     
                     done();
                 });
@@ -341,7 +388,7 @@ describe('Candidate service test', () => {
                 },
                 function (err, next) {
                     var bday = now.getFullYear() - 19 + '/'
-                        + (now.getMonth() < 10 ? '0' : '')
+                        + (now.getMonth() < 9 ? '0' : '')
                         + (now.getMonth() + 1) + '/'
                         + (now.getDate() < 10 ? '0' : '') + now.getDate();
                     var c = {id:"1", birthday: bday};
@@ -349,7 +396,7 @@ describe('Candidate service test', () => {
                 },
                 function (err, next) {
                     var bday = now.getFullYear() - 20 + '/'
-                        + (now.getMonth() < 10 ? '0' : '')
+                        + (now.getMonth() < 9 ? '0' : '')
                         + (now.getMonth() + 1) + '/'
                         + (now.getDate() < 10 ? '0' : '') + now.getDate();
                     var c = {id:"2", birthday: bday};
@@ -357,7 +404,7 @@ describe('Candidate service test', () => {
                 },
                 function (err, next) {
                     var bday = now.getFullYear() - 21 + '/'
-                        + (now.getMonth() < 10 ? '0' : '')
+                        + (now.getMonth() < 9 ? '0' : '')
                         + (now.getMonth() + 1) + '/'
                         + (now.getDate() < 10 ? '0' : '') + now.getDate();
                     var c = {id:"3", birthday: bday};
@@ -365,7 +412,7 @@ describe('Candidate service test', () => {
                 },
                 function (err, next) {
                     var bday = now.getFullYear() - 20 + '/'
-                        + (now.getMonth() < 10 ? '0' : '')
+                        + (now.getMonth() < 9 ? '0' : '')
                         + (now.getMonth() + 1) + '/'
                         + (now.getDate() < 10 ? '0' : '') + now.getDate() + 1;
                     var c = {id:"4", birthday: bday};
@@ -373,7 +420,7 @@ describe('Candidate service test', () => {
                 },
                 function (err, next) {
                     var bday = now.getFullYear() - 20 + '/'
-                        + (now.getMonth() < 10 ? '0' : '')
+                        + (now.getMonth() < 9 ? '0' : '')
                         + (now.getMonth() + 1) + '/'
                         + (now.getDate() < 10 ? '0' : '') + now.getDate() - 1;
                     var c = {id:"5", birthday: "1997/01/03"};
@@ -417,7 +464,7 @@ describe('Candidate service test', () => {
                 },
                 function (err, next) {
                     var bday = now.getFullYear() - 41 + '/'
-                        + (now.getMonth() < 10 ? '0' : '')
+                        + (now.getMonth() < 9 ? '0' : '')
                         + (now.getMonth() + 1) + '/'
                         + (now.getDate() < 10 ? '0' : '') + now.getDate();
                     var c = {id:"1", birthday: bday};
@@ -425,7 +472,7 @@ describe('Candidate service test', () => {
                 },
                 function (err, next) {
                     var bday = now.getFullYear() - 40 + '/'
-                        + (now.getMonth() < 10 ? '0' : '')
+                        + (now.getMonth() < 9 ? '0' : '')
                         + (now.getMonth() + 1) + '/'
                         + (now.getDate() < 10 ? '0' : '') + now.getDate();
                     var c = {id:"2", birthday: bday};
@@ -433,7 +480,7 @@ describe('Candidate service test', () => {
                 },
                 function (err, next) {
                     var bday = now.getFullYear() - 39 + '/'
-                        + (now.getMonth() < 10 ? '0' : '')
+                        + (now.getMonth() < 9 ? '0' : '')
                         + (now.getMonth() + 1) + '/'
                         + (now.getDate() < 10 ? '0' : '') + now.getDate();
                     var c = {id:"3", birthday: bday};
@@ -441,7 +488,7 @@ describe('Candidate service test', () => {
                 },
                 function (err, next) {
                     var bday = now.getFullYear() - 40 + '/'
-                        + (now.getMonth() < 10 ? '0' : '')
+                        + (now.getMonth() < 9 ? '0' : '')
                         + (now.getMonth() + 1) + '/'
                         + (now.getDate() < 10 ? '0' : '') + now.getDate() - 1;
                     var c = {id:"4", birthday: bday};
@@ -449,7 +496,7 @@ describe('Candidate service test', () => {
                 },
                 function (err, next) {
                     var bday = now.getFullYear() - 40 + '/'
-                        + (now.getMonth() < 10 ? '0' : '')
+                        + (now.getMonth() < 9 ? '0' : '')
                         + (now.getMonth() + 1) + '/'
                         + (now.getDate() < 10 ? '0' : '') + now.getDate() + 1;
                     var c = {id:"5", birthday: "1997/01/03"};
@@ -798,10 +845,13 @@ function createUserByCriteria(c, callback) {
                                                           : c.searchMales,
                 "searchFemales": c.searchFemales == undefined ? "true"
                                                               : c.searchFemales
+            },
+            "control": {
+                "isActive": c.isActive == undefined ? "true" : c.isActive
             }
         }
     }; 
-        
+    
     chai.request(server)
         .post('/user')
         .send(body)

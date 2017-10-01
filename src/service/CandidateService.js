@@ -20,7 +20,7 @@ exports.getCandidates = function (id, callback) {
             }
             var now = new Date();
             var now_str = now.getFullYear() + '/'
-                + (now.getMonth() < 10 ? '0' : '') + (now.getMonth() + 1) + '/'
+                + (now.getMonth() < 9 ? '0' : '') + (now.getMonth() + 1) + '/'
                 + (now.getDate() < 10 ? '0' : '') + now.getDate();
             var criteria = {
                 searchMales : user.settings.searchMales,
@@ -28,7 +28,8 @@ exports.getCandidates = function (id, callback) {
                 onlyFriends : user.settings.onlyFriends,
                 minDate : getDateFromAge(now_str, user.settings.minAge),
                 maxDate : getDateFromAge(now_str, user.settings.maxAge),
-                invisible : false
+                invisible : false,
+                isActive: true
             };
             userDao.findUsersByCriteria(criteria, next);
         },
@@ -86,11 +87,11 @@ exports.getCandidates = function (id, callback) {
                     next(err, null);
                     return;
                 }
-                console.log(candidates.length);
+                
                 candidates = candidates.filter(function (c) {
                     return !isLinked(c.fbid, links);
                 });
-                console.log(candidates.length);
+                
                 next(null, candidates);
             });
         },
@@ -135,7 +136,6 @@ function satisfiesCandidateCriteria(user, candidate) {
     if (user.fbid == candidate.fbid) {
         return false;
     }
-
     if (!candidate.settings.searchMales && user.gender == 'male') {
         //console.log('No satisface busqueda hombres.');
         return false;
@@ -152,18 +152,16 @@ function satisfiesCandidateCriteria(user, candidate) {
     //User age is in the candidate age range
     var now = new Date();
     var now_str = now.getFullYear() + '/'
-                + (now.getMonth() < 10 ? '0' : '') + (now.getMonth() + 1) + '/'
+                + (now.getMonth() < 9 ? '0' : '') + (now.getMonth() + 1) + '/'
                 + (now.getDate() < 10 ? '0' : '') + now.getDate();
-    console.log('now: ' + now_str);
-    console.log('user birthdate: ' + user.birthday);
-    console.log('candidate min: ' + getDateFromAge(now_str, candidate.settings.minAge));
+
     if (user.birthday > getDateFromAge(now_str, candidate.settings.minAge)) {
-        console.log('No esta en el rango de edad Min.');
+        //console.log('No esta en el rango de edad Min.');
         return false;
     }
     
     if (user.birthday < getDateFromAge(now_str, candidate.settings.maxAge)) {
-        console.log('No esta en el rango de edad Max.');
+        //console.log('No esta en el rango de edad Max.');
         return false;
     }
     return true;
