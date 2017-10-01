@@ -49,6 +49,9 @@ const UserSchema = new Schema({
         onlyFriends: {type: Boolean}, //True: 1, False: 0
 	    searchMales: {type: Boolean}, //True: 1, False: 0
 	    searchFemales: {type: Boolean} //True: 1, False: 0
+	},
+	control: {
+	    isActive: {type: Boolean}
 	}
 },{ collection: 'users' });
 
