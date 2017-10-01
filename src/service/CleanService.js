@@ -41,19 +41,6 @@ exports.cleanUser = function (fbidUser, callback) {
  * @param {Function} callback
  */
 exports.clean = function (callback) {
-    userDao.deleteAllUsers(function (err, data) {
-        if (err) {
-            callback(err, null);
-            return;
-        }
-        imageDao.deleteAllImages(function (err, data2) {
-            if (err) {
-                callback(err, null);
-                return;
-            }
-            callback(null, data);
-        });
-    });
     async.waterfall([
         function deleteUsers(next) {
             userDao.deleteAllUsers(next);
