@@ -36,7 +36,7 @@ exports.getUser = function (fbidUser, callback) {
             callback(err, null);
             return;
         }
-
+        console.log(user);
         imageDao.findImages(fbidUser, function(err, images) {
             if (err) {
                 callback(err, null);
@@ -101,7 +101,10 @@ exports.saveUser = function (userData, callback) {
                 interests : userData.interests,
                 lastName: userData.lastName,
                 occupation: userData.occupation,
-                settings: userData.settings
+                settings: userData.settings,
+                control : {
+                    isActive: true
+                }
             };
             userData.images.forEach(function(e) {
                 user.images.push({image: {idImage: e.image.idImage}});
@@ -144,7 +147,7 @@ exports.saveUser = function (userData, callback) {
             });
         },
     ],
-                    function (err, user) {
+    function (err, user) {
         if (err) {
             console.log(err);
             callback(err);
@@ -188,11 +191,14 @@ exports.updateUser = function (userData, callback) {
                 interests : userData.interests,
                 lastName: userData.lastName,
                 occupation: userData.occupation,
-                settings: userData.settings
+                settings: userData.settings,
+                control: userData.control == undefined ? user.control
+                                                       : userData.control
             };
             userData.images.forEach(function(e) {
                 user.images.push({image: {idImage: e.image.idImage}});
             });
+                        
             userDao.updateUser(user, next);
         }    
     ],

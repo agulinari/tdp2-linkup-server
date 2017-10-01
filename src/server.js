@@ -409,6 +409,29 @@ app.delete('/image', function (req, res, next) {
     }
 });
 
+var cleanCtrl = require(process.cwd() + '/src/controllers/CleanController');
+
+app.get('/clean/:idUser', function (req, res, next) {
+    var url = '/clean/' + req.params.idUser;
+    console.log('GET ' + url);
+    try{
+        cleanCtrl.getCleanUser(req, res);
+    } catch (err) {
+        console.log('GET ' + url + '\n'+ err);
+        return res.sendStatus(500);
+    }
+});
+
+app.get('/clean', function (req, res, next) {
+    console.log('GET /clean');
+    try{
+        cleanCtrl.getClean(req, res);
+    } catch (err) {
+        console.log('GET /clean' + '\n'+ err);
+        return res.sendStatus(500);
+    }
+});
+
 app.all('*', function (req,res,next) {
     return res.sendStatus(401);
     next();
