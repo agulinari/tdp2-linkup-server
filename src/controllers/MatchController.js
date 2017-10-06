@@ -14,6 +14,20 @@ exports.getUserMatches = function(req, res) {
     });
 };
 
+//Delete
+exports.deleteMatch = function(req, res) {
+
+    var idUser = req.params.idUser;
+    var idCandidate = req.params.idCandidate;
+
+    service.deleteMatch(idUser,idCandidate,function(err, response) {
+        if (err) {
+            return errorHandler.throwError(res, err);
+        }
+        return res.json(response);
+    });
+};
+
 
 //Delete
 exports.deleteMatches = function(req, res) {

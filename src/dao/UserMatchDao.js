@@ -25,6 +25,21 @@ exports.findMatchs = function(fbidUser, fbidCandidate, callback) {
    
 };
 
+exports.deleteMatch = function(fbidUser, fbidCandidate, callback) {
+
+    var query = {"fbidUser": fbidUser};
+
+    UserMatch.update(query,{$pull:{ "matches": {"fbid": fbidCandidate} }},
+                     function (err, value) {
+                        if (err) {
+                            callback(err,null);
+                            return;
+                        }
+                        callback(null, value);
+                        return;
+                    });
+};
+
 exports.deleteMatchs = function(callback) {
 
     UserMatch.deleteMany(function (err, value) {

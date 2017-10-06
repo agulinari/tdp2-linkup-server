@@ -45,11 +45,10 @@ exports.findLinks = function(callback) {
  * @param {Function} callback The function to call when deletion is complete.
  **/
 exports.deleteLink = function(fbidUser, fbidCandidate, callback) {
-    var query = {
-        "fbidUser": fbidUser,
-        "fbidCandidate": fbidCandidate
-    };
-    Link.deleteMany(query, function (err, value) {
+    var query = {"fbidUser": fbidUser};
+
+
+    Link.update(query, {$pull:{ "acceptedUsers": {"fbidCandidate": fbidCandidate} }}, function (err, value) {
         if (err) {
             callback(err,null);
             return;

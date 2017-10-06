@@ -12,6 +12,16 @@ module.exports = function (app) {
         }
     });
 
+    app.delete('/match/:idUser/:idCandidate',function(req,res,nect){
+        console.log('DELETE /match');
+        try{
+            matchCtrl.deleteMatch(req, res);
+        } catch (err) {
+            console.log('DELETE /Match' + '\n'+ err);
+            return res.sendStatus(500);
+        }
+    });
+
     app.delete('/match',function(req,res,nect){
         console.log('DELETE /match');
         try{
