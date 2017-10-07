@@ -210,7 +210,7 @@ exports.updateUser = function (userData, callback) {
                 settings: userData.settings != undefined
                             ? userData.settings
                             : user.settings,
-                control: userData.control == user.control
+                control: user.control
             };
             if (userData.images != undefined) {
                 user.images = [];
@@ -222,10 +222,12 @@ exports.updateUser = function (userData, callback) {
                 if (userData.control.isActive != undefined) {
                     if (userData.control.isActive == true
                             && user.control.isActive == false) {
+                        console.log('HIT 1');
                         user.control.isActive = true;
                         user.control.deactivationTime = null;
                     } else if (userData.control.isActive == false
                             && user.control.isActive == true) {
+                        console.log('HIT 2');
                         user.control.isActive = false;
                         user.control.deactivationTime = new Date();
                     }
