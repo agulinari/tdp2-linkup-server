@@ -24,7 +24,7 @@ exports.findAllAbuseReports = function(callback) {
  **/
 exports.findAbuseReportById = function(idAbuseReport, callback) {
     var proj = "-__v";
-    AbuseReport.findOne({ _id: idAbuseReport }, proj, function (err, value) {
+    AbuseReport.findOne({ idReporter: idAbuseReport }, proj, function (err, value) {
         if (err) {
             callback(err,null);
             return;

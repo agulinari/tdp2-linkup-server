@@ -86,7 +86,11 @@ exports.saveAbuseReport = function (abuseReportData, callback) {
         function save(next) {
             abuseReport = {
                 idReporter: abuseReportData.idReporter,
+                firstNameReporter: abuseReportData.firstNameReporter,
+                lastNameReporter: abuseReportData.lastNameReporter,
                 idReported: abuseReportData.idReported,
+                firstNameReported: abuseReportData.firstNameReported,
+                lastNameReported: abuseReportData.lastNameReported,
                 idCategory: abuseReportData.idCategory,
                    comment: abuseReportData.comment != undefined
                                 ? abuseReportData.comment
@@ -126,7 +130,7 @@ exports.saveAbuseReport = function (abuseReportData, callback) {
 exports.updateAbuseReport = function (abuseReportData, callback) {
     async.waterfall([
         function getAbuseReport(next) {
-            abuseReportDao.findAbuseReportById(abuseReportData._id,
+            abuseReportDao.findAbuseReportById(abuseReportData.idReporter,
                                                (err, abuseReport) => {
                 if (err) {
                     next(err);
@@ -144,7 +148,11 @@ exports.updateAbuseReport = function (abuseReportData, callback) {
             abuseReport = {
                        _id: abuseReport._id,
                 idReporter: abuseReport.idReporter,
+                firstNameReporter: abuseReportData.firstNameReporter,
+                lastNameReporter: abuseReportData.lastNameReporter,
                 idReported: abuseReport.idReported,
+                firstNameReported: abuseReportData.firstNameReported,
+                lastNameReported: abuseReportData.lastNameReported,
                 idCategory: abuseReport.idCategory,
                    comment: abuseReport.comment,
                     isOpen: abuseReportData.isOpen != undefined
