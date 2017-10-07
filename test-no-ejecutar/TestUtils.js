@@ -76,7 +76,9 @@ exports.createAbuseReportByCriteria = function(c, callback) {
         "abuseReport": {
             "_id" : c.id == undefined ? null : c.id,
             "idReporter": c.idReporter,
+            "fullnameReporter": "Full Name " + c.idReporter,
             "idReported": c.idReported,
+            "fullnameReported": "Full Name " + c.idReported,
             "idCategory": c.idCategory == undefined ? "1" : c.idCategory,
             "comment": c.comment == undefined ? null : c.comment,
             "isOpen": c.isOpen == undefined ? "true" : c.isOpen

@@ -9,11 +9,9 @@ var ObjectId = mongoose.Types.ObjectId;
 
 const AbuseReportSchema = new Schema({
     idReporter: String,
-    firstNameReporter: String,
-    lastNameReporter: String,
+    fullnameReporter: String,
     idReported: String,
-    firstNameReported: String,
-    lastNameReported: String,
+    fullnameReported: String,
     time : { type : Date, default: Date.now },
     idCategory: Number,
     comment: String,
