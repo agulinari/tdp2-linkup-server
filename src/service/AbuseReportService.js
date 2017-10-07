@@ -3,19 +3,20 @@ var abuseReportDao = require('../dao/AbuseReportDao');
 var userDao = require('../dao/UserDao');
 var NotFound = require("../error/NotFound");
 
-
 /**
  * Get all AbuseReports
  * @param {Function} callback
  */
 exports.getAbuseReports = function (callback) {
-    abuseReportDao.findAllAbuseReports(function (err, abuseReports) {
-        if (err) {
-            callback(err, null);
-            return;
+    abuseReportDao.findAllAbuseReportsSortedByReportedUser(
+        (err, abuseReports) => {
+            if (err) {
+                callback(err, null);
+                return;
+            }
+            callback(null, abuseReports);
         }
-        callback(null, abuseReports);
-    });
+    );
 };
 
 /**
@@ -23,14 +24,15 @@ exports.getAbuseReports = function (callback) {
  * @param {Function} callback
  */
 exports.getOpenAbuseReports = function (callback) {
-    var criteria = {isOpen: true};
-    abuseReportDao.findAbuseReportsByCriteria(criteria, (err, abuseReports) => {
-        if (err) {
-            callback(err, null);
-            return;
+    abuseReportDao.findAllOpenAbuseReportsSortedByReportedUser(
+        (err, abuseReports) => {
+            if (err) {
+                callback(err, null);
+                return;
+            }
+            callback(null, abuseReports);
         }
-        callback(null, abuseReports);
-    });
+    );
 };
 
 /**
@@ -38,14 +40,15 @@ exports.getOpenAbuseReports = function (callback) {
  * @param {Function} callback
  */
 exports.getClosedAbuseReports = function (callback) {
-    var criteria = {isOpen: false};
-    abuseReportDao.findAbuseReportsByCriteria(criteria, (err, abuseReports) => {
-        if (err) {
-            callback(err, null);
-            return;
+    abuseReportDao.findAllClosedAbuseReportsSortedByReportedUser(
+        (err, abuseReports) => {
+            if (err) {
+                callback(err, null);
+                return;
+            }
+            callback(null, abuseReports);
         }
-        callback(null, abuseReports);
-    });
+    );
 };
 
 /**
@@ -86,14 +89,16 @@ exports.saveAbuseReport = function (abuseReportData, callback) {
         function save(next) {
             abuseReport = {
                 idReporter: abuseReportData.idReporter,
+                fullnameReporter: abuseReportData.fullnameReporter,
                 idReported: abuseReportData.idReported,
+                fullnameReported: abuseReportData.fullnameReported,
                 idCategory: abuseReportData.idCategory,
-                   comment: abuseReportData.comment != undefined
-                                ? abuseReportData.comment
-                                : null,
-                    isOpen: abuseReportData.isOpen != undefined
-                                ? abuseReportData.isOpen
-                                : true
+                comment: abuseReportData.comment != undefined
+                            ? abuseReportData.comment
+                            : null,
+                isOpen: abuseReportData.isOpen != undefined
+                            ? abuseReportData.isOpen
+                            : true
             };
             abuseReportDao.saveAbuseReport(abuseReport, (err, abuseReport) => {
                 if (err) {
@@ -142,14 +147,16 @@ exports.updateAbuseReport = function (abuseReportData, callback) {
         },
         function update(abuseReport, next) {
             abuseReport = {
-                       _id: abuseReport._id,
+                _id: abuseReport._id,
                 idReporter: abuseReport.idReporter,
+                fullnameReporter: abuseReport.fullnameReporter,
                 idReported: abuseReport.idReported,
+                fullnameReported: abuseReport.fullnameReported,
                 idCategory: abuseReport.idCategory,
-                   comment: abuseReport.comment,
-                    isOpen: abuseReportData.isOpen != undefined
-                                ? abuseReportData.isOpen
-                                : abuseReport.isOpen
+                comment: abuseReport.comment,
+                isOpen: abuseReportData.isOpen != undefined
+                            ? abuseReportData.isOpen
+                            : abuseReport.isOpen
             };
             abuseReportDao.updateAbuseReport(abuseReport,
                                             (err, abuseReport) => {

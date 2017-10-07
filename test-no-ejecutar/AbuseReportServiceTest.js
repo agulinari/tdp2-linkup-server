@@ -28,6 +28,12 @@ describe('AbuseReport service test', () => {
             },
             function (res, next) {
                 testUtils.createUserByCriteria( {id:"2"}, next);
+            },
+            function (res, next) {
+                testUtils.createUserByCriteria( {id:"3"}, next);
+            },
+            function (res, next) {
+                testUtils.createUserByCriteria( {id:"4"}, next);
             }
         ],
         function (err, res) {
@@ -166,6 +172,22 @@ describe('AbuseReport service test', () => {
                         "isOpen" : "true"
                     };
                     testUtils.createAbuseReportByCriteria(criteria, next);
+                },
+                function (res, next) {
+                    var criteria = {
+                        "idReporter": "3",
+                        "idReported": "2",
+                        "isOpen" : "true"
+                    };
+                    testUtils.createAbuseReportByCriteria(criteria, next);
+                },
+                function (res, next) {
+                    var criteria = {
+                        "idReporter": "4",
+                        "idReported": "2",
+                        "isOpen" : "true"
+                    };
+                    testUtils.createAbuseReportByCriteria(criteria, next);
                 }
             ],
             function (err, res) {
@@ -181,12 +203,22 @@ describe('AbuseReport service test', () => {
                     res.should.have.status(200);
                     var data = res.body;
                     var reports = data.abuseReports;
-                    expect(data.metadata.count).to.equal(4);
+                    expect(data.metadata.count).to.equal(6);
                     expect(containsAbuseReport(0, 1, reports)).to.equal(true);
                     expect(containsAbuseReport(1, 2, reports)).to.equal(true);
                     expect(containsAbuseReport(2, 0, reports)).to.equal(true);
                     expect(containsAbuseReport(2, 1, reports)).to.equal(true);
+                    expect(containsAbuseReport(3, 2, reports)).to.equal(true);
+                    expect(containsAbuseReport(4, 2, reports)).to.equal(true);
                     expect(containsAbuseReport(1, 0, reports)).to.equal(false);
+                    
+                    //test order
+                    expect(data.abuseReports[0].idReported).to.equal('2');
+                    expect(data.abuseReports[1].idReported).to.equal('2');
+                    expect(data.abuseReports[2].idReported).to.equal('2');
+                    expect(data.abuseReports[3].idReported).to.equal('1');
+                    expect(data.abuseReports[4].idReported).to.equal('1');
+                    expect(data.abuseReports[5].idReported).to.equal('0');
                     
                     done();
                 });             

@@ -54,6 +54,140 @@ exports.findAbuseReportsByCriteria = function(criteria, callback) {
     });
 };
 
+/**
+ * Retrieves all AbuseReports sorted by Reported user
+ * @param {Function} callback
+ **/
+exports.findAllAbuseReportsSortedByReportedUser = function(callback) {
+    
+    AbuseReport.aggregate([
+        {$sort: {idReported:1}},
+        {
+            $group:{
+                _id:{idReported:"$idReported"},
+                reports:{ $push:{
+                            _id:"$_id",
+                            idReporter:"$idReporter",
+                            time:"$time",
+                            idCategory:"$idCategory",
+                            comment:"$comment",
+                            isOpen:"$isOpen"
+                        }
+                },
+                size:{$sum:1}
+            }
+        },
+        {$sort: {size:-1}}, {$unwind:"$reports"},
+        {
+            $project: {
+                _id:"$reports._id",
+                idReported:"$_id.idReported",
+                idReporter:"$reports.idReporter",
+                time:"$reports.time",
+                idCategory:"$reports.idCategory",
+                comment:"$reports.comment",
+                isOpen:"$reports.isOpen"
+            }
+        }
+    ], function (err, value) {
+        if (err) {
+            callback(err,null);
+            return;
+        }
+        callback(null, value);
+    });
+};
+
+/**
+ * Retrieves all open AbuseReports sorted by Reported user
+ * @param {Function} callback
+ **/
+exports.findAllOpenAbuseReportsSortedByReportedUser = function(callback) {
+    
+    AbuseReport.aggregate([
+        {$match: { isOpen: true} },
+        {$sort: {idReported:1}},
+        {
+            $group:{
+                _id:{idReported:"$idReported"},
+                reports:{ $push:{
+                            _id:"$_id",
+                            idReporter:"$idReporter",
+                            time:"$time",
+                            idCategory:"$idCategory",
+                            comment:"$comment",
+                            isOpen:"$isOpen"
+                        }
+                },
+                size:{$sum:1}
+            }
+        },
+        {$sort: {size:-1}}, {$unwind:"$reports"},
+        {
+            $project: {
+                _id:"$reports._id",
+                idReported:"$_id.idReported",
+                idReporter:"$reports.idReporter",
+                time:"$reports.time",
+                idCategory:"$reports.idCategory",
+                comment:"$reports.comment",
+                isOpen:"$reports.isOpen"
+            }
+        }
+    ], function (err, value) {
+        if (err) {
+            callback(err,null);
+            return;
+        }
+        callback(null, value);
+    });
+};
+
+/**
+ * Retrieves all closed AbuseReports sorted by Reported user
+ * @param {Function} callback
+ **/
+exports.findAllClosedAbuseReportsSortedByReportedUser = function(callback) {
+    
+    AbuseReport.aggregate([
+        {$match: { isOpen: false} },
+        {$sort: {idReported:1}},
+        {
+            $group:{
+                _id:{idReported:"$idReported"},
+                reports:{ $push:{
+                            _id:"$_id",
+                            idReporter:"$idReporter",
+                            time:"$time",
+                            idCategory:"$idCategory",
+                            comment:"$comment",
+                            isOpen:"$isOpen"
+                        }
+                },
+                size:{$sum:1}
+            }
+        },
+        {$sort: {size:-1}}, {$unwind:"$reports"},
+        {
+            $project: {
+                _id:"$reports._id",
+                idReported:"$_id.idReported",
+                idReporter:"$reports.idReporter",
+                time:"$reports.time",
+                idCategory:"$reports.idCategory",
+                comment:"$reports.comment",
+                isOpen:"$reports.isOpen"
+            }
+        }
+    ], function (err, value) {
+        if (err) {
+            callback(err,null);
+            return;
+        }
+        callback(null, value);
+    });
+};
+
 exports.saveAbuseReport = function(abuseReportData, callback) {
     var newAbuseReport = new AbuseReport(abuseReportData);
     newAbuseReport.save(function(err, value) {
