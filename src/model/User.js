@@ -51,7 +51,8 @@ const UserSchema = new Schema({
 	    searchFemales: {type: Boolean} //True: 1, False: 0
 	},
 	control: {
-	    isActive: {type: Boolean}
+	    isActive: {type: Boolean, default: true},
+	    deactivationTime: { type : Date, default: null }
 	}
 },{ collection: 'users' });
 
