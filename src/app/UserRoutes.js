@@ -45,7 +45,7 @@ module.exports = function (app) {
             return res.sendStatus(500);
         }
     });
-    
+        
     app.delete('/user/:idUser', function (req, res, next) {
         console.log('DELETE /user ' + req.params.idUser);
         try{
