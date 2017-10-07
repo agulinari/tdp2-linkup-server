@@ -102,8 +102,7 @@ exports.saveUser = function (userData, callback) {
                 lastName: userData.lastName,
                 occupation: userData.occupation,
                 settings: userData.settings,
-                control : userData.control != undefined ? userData.control
-                                                        : true
+                control : userData.control
             };
             userData.images.forEach(function(e) {
                 user.images.push({image: {idImage: e.image.idImage}});
@@ -173,30 +172,65 @@ exports.updateUser = function (userData, callback) {
                 return;
             }
             user = {
-                birthday: userData.birthday,
-                comments: userData.comments,
-                education: userData.education,
-                fbid: userData.fbid,
-                token: userData.token,
-                firstName: userData.firstName, 
-                location: {
-                    longitude: userData.location.longitude,
-                    latitude: userData.location.latitude,
-                    name: userData.location.name
-                },
-                gender: userData.gender,
-                avatar: {image: {idImage: userData.avatar.image.idImage}},
-                images: [],
-                interests : userData.interests,
-                lastName: userData.lastName,
-                occupation: userData.occupation,
-                settings: userData.settings,
-                control: userData.control == undefined ? user.control
-                                                       : userData.control
+                birthday: userData.birthday != undefined
+                            ? userData.birthday
+                            : user.birthday,
+                comments: userData.comments != undefined
+                            ? userData.comments
+                            : user.comments,
+                education: userData.education != undefined
+                            ? userData.education
+                            : user.education,
+                fbid: user.fbid,
+                token: userData.token != undefined
+                            ? userData.token
+                            : user.token,
+                firstName: userData.firstName != undefined
+                            ? userData.firstName
+                            : user.firstName,
+                location: userData.location != undefined
+                            ? userData.location
+                            : user.location,
+                gender: userData.gender != undefined
+                            ? userData.gender
+                            : user.gender,
+                avatar: userData.avatar != undefined
+                            ? userData.avatar
+                            : user.avatar,
+                images: user.images,
+                interests : userData.interests != undefined
+                            ? userData.interests
+                            : user.interests,
+                lastName: userData.lastName != undefined
+                            ? userData.lastName
+                            : user.lastName,
+                occupation: userData.occupation != undefined
+                            ? userData.occupation
+                            : user.occupation,
+                settings: userData.settings != undefined
+                            ? userData.settings
+                            : user.settings,
+                control: userData.control == user.control
             };
-            userData.images.forEach(function(e) {
-                user.images.push({image: {idImage: e.image.idImage}});
-            });
+            if (userData.images != undefined) {
+                user.images = [];
+                userData.images.forEach(function(e) {
+                    user.images.push({image: {idImage: e.image.idImage}});
+                });
+            }
+            if (userData.control != undefined) {
+                if (userData.control.isActive != undefined) {
+                    if (userData.control.isActive == true
+                            && user.control.isActive == false) {
+                        user.control.isActive = true;
+                        user.control.deactivationTime = null;
+                    } else if (userData.control.isActive == false
+                            && user.control.isActive == true) {
+                        user.control.isActive = false;
+                        user.control.deactivationTime = new Date();
+                    }
+                }
+            }
                         
             userDao.updateUser(user, next);
         }    
