@@ -2,12 +2,13 @@ var async = require('async');
 var matchDao = require('../dao/UserMatchDao');
 var utils = require('../utils/Utils');
 var NotFound = require("../error/NotFound");
+var userDao = require('../dao/UserDao');
+var DisabledAccountError = require("../error/DisabledAccountError");
 
 /**
  * Get Matches
  * @param {String} fbidUser
- * @param {String} fbidCandidate
- * @param {Function} callback  The function to call when retrieval is complete.
+ * @param {Function} callback
  */
 exports.getUserMatches = function (fbidUser, callback) {
     async.waterfall([
