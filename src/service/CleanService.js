@@ -90,4 +90,23 @@ exports.cleanAbuseReports = function (callback) {
     });
 };
 
+/**
+ * Clean all Blocks
+ * @param {Function} callback
+ */
+exports.cleanBlocks = function (callback) {
+    async.waterfall([
+        function deleteBlocks(next) {
+            blockDao.deleteBlocks(next);
+        }
+    ],
+    function (err, data) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            return;
+        }
+        callback(null, data);
+    });
+};
 

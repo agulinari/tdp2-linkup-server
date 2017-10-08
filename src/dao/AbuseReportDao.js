@@ -64,10 +64,11 @@ exports.findAllAbuseReportsSortedByReportedUser = function(callback) {
         {$sort: {idReported:1}},
         {
             $group:{
-                _id:{idReported:"$idReported"},
+                _id:{idReported:"$idReported", fullnameReported:"$fullnameReported"},
                 reports:{ $push:{
                             _id:"$_id",
                             idReporter:"$idReporter",
+                            fullnameReporter:"$fullnameReporter",
                             time:"$time",
                             idCategory:"$idCategory",
                             comment:"$comment",
@@ -82,7 +83,9 @@ exports.findAllAbuseReportsSortedByReportedUser = function(callback) {
             $project: {
                 _id:"$reports._id",
                 idReported:"$_id.idReported",
+                fullnameReported:"$_id.fullnameReported",
                 idReporter:"$reports.idReporter",
+                fullnameReporter:"$reports.fullnameReporter",
                 time:"$reports.time",
                 idCategory:"$reports.idCategory",
                 comment:"$reports.comment",
@@ -109,7 +112,7 @@ exports.findAllOpenAbuseReportsSortedByReportedUser = function(callback) {
         {$sort: {idReported:1}},
         {
             $group:{
-                _id:{idReported:"$idReported"},
+                _id:{idReported:"$idReported", fullnameReported:"$fullnameReported"},
                 reports:{ $push:{
                             _id:"$_id",
                             idReporter:"$idReporter",
@@ -127,7 +130,9 @@ exports.findAllOpenAbuseReportsSortedByReportedUser = function(callback) {
             $project: {
                 _id:"$reports._id",
                 idReported:"$_id.idReported",
+                fullnameReported:"$_id.fullnameReported",
                 idReporter:"$reports.idReporter",
+                fullnameReporter:"$reports.fullnameReporter",
                 time:"$reports.time",
                 idCategory:"$reports.idCategory",
                 comment:"$reports.comment",
@@ -154,7 +159,7 @@ exports.findAllClosedAbuseReportsSortedByReportedUser = function(callback) {
         {$sort: {idReported:1}},
         {
             $group:{
-                _id:{idReported:"$idReported"},
+                _id:{idReported:"$idReported", fullnameReported:"$fullnameReported"},
                 reports:{ $push:{
                             _id:"$_id",
                             idReporter:"$idReporter",
@@ -172,7 +177,9 @@ exports.findAllClosedAbuseReportsSortedByReportedUser = function(callback) {
             $project: {
                 _id:"$reports._id",
                 idReported:"$_id.idReported",
+                fullnameReported:"$_id.fullnameReported",
                 idReporter:"$reports.idReporter",
+                fullnameReporter:"$reports.fullnameReporter",
                 time:"$reports.time",
                 idCategory:"$reports.idCategory",
                 comment:"$reports.comment",

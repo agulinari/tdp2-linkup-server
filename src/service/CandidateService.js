@@ -6,20 +6,32 @@ var blockService = require('./BlockService');
 var linkDao = require('../dao/LinkDao');
 var GeoPoint = require('geopoint');
 var NotFound = require("../error/NotFound");
+var DisabledAccountError = require("../error/DisabledAccountError");
 
 exports.getCandidates = function (id, callback) {
     var user = {};
 
     async.waterfall([
         function getUser(next) {
-            userDao.findUser(id, next);
+            userDao.findUser(id, (err, user) => {
+                if (err) {
+                    next(err);
+                }
+                if (user == null) {
+                    next(new NotFound("No se encontro el usuario"));
+                    return;
+                }
+                if (! user.control.isActive) {
+                    next(new DisabledAccountError());
+                    return;
+                }
+                next(null, user);
+            });
         },
         function getCandidatesByUserCriteria(response, next) {
+            console.log('user: ' + JSON.stringify(response));
             user = response;
-            if (user == null) {
-                next(new NotFound("No se encontro el usuario"), null);
-                return;
-            }
+
             var now = new Date();
             var now_str = now.getFullYear() + '/'
             + (now.getMonth() < 9 ? '0' : '') + (now.getMonth() + 1) + '/'
@@ -37,8 +49,6 @@ exports.getCandidates = function (id, callback) {
         },
         function filterByCandidateCriteria(response, next) {
             var users = response;
-            console.log("Longitud users:"+users.length);
-            console.log('candidates size: ' + users.size);
             var candidates = [];
             users.forEach(function (candidate) {
                 if (canBeCandidate(user, candidate)) {
