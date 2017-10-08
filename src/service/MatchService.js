@@ -10,17 +10,40 @@ var NotFound = require("../error/NotFound");
  * @param {Function} callback  The function to call when retrieval is complete.
  */
 exports.getUserMatches = function (fbidUser, callback) {
-    matchDao.findMatchs(fbidUser,callback, function (err, value) {
+    async.waterfall([
+        function getUser(next) {
+            userDao.findUser(fbidUser, (err, user) => {
+                if (err) {
+                    next(err);
+                }
+                if (user == null) {
+                    next(new NotFound("No se encontro el usuario"));
+                    return;
+                }
+                if (! user.control.isActive) {
+                    next(new DisabledAccountError());
+                    return;
+                }
+                next();
+            });
+        }
+    ],
+    function (err, response) {
         if (err) {
-            callback(err, null);
+            callback(err);
             return;
         }
-        var response = {
-
-            matches: (value==null||value=="")?[]:value,
-            metadata : utils.getMetadata(1)
-        }
-        callback(null, response);
+        matchDao.findMatchs(fbidUser, function (err, value) {
+            if (err) {
+                callback(err, null);
+                return;
+            }
+            var response = {
+                matches: (value==null||value=="")?[]:value,
+                metadata : utils.getMetadata(1)
+            }
+            callback(null, response);
+        });
     });
 };
 

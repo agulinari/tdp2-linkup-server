@@ -4,7 +4,7 @@ var UserMatch = require('../model/UserMatch');
 var NotFound = require("../error/NotFound");
 var BadRequest = require("../error/BadRequest");
 
-exports.findMatchs = function(fbidUser, fbidCandidate, callback) {
+exports.findMatchs = function(fbidUser, callback) {
     var query = {
         "fbidUser": fbidUser,
     };

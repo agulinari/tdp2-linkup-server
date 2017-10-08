@@ -48,7 +48,6 @@ exports.getCandidates = function (id, callback) {
         },
         function filterByCandidateCriteria(response, next) {
             var users = response;
-            console.log('candidates size 1: ' + users.length);
             var candidates = [];
             users.forEach(function (candidate) {
                 if (canBeCandidate(user, candidate)) {
@@ -58,7 +57,6 @@ exports.getCandidates = function (id, callback) {
             next(null, candidates);
         },
         function filterRejectedCandidates(candidates, next) {
-        console.log('candidates size 2: ' + candidates.length);
             if (candidates.length == 0) {
                 next(null, candidates);
                 return;
@@ -76,7 +74,6 @@ exports.getCandidates = function (id, callback) {
             });
         },
         function filterCandidatesRejections(candidates, next) {
-            console.log('candidates size 3: ' + candidates.length);
             if (candidates.length == 0) {
                 next(null, candidates);
                 return;
@@ -94,7 +91,6 @@ exports.getCandidates = function (id, callback) {
             });
         },
         function filterBlockedCandidates(candidates, next) {
-            console.log('candidates size 4: ' + candidates.length);
             if (candidates.length == 0) {
                 next(null, candidates);
                 return;
@@ -112,7 +108,6 @@ exports.getCandidates = function (id, callback) {
             });
         },
         function filterCandidatesBlocks(candidates, next) {
-            console.log('candidates size 5: ' + candidates.length);
             if (candidates.length == 0) {
                 next(null, candidates);
                 return;
