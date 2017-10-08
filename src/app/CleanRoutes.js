@@ -33,6 +33,16 @@ module.exports = function (app) {
         }
     });
     
+    app.get('/clean/block', function (req, res, next) {
+        console.log('GET /clean/block');
+        try{
+            cleanCtrl.getCleanBlocks(req, res);
+        } catch (err) {
+            console.log('GET /clean/block' + '\n'+ err);
+            return res.sendStatus(500);
+        }
+    });
+    
 };
 
 
