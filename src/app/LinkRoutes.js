@@ -14,6 +14,18 @@ module.exports = function (app) {
         }
     });
 
+    app.post('/linksUsersCandidate', function (req, res, next) {
+        console.log('POST /linksUsersCandidate ' + JSON.stringify(req.body));
+        try{
+            linkCtrl.getLinksUsersByCandidate(req, res);
+        } catch (err) {
+            console.log('ERR POST /linksUsersCandidate '
+                        + JSON.stringify(req.body) + '\n'
+                        + err);
+            return res.sendStatus(500);
+        }
+    });
+
     app.get('/link/:idUser/:idCandidate', function (req, res, next) {
         var url = '/link/' + req.params.idUser + '/' + req.params.idCandidate;
         console.log('GET ' + url);

@@ -99,6 +99,25 @@ exports.deleteLinks = function(callback) {
 };
 
 /**
+ * Find List id and idUser into array acceptedUser
+ *
+ **/
+exports.getUserLinkByIdsUsersAndIdCandidate = function(idsUsers,idCandidate, callback) {
+    var proj = "-_id -__v";
+    Link.find({"fbidUser": {$in: idsUsers},"acceptedUsers.fbidCandidate" : {$eq: idCandidate}},proj, function(err,value){
+        if (err) {
+            callback(err,null);
+            return;
+        }
+
+        //console.log("Valores encontrados: "+value);
+        callback(null, value);
+        return;
+    });
+
+}
+
+/**
  * Devuelve el candidate si lo encuentra en el array de candidatos del usuario.
  * En caso de no encontrar el usuario o el candidato, retorna null;
  * @param id fbidCandidate.
@@ -138,7 +157,6 @@ exports.getUserLinkByIdUserAndIdCandidate = function(idUser,idCandidate, callbac
         console.log("Ingreso a linkeo:"+retValue);
         callback(null, retValue);
         return;
-
     });
 };
 
@@ -146,7 +164,7 @@ exports.saveOrUpdateUserLink = function (idUser,idCandidate,tipoLinkParam, callb
 
     if(idUser!=null && idCandidate!=null){
         console.log('INGRESO A GUARDAR');
-        var tipoLink = (tipoLinkParam!=null && tipoLinkParam!=undefined)?tipoLinkParam : "Link";
+        var tipoLink = ((tipoLinkParam!=null) && (tipoLinkParam!=undefined))?tipoLinkParam : "Link";
         var itemAcceptedUser = {"fbidCandidate": idCandidate,"typeOfLink": tipoLink,"countOfSuperLinks": 0, "time": Date.now()};
 
         var conditions = {
@@ -168,6 +186,7 @@ exports.saveOrUpdateUserLink = function (idUser,idCandidate,tipoLinkParam, callb
                 console.log('GUARDA');
                 var userLink = new Link();
                 userLink.fbidUser = idUser;
+                userLink.typeOfLink = tipoLink;
                 userLink.acceptedUsers = [itemAcceptedUser];
                 userLink.save();
                 callback(null, data);
@@ -181,7 +200,7 @@ exports.saveOrUpdateUserLink = function (idUser,idCandidate,tipoLinkParam, callb
                     }
 
 
-                    console.log("ESTA ACTUALIZANDO");
+                    console.log("ESTA ACTUALIZANDO:"+JSON.stringify(doc));
                     callback(null, doc);
                     return;
                 });

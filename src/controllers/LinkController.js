@@ -25,6 +25,18 @@ exports.getUserLinks = function(req, res) {
     });
 };
 
+exports.getLinksUsersByCandidate = function(req,res){
+    var idsUser = req.body.idsUser;
+    var idCandidate = req.body.idCandidate;
+
+    service.getLinksUsersByCandidate(idsUser,idCandidate,function(err, response) {
+        if (err) {
+            return errorHandler.throwError(res, err);
+        }
+        return res.json(response);
+    });
+}
+
 //GET - Returns all Link from db
 exports.getLinks = function(req, res) {
     service.getLinks(function(err, response) {
@@ -52,7 +64,7 @@ exports.postLink = function(req, res) {
         return res.json(response);
     });*/
 
-    service.linkCandidate(linkReq.fbidUser,linkReq.fbidCandidate,linkReq.tipoDeLink, function (err, response) {
+    service.linkCandidate(linkReq.fbidUser,linkReq.fbidCandidate,linkReq.typeOfLink, function (err, response) {
         if (err) {
             console.log(err);
             return errorHandler.throwError(res, err);
