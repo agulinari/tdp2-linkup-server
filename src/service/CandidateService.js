@@ -36,6 +36,7 @@ exports.getCandidates = function (id, callback) {
         },
         function filterByCandidateCriteria(response, next) {
             var users = response;
+            console.log('candidates size: ' + users.size);
             var candidates = [];
             users.forEach(function (candidate) {
                 if (canBeCandidate(user, candidate)) {
