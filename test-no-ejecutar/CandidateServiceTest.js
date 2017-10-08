@@ -8,6 +8,7 @@ var server = require('../src/server');
 var should = chai.should();
 var expect = chai.expect;
 var async = require('async');
+var testUtils = require('./TestUtils');
 
 chai.use(chaiHttp);
 //Our parent block
@@ -15,46 +16,29 @@ describe('Candidate service test', () => {
 
     // Before each test
     beforeEach((done) => {
-    
-        chai.request(server)
-                .delete('/user')
-                .end((err, res) => {
-                    should.not.exist(err);
-                    res.should.have.status(200);
-                    
-                    chai.request(server)
-                        .delete('/rejection')
-                        .end((err, res) => {
-                            //console.log(res);
-                            should.not.exist(err);
-                            res.should.have.status(200);
-                            //console.log(res.body);
-                            done();
-                    });
-
-                });
+        testUtils.cleanDB(done);
     });
    
     describe('GET /candidate/:idUser', () => {
         it('It should get all user\'s Candidates', (done) => {
             async.waterfall([
                 function (next) {
-                    createUserByCriteria( {id:"0"}, next);
+                    testUtils.createUserByCriteria( {id:"0"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"1"}, next);
+                    testUtils.createUserByCriteria( {id:"1"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"2"}, next);
+                    testUtils.createUserByCriteria( {id:"2"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"3"}, next);
+                    testUtils.createUserByCriteria( {id:"3"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"4"}, next);
+                    testUtils.createUserByCriteria( {id:"4"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"5"}, next);
+                    testUtils.createUserByCriteria( {id:"5"}, next);
                 }
             ],
             function (err, user) {
@@ -68,7 +52,7 @@ describe('Candidate service test', () => {
                     res.should.have.status(200);
                     var data = res.body;
                     var candidates = data.candidates;
-                    expect(data.metadata.count).to.equal(5);
+                    //expect(data.metadata.count).to.equal(5);
                     expect(containsCandidate(0, candidates)).to.equal(false);
                     expect(containsCandidate(1, candidates)).to.equal(true);
                     expect(containsCandidate(2, candidates)).to.equal(true);
@@ -86,22 +70,22 @@ describe('Candidate service test', () => {
         it('It should filter inactive Candidates', (done) => {
             async.waterfall([
                 function (next) {
-                    createUserByCriteria( {id:"0"}, next);
+                    testUtils.createUserByCriteria( {id:"0"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"1"}, next);
+                    testUtils.createUserByCriteria( {id:"1"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"2"}, next);
+                    testUtils.createUserByCriteria( {id:"2"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"3", isActive: "false"}, next);
+                    testUtils.createUserByCriteria( {id:"3", isActive: "false"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"4"}, next);
+                    testUtils.createUserByCriteria( {id:"4"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"5", isActive: "false"}, next);
+                    testUtils.createUserByCriteria( {id:"5", isActive: "false"}, next);
                 }
             ],
             function (err, user) {
@@ -133,13 +117,13 @@ describe('Candidate service test', () => {
         it('It should filter far away user\'s Candidates', (done) => {
             async.waterfall([
                 function (next) {
-                    createUserByCriteria( {id:"0", maxDistance: "1"}, next);
+                    testUtils.createUserByCriteria( {id:"0", maxDistance: "1"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"1"}, next);
+                    testUtils.createUserByCriteria( {id:"1"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"2"}, next);
+                   testUtils.createUserByCriteria( {id:"2"}, next);
                 },
                 
                 function (err, next) {
@@ -148,10 +132,10 @@ describe('Candidate service test', () => {
                         latitude: "48.858093",
                         name: "eiffel tower"
                     }
-                    createUserByCriteria( {id:"3", location: loc}, next);
+                    testUtils.createUserByCriteria( {id:"3", location: loc}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"4"}, next);
+                    testUtils.createUserByCriteria( {id:"4"}, next);
                 },
                 function (err, next) {
                     var loc = {
@@ -159,7 +143,7 @@ describe('Candidate service test', () => {
                         latitude: "48.858093",
                         name: "eiffel tower"
                     }
-                    createUserByCriteria( {id:"5", location: loc}, next);
+                    testUtils.createUserByCriteria( {id:"5", location: loc}, next);
                 }
             ],
             function (err, user) {
@@ -191,22 +175,22 @@ describe('Candidate service test', () => {
         it('It should filter only friends Candidates', (done) => {
             async.waterfall([
                 function (next) {
-                    createUserByCriteria( {id:"0", onlyFriends: "false"}, next);
+                    testUtils.createUserByCriteria( {id:"0", onlyFriends: "false"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"1", onlyFriends: "false"}, next);
+                    testUtils.createUserByCriteria( {id:"1", onlyFriends: "false"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"2", onlyFriends: "false"}, next);
+                    testUtils.createUserByCriteria( {id:"2", onlyFriends: "false"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"3", onlyFriends: "true"}, next);
+                    testUtils.createUserByCriteria( {id:"3", onlyFriends: "true"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"4", onlyFriends: "false"}, next);
+                    testUtils.createUserByCriteria( {id:"4", onlyFriends: "false"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"5", onlyFriends: "true"}, next);
+                    testUtils.createUserByCriteria( {id:"5", onlyFriends: "true"}, next);
                 }
             ],
             function (err, user) {
@@ -238,22 +222,22 @@ describe('Candidate service test', () => {
         it('It should filter more than Friends Candidates', (done) => {
             async.waterfall([
                 function (next) {
-                    createUserByCriteria( {id:"0", onlyFriends: "true"}, next);
+                    testUtils.createUserByCriteria( {id:"0", onlyFriends: "true"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"1", onlyFriends: "true"}, next);
+                    testUtils.createUserByCriteria( {id:"1", onlyFriends: "true"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"2", onlyFriends: "true"}, next);
+                    testUtils.createUserByCriteria( {id:"2", onlyFriends: "true"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"3", onlyFriends: "false"}, next);
+                    testUtils.createUserByCriteria( {id:"3", onlyFriends: "false"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"4", onlyFriends: "true"}, next);
+                    testUtils.createUserByCriteria( {id:"4", onlyFriends: "true"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"5", onlyFriends: "false"}, next);
+                    testUtils.createUserByCriteria( {id:"5", onlyFriends: "false"}, next);
                 }
             ],
             function (err, user) {
@@ -285,22 +269,22 @@ describe('Candidate service test', () => {
         it('It should filter male Candidates', (done) => {
             async.waterfall([
                 function (next) {
-                    createUserByCriteria( {id:"0", searchMales: "false"}, next);
+                    testUtils.createUserByCriteria( {id:"0", searchMales: "false"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"1", gender: "female"}, next);
+                    testUtils.createUserByCriteria( {id:"1", gender: "female"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"2", gender: "female"}, next);
+                    testUtils.createUserByCriteria( {id:"2", gender: "female"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"3", gender: "male"}, next);
+                    testUtils.createUserByCriteria( {id:"3", gender: "male"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"4", gender: "female"}, next);
+                    testUtils.createUserByCriteria( {id:"4", gender: "female"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"5", gender: "male"}, next);
+                    testUtils.createUserByCriteria( {id:"5", gender: "male"}, next);
                 }
             ],
             function (err, user) {
@@ -332,23 +316,23 @@ describe('Candidate service test', () => {
         it('It should filter female Candidates', (done) => {
             async.waterfall([
                 function (next) {
-                    createUserByCriteria({id:"0", searchFemales: "false"},
+                    testUtils.createUserByCriteria({id:"0", searchFemales: "false"},
                                          next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"1", gender: "female"}, next);
+                    testUtils.createUserByCriteria( {id:"1", gender: "female"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"2", gender: "female"}, next);
+                    testUtils.createUserByCriteria( {id:"2", gender: "female"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"3", gender: "male"}, next);
+                    testUtils.createUserByCriteria( {id:"3", gender: "male"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"4", gender: "female"}, next);
+                    testUtils.createUserByCriteria( {id:"4", gender: "female"}, next);
                 },
                 function (err, next) {
-                    createUserByCriteria( {id:"5", gender: "male"}, next);
+                    testUtils.createUserByCriteria( {id:"5", gender: "male"}, next);
                 }
             ],
             function (err, user) {
@@ -384,7 +368,7 @@ describe('Candidate service test', () => {
             async.waterfall([
                 function (next) {
                     var c = {id:"0", minAge: "20", birthday: "1980/01/02"};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var bday = now.getFullYear() - 19 + '/'
@@ -392,7 +376,7 @@ describe('Candidate service test', () => {
                         + (now.getMonth() + 1) + '/'
                         + (now.getDate() < 10 ? '0' : '') + now.getDate();
                     var c = {id:"1", birthday: bday};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var bday = now.getFullYear() - 20 + '/'
@@ -400,7 +384,7 @@ describe('Candidate service test', () => {
                         + (now.getMonth() + 1) + '/'
                         + (now.getDate() < 10 ? '0' : '') + now.getDate();
                     var c = {id:"2", birthday: bday};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var bday = now.getFullYear() - 21 + '/'
@@ -408,7 +392,7 @@ describe('Candidate service test', () => {
                         + (now.getMonth() + 1) + '/'
                         + (now.getDate() < 10 ? '0' : '') + now.getDate();
                     var c = {id:"3", birthday: bday};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var bday = now.getFullYear() - 20 + '/'
@@ -416,7 +400,7 @@ describe('Candidate service test', () => {
                         + (now.getMonth() + 1) + '/'
                         + (now.getDate() < 10 ? '0' : '') + now.getDate() + 1;
                     var c = {id:"4", birthday: bday};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var bday = now.getFullYear() - 20 + '/'
@@ -424,7 +408,7 @@ describe('Candidate service test', () => {
                         + (now.getMonth() + 1) + '/'
                         + (now.getDate() < 10 ? '0' : '') + now.getDate() - 1;
                     var c = {id:"5", birthday: "1997/01/03"};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 }
             ],
             function (err, user) {
@@ -460,7 +444,7 @@ describe('Candidate service test', () => {
             async.waterfall([
                 function (next) {
                     var c = {id:"0", maxAge: "40", birthday: "1980/01/02"};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var bday = now.getFullYear() - 41 + '/'
@@ -468,7 +452,7 @@ describe('Candidate service test', () => {
                         + (now.getMonth() + 1) + '/'
                         + (now.getDate() < 10 ? '0' : '') + now.getDate();
                     var c = {id:"1", birthday: bday};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var bday = now.getFullYear() - 40 + '/'
@@ -476,7 +460,7 @@ describe('Candidate service test', () => {
                         + (now.getMonth() + 1) + '/'
                         + (now.getDate() < 10 ? '0' : '') + now.getDate();
                     var c = {id:"2", birthday: bday};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var bday = now.getFullYear() - 39 + '/'
@@ -484,7 +468,7 @@ describe('Candidate service test', () => {
                         + (now.getMonth() + 1) + '/'
                         + (now.getDate() < 10 ? '0' : '') + now.getDate();
                     var c = {id:"3", birthday: bday};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var bday = now.getFullYear() - 40 + '/'
@@ -492,7 +476,7 @@ describe('Candidate service test', () => {
                         + (now.getMonth() + 1) + '/'
                         + (now.getDate() < 10 ? '0' : '') + now.getDate() - 1;
                     var c = {id:"4", birthday: bday};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var bday = now.getFullYear() - 40 + '/'
@@ -500,7 +484,7 @@ describe('Candidate service test', () => {
                         + (now.getMonth() + 1) + '/'
                         + (now.getDate() < 10 ? '0' : '') + now.getDate() + 1;
                     var c = {id:"5", birthday: "1997/01/03"};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 }
             ],
             function (err, user) {
@@ -533,27 +517,27 @@ describe('Candidate service test', () => {
             async.waterfall([
                 function (next) {
                     var c = {id:"0"};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var c = {id:"1", invisible: 'false'};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var c = {id:"2", invisible: 'false'};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var c = {id:"3", invisible: 'true'};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var c = {id:"4", invisible: 'true'};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var c = {id:"5", invisible: "true"};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 }
             ],
             function (err, user) {
@@ -582,32 +566,141 @@ describe('Candidate service test', () => {
     });
     
     describe('GET /candidate/:idUser', () => {
+        it('It should filter inactive Candidates', (done) => {       
+            async.waterfall([
+                function (next) {
+                    var c = {id:"0"};
+                    testUtils.createUserByCriteria(c, next);
+                },
+                function (err, next) {
+                    var c = {id:"1"};
+                    testUtils.createUserByCriteria(c, next);
+                },
+                function (err, next) {
+                    var c = {id:"2"};
+                    testUtils.createUserByCriteria(c, next);
+                },
+                function (err, next) {
+                    var c = {
+                        id:"3",
+                        isActive: false,
+                        deactivationTime: new Date()
+                    };
+                    testUtils.createUserByCriteria(c, next);
+                },
+                function (err, next) {
+                    var c = {
+                        id:"4",
+                        isActive: false,
+                        deactivationTime: new Date()
+                    };
+                    testUtils.createUserByCriteria(c, next);
+                },
+                function (err, next) {
+                    var c = {id:"5"};
+                    testUtils.createUserByCriteria(c, next);
+                }
+            ],
+            function (err, user) {
+                should.not.exist(err);
+                
+                chai.request(server)
+                .get('/candidate/0')
+                .end((err, res) => {
+                    //console.log(err);
+                    should.not.exist(err);
+                    res.should.have.status(200);
+                    var data = res.body;
+                    var candidates = data.candidates;
+                    expect(data.metadata.count).to.equal(3);
+                    expect(containsCandidate(0, candidates)).to.equal(false);
+                    expect(containsCandidate(1, candidates)).to.equal(true);
+                    expect(containsCandidate(2, candidates)).to.equal(true);
+                    expect(containsCandidate(3, candidates)).to.equal(false);
+                    expect(containsCandidate(4, candidates)).to.equal(false);
+                    expect(containsCandidate(5, candidates)).to.equal(true);
+                    
+                    done();
+                });
+            });
+        });
+    });
+    
+    describe('GET /candidate/:idUser', () => {
+        it('It should filter all users for inactive Candidates', (done) => {       
+            async.waterfall([
+                function (next) {
+                    var c = {
+                        id:"0",
+                        isActive: false,
+                        deactivationTime: new Date()
+                    };
+                    testUtils.createUserByCriteria(c, next);
+                },
+                function (err, next) {
+                    var c = {id:"1"};
+                    testUtils.createUserByCriteria(c, next);
+                },
+                function (err, next) {
+                    var c = {id:"2"};
+                    testUtils.createUserByCriteria(c, next);
+                },
+                function (err, next) {
+                    var c = {id:"3"};
+                    testUtils.createUserByCriteria(c, next);
+                },
+                function (err, next) {
+                    var c = {id:"4"};
+                    testUtils.createUserByCriteria(c, next);
+                },
+                function (err, next) {
+                    var c = {id:"5"};
+                    testUtils.createUserByCriteria(c, next);
+                }
+            ],
+            function (err, user) {
+                should.not.exist(err);
+                
+                chai.request(server)
+                .get('/candidate/0')
+                .end((err, res) => {
+                    //console.log(err);
+                    should.exist(err);
+                    res.should.have.status(401);
+                    
+                    done();
+                });
+            });
+        });
+    });
+    
+    describe('GET /candidate/:idUser', () => {
         it('It should filter when the user is not compatible', (done) => {       
             async.waterfall([
                 function (next) {
                     var c = {id:"0"};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var c = {id:"1"};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 
                 function (err, next) {
                     var c = {id:"2", maxAge: '18'};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var c = {id:"3", minAge: '90'};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var c = {id:"4", maxDistance: '1', searchMales: 'false'};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var c = {id:"5", onlyFriends: 'false'};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 }
             ],
             function (err, user) {
@@ -640,28 +733,28 @@ describe('Candidate service test', () => {
             async.waterfall([
                 function (next) {
                     var c = {id:"0"};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var c = {id:"1"};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 
                 function (err, next) {
                     var c = {id:"2"};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var c = {id:"3"};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var c = {id:"4"};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var c = {id:"5"};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var body = {
@@ -713,28 +806,28 @@ describe('Candidate service test', () => {
             async.waterfall([
                 function (next) {
                     var c = {id:"0"};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var c = {id:"1"};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 
                 function (err, next) {
                     var c = {id:"2"};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var c = {id:"3"};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var c = {id:"4"};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var c = {id:"5"};
-                    createUserByCriteria(c, next);
+                    testUtils.createUserByCriteria(c, next);
                 },
                 function (err, next) {
                     var body = {
@@ -780,6 +873,68 @@ describe('Candidate service test', () => {
             });
         });
     });
+    
+    describe('GET /candidate/:idUser', () => {
+        it('It should filter reported Candidates', (done) => {       
+            async.waterfall([
+                function (next) {
+                    var c = {id:"0"};
+                    testUtils.createUserByCriteria(c, next);
+                },
+                function (err, next) {
+                    var c = {id:"1"};
+                    testUtils.createUserByCriteria(c, next);
+                },
+                
+                function (err, next) {
+                    var c = {id:"2"};
+                    testUtils.createUserByCriteria(c, next);
+                },
+                function (err, next) {
+                    var c = {id:"3"};
+                    testUtils.createUserByCriteria(c, next);
+                },
+                function (err, next) {
+                    var c = {id:"4"};
+                    testUtils.createUserByCriteria(c, next);
+                },
+                function (err, next) {
+                    var c = {id:"5"};
+                    testUtils.createUserByCriteria(c, next);
+                },
+                function (err, next) {
+                    var c = {
+                        id:"5",
+                        idReporter: '0',
+                        idReported: '4'
+                    };
+                    testUtils.createAbuseReportByCriteria(c, next);
+                },
+            ],
+            function (err, user) {
+                should.not.exist(err);
+                
+                chai.request(server)
+                .get('/candidate/0')
+                .end((err, res) => {
+                    //console.log(err);
+                    should.not.exist(err);
+                    res.should.have.status(200);
+                    var data = res.body;
+                    var candidates = data.candidates;
+                    expect(data.metadata.count).to.equal(4);
+                    expect(containsCandidate(0, candidates)).to.equal(false);
+                    expect(containsCandidate(1, candidates)).to.equal(true);
+                    expect(containsCandidate(2, candidates)).to.equal(true);
+                    expect(containsCandidate(3, candidates)).to.equal(true);
+                    expect(containsCandidate(4, candidates)).to.equal(false);
+                    expect(containsCandidate(5, candidates)).to.equal(true);
+                    
+                    done();
+                });
+            });
+        });
+    });
 
 
 });
@@ -791,72 +946,5 @@ function containsCandidate(fbid, candidates) {
         }
     }
     return false;
-}
-
-function createUserByCriteria(c, callback) {
-    var body = {
-        "user": {
-            "birthday": c.birthday == undefined ? "1980/01/01" : c.birthday,
-            "comments": "dummy comment",
-            "education": "dummy education",
-            "fbid": c.id,        
-            "firstName": "dummy name",
-            "location": c.location == undefined ? {"longitude": "-58.370289",
-                                                   "latitude": "-34.603800",
-                                                   "name": "Obelisco"}
-                                                : c.location,
-            "gender": c.gender == undefined ? "male" : c.gender,
-            "avatar": {
-                "image" : {
-                    "idImage": "0",
-                    "data": "000000"
-                }
-             },
-            "images": [
-                {
-                    "image": {
-                        "idImage": "1",
-                        "data": "123456"
-                    }
-                },
-                 {
-                    "image": {
-                        "idImage": "2",
-                        "data": "222222"
-                    }
-                }
-            ],
-            "interests" : [],
-            "lastName" : "dummy last name",
-            "ocupation" : "dummy ocupation",
-            "settings": {
-                "fbid": c.id,
-                "invisible": c.invisible == undefined ? "false" : c.invisible,
-                "maxRange" : "69",
-                "maxAge": c.maxAge == undefined ? "99" : c.maxAge,
-                "maxDistance" : c.maxDistance == undefined ? "99999"
-                                                           : c.maxDistance,
-                "minAge": c.minAge == undefined ? "18" : c.minAge,
-                "accountType": "Basic",
-                "notifications": "true",
-                "onlyFriends": c.onlyFriends == undefined ? "true"
-                                                          : c.onlyFriends,
-                "searchMales": c.searchMales == undefined ? "true"
-                                                          : c.searchMales,
-                "searchFemales": c.searchFemales == undefined ? "true"
-                                                              : c.searchFemales
-            },
-            "control": {
-                "isActive": c.isActive == undefined ? "true" : c.isActive
-            }
-        }
-    }; 
-    
-    chai.request(server)
-        .post('/user')
-        .send(body)
-        .end((err, res) => {
-            callback(err, res);
-        });
 }
 
