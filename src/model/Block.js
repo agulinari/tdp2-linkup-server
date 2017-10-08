@@ -11,11 +11,11 @@ const Schema = mongoose.Schema;
 var ObjectIdSchema = Schema.ObjectId;
 var ObjectId = mongoose.Types.ObjectId;
 
-const RejectionSchema = new Schema({
-    fbidUser: String,
-    fbidCandidate: String,
+const BlockSchema = new Schema({
+    idBlockerUser: String,
+    idBlockedUser: String,
     time : { type : Date, default: Date.now }
-},{ collection: 'rejections' });
+},{ collection: 'blocks' });
 
 // make this available to our users in our Node applications
-module.exports = mongoose.model("Rejection", RejectionSchema);
+module.exports = mongoose.model("Block", BlockSchema);
