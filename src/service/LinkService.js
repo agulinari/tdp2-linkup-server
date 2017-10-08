@@ -178,6 +178,24 @@ exports.deleteLinks = function (callback) {
     });
 };
 
+exports.getLinksUsersByCandidate = function(idsUsers,idCandidate, callback){
+
+    linkDao.getUserLinkByIdsUsersAndIdCandidate(idsUsers,idCandidate, callback,function (err, data) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        var response = {
+            'data': data,
+            metadata : utils.getMetadata(1)
+        }
+        callback(null, response);
+        return;
+    });
+
+}
+
+
 /**
 * Servicio para linkear con un candidato. Si el candidato linkeo tambien, se inicia el match y devuelve match true,
 caso contrario solo linkea devolviendo match false.

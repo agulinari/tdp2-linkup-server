@@ -33,7 +33,7 @@ exports.getUserBlocks = function (idBlockerUser, callback) {
         if (err) {
             callback(err, null);
             return;
-        }        
+        }
         callback(null, blocks);
     });
 };

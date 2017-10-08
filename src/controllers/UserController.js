@@ -17,7 +17,7 @@ exports.getUsers = function (req, res) {
 
 exports.getUser = function (req, res) {
     var idUser = req.params.idUser;
-    
+
     service.getUser(idUser, function (err, user) {
         if (err) {
             console.log(err);

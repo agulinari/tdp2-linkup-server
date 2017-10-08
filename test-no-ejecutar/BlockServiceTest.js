@@ -40,10 +40,10 @@ describe('Block service test', () => {
         function (err, res) {
             if (err) {
                 done(err);
-                return;          
+                return;
             }
             done();
-        });        
+        });
     });
 
     describe('POST /block', () => {
@@ -54,7 +54,7 @@ describe('Block service test', () => {
                 done();
             });
         });
-        
+
         it('It should fail when idBlockerUser is fake', (done) => {
             testUtils.createBlock("XXX", "1", (err, res) => {
                 should.exist(err);
@@ -62,7 +62,7 @@ describe('Block service test', () => {
                 done();
             });
         });
-        
+
         it('It should fail when idBlockedUser is fake', (done) => {
             testUtils.createBlock("0", "XXX", (err, res) => {
                 should.exist(err);
@@ -86,7 +86,7 @@ describe('Block service test', () => {
             function (err, res) {
                 if (err) {
                     done(err);
-                    return;          
+                    return;
                 }
                 chai.request(server)
                 .get('/block/0/1')
@@ -101,7 +101,7 @@ describe('Block service test', () => {
                     expect(block.idBlockedUser).to.equal("1");
                     expect(block.time).not.to.be.a("null");
                     done();
-                });             
+                });
             });
         });
     });
@@ -155,7 +155,7 @@ describe('Block service test', () => {
             function (err, res) {
                 if (err) {
                     done(err);
-                    return;          
+                    return;
                 }
                 chai.request(server)
                 .get('/block/0')
@@ -170,9 +170,9 @@ describe('Block service test', () => {
                     expect(containsBlock(0, 3, blocks)).to.equal(true);
                     expect(containsBlock(0, 5, blocks)).to.equal(true);
                     expect(containsBlock(2, 1, blocks)).to.equal(false);
-                    
+
                     done();
-                });             
+                });
             });
         });
     });
@@ -226,7 +226,7 @@ describe('Block service test', () => {
             function (err, res) {
                 if (err) {
                     done(err);
-                    return;          
+                    return;
                 }
                 chai.request(server)
                 .get('/block')
@@ -243,15 +243,15 @@ describe('Block service test', () => {
                     expect(containsBlock(1, 0, blocks)).to.equal(true);
                     expect(containsBlock(2, 1, blocks)).to.equal(true);
                     expect(containsBlock(3, 1, blocks)).to.equal(true);
-                    
+
                     done();
-                });             
+                });
             });
         });
     });
 
     describe('DELETE /block/:idBlockerUser/:idBlockedUser', () => {
-        it('It should delete a Block between users', (done) => {    
+        it('It should delete a Block between users', (done) => {
             async.waterfall([
                 function (next) {
                     testUtils.createBlock("0", "1", (err, res) => {
@@ -275,7 +275,7 @@ describe('Block service test', () => {
             function (err, res) {
                 if (err) {
                     done(err);
-                    return;          
+                    return;
                 }
                 chai.request(server)
                 .get('/block/0/1')
@@ -287,7 +287,7 @@ describe('Block service test', () => {
                     var block = data.block;
                     expect(data.metadata.count).to.equal(0);
                     done();
-                });        
+                });
             });
         });
     });
@@ -352,7 +352,7 @@ describe('Block service test', () => {
             function (err, res) {
                 if (err) {
                     done(err);
-                    return;          
+                    return;
                 }
                 chai.request(server)
                 .get('/block')
@@ -367,13 +367,13 @@ describe('Block service test', () => {
                     expect(containsBlock(2, 1, blocks)).to.equal(true);
                     expect(containsBlock(3, 1, blocks)).to.equal(true);
                     expect(containsBlock(0, 1, blocks)).to.equal(false);
-                    
+
                     done();
-                });             
+                });
             });
         });
     });
-    
+
     describe('DELETE /block/:idBlockerUser', () => {
         it('It should delete all of user\'s Blocks', (done) => {
             async.waterfall([
@@ -434,7 +434,7 @@ describe('Block service test', () => {
             function (err, res) {
                 if (err) {
                     done(err);
-                    return;          
+                    return;
                 }
                 chai.request(server)
                 .get('/block')
@@ -445,9 +445,9 @@ describe('Block service test', () => {
                     var data = res.body;
                     var blocks = data.blocks;
                     expect(data.metadata.count).to.equal(0);
-                    
+
                     done();
-                });             
+                });
             });
         });
     });

@@ -10,6 +10,7 @@ var DisabledAccountError = require("../error/DisabledAccountError");
 
 exports.getCandidates = function (id, callback) {
     var user = {};
+
     async.waterfall([
         function getUser(next) {
             userDao.findUser(id, (err, user) => {
@@ -30,11 +31,11 @@ exports.getCandidates = function (id, callback) {
         function getCandidatesByUserCriteria(response, next) {
             console.log('user: ' + JSON.stringify(response));
             user = response;
-            
+
             var now = new Date();
             var now_str = now.getFullYear() + '/'
-                + (now.getMonth() < 9 ? '0' : '') + (now.getMonth() + 1) + '/'
-                + (now.getDate() < 10 ? '0' : '') + now.getDate();
+            + (now.getMonth() < 9 ? '0' : '') + (now.getMonth() + 1) + '/'
+            + (now.getDate() < 10 ? '0' : '') + now.getDate();
             var criteria = {
                 searchMales : user.settings.searchMales,
                 searchFemales : user.settings.searchFemales,
@@ -54,6 +55,7 @@ exports.getCandidates = function (id, callback) {
                     candidates.push(candidate);
                 }
             });
+
             next(null, candidates);
         },
         function filterRejectedCandidates(candidates, next) {
@@ -83,7 +85,7 @@ exports.getCandidates = function (id, callback) {
                     next(err, null);
                     return;
                 }
-                                
+
                 candidates = candidates.filter(function (c) {
                     return !didReject(c.fbid, rejections);
                 });
@@ -117,7 +119,7 @@ exports.getCandidates = function (id, callback) {
                     next(err, null);
                     return;
                 }
-                                
+
                 candidates = candidates.filter(function (c) {
                     return !didBlock(c.fbid, blocks);
                 });
@@ -126,19 +128,21 @@ exports.getCandidates = function (id, callback) {
         },
         function filterLinkedCandidates(candidates, next) {
             if (candidates.length == 0) {
+
                 next(null, candidates);
                 return;
             }
+            console.log("Busca Links");
             linkDao.findUserLinks(user.fbid, function (err, links) {
                 if (err) {
                     next(err, null);
                     return;
                 }
-                
+
                 candidates = candidates.filter(function (c) {
                     return !isLinked(c.fbid, links);
                 });
-                
+
                 next(null, candidates);
             });
         },
@@ -149,13 +153,44 @@ exports.getCandidates = function (id, callback) {
             }
             console.log('TODO: filtrar candidatos matcheados');
             next(null, candidates);
+        },
+        function sortCandidatesBySuperLink(candidates,next){
+            if (candidates.length == 0) {
+                next(null, candidates);
+                return;
+            }
+            var candidatesSort = []; //Lista de candidatos ordenada por superlinks
+            console.log("Cantidad de candidatos superlink: "+candidates.length);
+            console.log("candidatos: "+candidates);
+            var idsCandidates = [];
+            for (var index = 0, len = candidates.length; index < len; index++) {
+                var fbIdCandidate = candidates[index].fbid;
+                idsCandidates.push(fbIdCandidate);
+            }
+            console.log("Candidatos a buscar: "+idsCandidates);
+            linkDao.getUserLinkByIdsUsersAndIdCandidate(idsCandidates,user.fbid,function (err, acceptedUsers){
+                //linkDao.getUserLinkByIdUserAndIdCandidate(fbIdCandidate,user.fbid,function (err, valueLink){
+                if (err) {
+                    next(err, null);
+                    return;
+                }
+                //console.log("valor valueLink:"+valueLink);
+                addCandidatesToArrayByTypeOfLink(candidatesSort,acceptedUsers,candidates,user.fbid);
+                console.log("candidatos agregados al sort:"+candidatesSort);
+                completeCandidates(candidatesSort, candidates);
+                console.log("candidatos agregados restantes:"+candidatesSort);
+                next(null, candidatesSort);
+            });
+
         }
+
     ],
-    function (err, response) {
+                    function (err, response) {
         if (err) {
             callback(err);
             return;
         }
+        console.log("response a devolver:"+response);
         var response = {
             'candidates': response,
             metadata : utils.getMetadata(response.length)
@@ -176,7 +211,7 @@ function canBeCandidate(user, candidate) {
      * distancia = 1,4 km approx
      */
     return satisfiesCandidateCriteria(user, candidate)
-           && isCloseEnough(distance, user.location, candidate.location);
+    && isCloseEnough(distance, user.location, candidate.location);
 };
 
 function satisfiesCandidateCriteria(user, candidate) {
@@ -199,14 +234,14 @@ function satisfiesCandidateCriteria(user, candidate) {
     //User age is in the candidate age range
     var now = new Date();
     var now_str = now.getFullYear() + '/'
-                + (now.getMonth() < 9 ? '0' : '') + (now.getMonth() + 1) + '/'
-                + (now.getDate() < 10 ? '0' : '') + now.getDate();
+    + (now.getMonth() < 9 ? '0' : '') + (now.getMonth() + 1) + '/'
+    + (now.getDate() < 10 ? '0' : '') + now.getDate();
 
     if (user.birthday > getDateFromAge(now_str, candidate.settings.minAge)) {
         //console.log('No esta en el rango de edad Min.');
         return false;
     }
-    
+
     if (user.birthday < getDateFromAge(now_str, candidate.settings.maxAge)) {
         //console.log('No esta en el rango de edad Max.');
         return false;
@@ -277,3 +312,55 @@ function isLinked(fbidCandidate, links) {
     return false;
 };
 
+function completeCandidates(candidatesSort, candidates){
+    if(candidates!=null && candidatesSort!=null){
+        var encontrado;
+        for(var c of candidates){
+            encontrado = false;
+            for (var cs of candidatesSort) {
+                if (cs.fbid == c.fbid) {
+                    encontrado=true;
+                    break;
+                }
+            }
+            if(!encontrado){
+                candidatesSort.push(c);
+            }
+        }
+    }
+}
+
+function getCandidateForAddToArray(fbidUser,candidates){
+    for (c of candidates){
+
+        if(c.fbid == fbidUser){
+
+            return c;
+        }
+    }
+    return null;
+}
+
+function addCandidatesToArrayByTypeOfLink(candidatesSort,users,candidates,fbidUser){
+
+    console.log("Candidate users:"+users);
+
+    for (user of users){
+        for(acceptedUser of user.acceptedUsers){
+            if((acceptedUser.fbidCandidate == fbidUser)&&(acceptedUser.typeOfLink=="Superlink")){
+                var candidateAdd = getCandidateForAddToArray(user.fbidUser,candidates);
+                if(candidateAdd!=null)
+                    candidatesSort.unshift(candidateAdd);
+                console.log("UNSHIFT");
+                break;
+            }else if(acceptedUser.fbidCandidate == fbidUser){
+                var candidateAdd = getCandidateForAddToArray(user.fbidUser,candidates);
+                if(candidateAdd!=null)
+                    candidatesSort.push(candidateAdd);
+                console.log("PUSH");
+                break;
+            }
+        }
+    }
+
+}

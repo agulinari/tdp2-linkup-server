@@ -25,7 +25,7 @@ describe('Image service test', () => {
                     res.should.have.status(200);
                     //console.log(res.body);
                     done();
-                });     
+                });
     });
     /*
     describe('DELETE /user', () => {
@@ -108,15 +108,15 @@ describe('Image service test', () => {
                 });
         });
     });
-    */ 
-    /*   
+    */
+    /*
     describe('PUT /user', () => {
-        it('It should update an User', (done) => {         
+        it('It should update an User', (done) => {
             async.waterfall([
                 function (next) {
                     testUtils.createUserByCriteria( {id:"0"}, next);
                 },
-                
+
                 function (res, next) {
                     var body = {
                         "user": {
@@ -154,7 +154,7 @@ describe('Image service test', () => {
                             }
                         }
                     };
-                    
+
                     chai.request(server)
                         .put('/user')
                         .send(body)
@@ -168,7 +168,7 @@ describe('Image service test', () => {
             function (err, res) {
                 if (err) {
                     done(err);
-                    return;          
+                    return;
                 }
                 chai.request(server)
                 .get('/user/0')
@@ -176,7 +176,7 @@ describe('Image service test', () => {
                     //console.log(res);
                     should.not.exist(err);
                     res.should.have.status(200);
-                    
+
                     var user = res.body.user;
                     expect(user.fbid).to.equal('0');
                     expect(user.birthday).to.equal("1925/01/01");
@@ -193,20 +193,20 @@ describe('Image service test', () => {
                     expect(user.settings.onlyFriends).to.equal(false);
                     expect(user.settings.searchMales).to.equal(false);
                     done();
-                });             
-            }); 
+                });
+            });
         });
         
-        
+
     });
     */
     describe('PUT /user', () => {
-        it('It should deactivate an User', (done) => {         
+        it('It should deactivate an User', (done) => {
             async.waterfall([
                 function (next) {
                     testUtils.createUserByCriteria( {id:"0"}, next);
                 },
-                
+
                 function (res, next) {
                     var body = {
                         "user": {
@@ -215,7 +215,7 @@ describe('Image service test', () => {
                                 "isActive": false,
                             }
                         }
-                    };                    
+                    };
                     chai.request(server)
                         .put('/user')
                         .send(body)
@@ -225,12 +225,12 @@ describe('Image service test', () => {
                             res.should.have.status(200);
                             next();
                         });
-                        
+
             }],
             function (err, res) {
                 if (err) {
                     done(err);
-                    return;          
+                    return;
                 }
                 chai.request(server)
                 .get('/user/0')
@@ -238,19 +238,19 @@ describe('Image service test', () => {
                     //console.log(res);
                     should.not.exist(err);
                     res.should.have.status(200);
-                    
+
                     var user = res.body.user;
                     expect(user.fbid).to.equal('0');
                     expect(user.control.isActive).to.equal(false);
                     expect(user.control.deactivationDate).to.not.be.a('null');
                     done();
-                });             
-            }); 
+                });
+            });
         });
-        
-        
+
+
     });
-/*    
+/*
     describe('GET /user/:idUser', () => {
         it('It should get an user', (done) => {
             chai.request(server)

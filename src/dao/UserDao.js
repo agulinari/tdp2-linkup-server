@@ -66,6 +66,23 @@ exports.findUsersByCriteria = function(criteria, callback) {
     });
 };
 
+exports.findInactiveUsers = function(callback) {
+    var query = {
+        "control.isActive" : false
+    };
+    User.find(query, function (err, value) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+	    if(value == null){
+		    callback(new NotFound("Inactive users es null"));
+		    return;
+	    }
+        callback(null, value);
+    });
+};
+
 exports.saveUser = function(userData, callback) {
     var newUser = new User(userData);
     newUser.save(function(err, value) {
