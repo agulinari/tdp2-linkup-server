@@ -8,6 +8,7 @@ var NotFound = require("../error/NotFound");
 
 exports.getCandidates = function (id, callback) {
     var user = {};
+
     async.waterfall([
         function getUser(next) {
             userDao.findUser(id, next);
@@ -26,8 +27,8 @@ exports.getCandidates = function (id, callback) {
                 searchMales : user.settings.searchMales,
                 searchFemales : user.settings.searchFemales,
                 onlyFriends : user.settings.onlyFriends,
-                minDate : getDateFromAge(now_str, user.settings.minAge),
-                maxDate : getDateFromAge(now_str, user.settings.maxAge),
+                minDate : 18,//getDateFromAge(now_str, user.settings.minAge),
+                maxDate : 90,//getDateFromAge(now_str, user.settings.maxAge),
                 invisible : false,
                 isActive: true
             };
@@ -35,12 +36,14 @@ exports.getCandidates = function (id, callback) {
         },
         function filterByCandidateCriteria(response, next) {
             var users = response;
+            console.log("Longitud users:"+users.length);
             var candidates = [];
             users.forEach(function (candidate) {
                 if (canBeCandidate(user, candidate)) {
                     candidates.push(candidate);
                 }
             });
+
             next(null, candidates);
         },
         function filterRejectedCandidates(candidates, next) {
@@ -79,9 +82,11 @@ exports.getCandidates = function (id, callback) {
         },
         function filterLinkedCandidates(candidates, next) {
             if (candidates.length == 0) {
+
                 next(null, candidates);
                 return;
             }
+            console.log("Busca Links");
             linkDao.findUserLinks(user.fbid, function (err, links) {
                 if (err) {
                     next(err, null);
@@ -102,7 +107,31 @@ exports.getCandidates = function (id, callback) {
             }
             console.log('TODO: filtrar candidatos matcheados');
             next(null, candidates);
+        },
+        function sortCandidatesBySuperLink(candidates,next){
+            if (candidates.length == 0) {
+                next(null, candidates);
+                return;
+            }
+            var candidatesSort = []; //Lista de candidatos ordenada por superlinks
+            console.log("Cantidad de candidatos superlink: "+candidates.length);
+            console.log("candidatos: "+candidates);
+            for (var index = 0, len = candidates.length; i < len; i++) {
+                linkDao.getUserLinkByIdUserAndIdCandidate(candidates[i].fbid,user.fbid,function (err, valuesLink){
+                    if (err) {
+                        next(err, null);
+                        return;
+                    }
+                    if(isSuperlink(valuesLink,candidates[i].fbid)){
+                        candidatesSort.unshift(candidates[i]);
+                    }
+                    return;
+                });
+            }
+            completeCandidates(candidatesSort, candidates);
+            next(null, candidatesSort);
         }
+
     ],
     function (err, response) {
         if (err) {
@@ -212,3 +241,36 @@ function isLinked(fbidCandidate, links) {
     return false;
 };
 
+function isSuperLink(links,fbidCandidate){
+   if(links==null)
+       return false;
+
+   for (var index = 0, len = links.length; i < len; i++) {
+       if((links[index].fbidCandidate == fbidCandidate)
+          &&(links[index].typeOfLink.trim()!=="Link")){
+           return true;
+       }else if(links[index].fbidCandidate == fbidCandidate){
+           return false;
+       }
+   }
+   console.log("Hubo un problema... No encontro el candidato en la lista de linkeados");
+   return false; //No deberia devolver este valor, dado que tiene que estar en la lista de linkeados.
+}
+
+function completeCandidates(candidatesSort, candidates){
+    if(candidates!=null && candidatesSort!=null){
+        var encontrado;
+        for(var c of candidates){
+            encontrado = false;
+            for (var cs of candidatesSort) {
+                if (cs.fbidCandidate == c.fbidCandidate) {
+                    encontrado=true;
+                    break;
+                }
+            }
+            if(encontrado){
+                candidatesSort.push(c);
+            }
+        }
+    }
+}

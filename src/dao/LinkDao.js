@@ -196,3 +196,5 @@ exports.saveOrUpdateUserLink = function (idUser,idCandidate,tipoLinkParam, callb
     }
 };
 
+
+
