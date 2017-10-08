@@ -2,6 +2,7 @@ var async = require('async');
 var utils = require('../utils/Utils');
 var userDao = require('../dao/UserDao');
 var rejectionDao = require('../dao/RejectionDao');
+var blockService = require('./BlockService');
 var linkDao = require('../dao/LinkDao');
 var GeoPoint = require('geopoint');
 var NotFound = require("../error/NotFound");
@@ -35,6 +36,7 @@ exports.getCandidates = function (id, callback) {
         },
         function filterByCandidateCriteria(response, next) {
             var users = response;
+            console.log('candidates size: ' + users.size);
             var candidates = [];
             users.forEach(function (candidate) {
                 if (canBeCandidate(user, candidate)) {
@@ -73,6 +75,40 @@ exports.getCandidates = function (id, callback) {
                                 
                 candidates = candidates.filter(function (c) {
                     return !didReject(c.fbid, rejections);
+                });
+                next(null, candidates);
+            });
+        },
+        function filterBlockedCandidates(candidates, next) {
+            if (candidates.length == 0) {
+                next(null, candidates);
+                return;
+            }
+            blockService.getUserBlocks(user.fbid, function (err, blocks) {
+                if (err) {
+                    next(err, null);
+                    return;
+                }
+
+                candidates = candidates.filter(function (c) {
+                    return !isBlocked(c.fbid, blocks);
+                });
+                next(null, candidates);
+            });
+        },
+        function filterCandidatesBlocks(candidates, next) {
+            if (candidates.length == 0) {
+                next(null, candidates);
+                return;
+            }
+            blockService.getUsersBlockingUser(user.fbid, function (err, blocks) {
+                if (err) {
+                    next(err, null);
+                    return;
+                }
+                                
+                candidates = candidates.filter(function (c) {
+                    return !didBlock(c.fbid, blocks);
                 });
                 next(null, candidates);
             });
@@ -192,9 +228,27 @@ function isRejected(fbidCandidate, rejections) {
     return false;
 };
 
+function isBlocked(fbidCandidate, blocks) {
+    for (var b of blocks) {
+        if (b.idBlockedUser == fbidCandidate) {
+            return true;
+        }
+    }
+    return false;
+};
+
 function didReject(fbidCandidate, rejections) {
     for (var r of rejections) {
         if (r.fbidUser == fbidCandidate) {
+            return true;
+        }
+    }
+    return false;
+};
+
+function didBlock(fbidCandidate, blocks) {
+    for (var b of blocks) {
+        if (b.idBlockerUser == fbidCandidate) {
             return true;
         }
     }

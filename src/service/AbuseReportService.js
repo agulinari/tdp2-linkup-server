@@ -1,5 +1,6 @@
 var async = require('async');
 var abuseReportDao = require('../dao/AbuseReportDao');
+var blockService = require('./BlockService');
 var userDao = require('../dao/UserDao');
 var NotFound = require("../error/NotFound");
 
@@ -109,8 +110,15 @@ exports.saveAbuseReport = function (abuseReportData, callback) {
             });
         },
         function block(abuseReport, next) {
-            console.log('TODO: block user on new abuse report');
-            next(null, abuseReport);
+            blockService.saveBlock(abuseReport.idReporter,
+                                   abuseReport.idReported,
+                                   (err, abuseReport) => {
+                if (err) {
+                    next(err);
+                    return;
+                }
+                next(null, abuseReport);
+            });
         },
     ],
     function (err, abuseReport) {
