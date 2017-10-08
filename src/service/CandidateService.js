@@ -6,19 +6,31 @@ var blockService = require('./BlockService');
 var linkDao = require('../dao/LinkDao');
 var GeoPoint = require('geopoint');
 var NotFound = require("../error/NotFound");
+var DisabledAccountError = require("../error/DisabledAccountError");
 
 exports.getCandidates = function (id, callback) {
     var user = {};
     async.waterfall([
         function getUser(next) {
-            userDao.findUser(id, next);
+            userDao.findUser(id, (err, user) => {
+                if (err) {
+                    next(err);
+                }
+                if (user == null) {
+                    next(new NotFound("No se encontro el usuario"));
+                    return;
+                }
+                if (! user.control.isActive) {
+                    next(new DisabledAccountError());
+                    return;
+                }
+                next(null, user);
+            });
         },
         function getCandidatesByUserCriteria(response, next) {
+            console.log('user: ' + JSON.stringify(response));
             user = response;
-            if (user == null) {
-                next(new NotFound("No se encontro el usuario"), null);
-                return;
-            }
+            
             var now = new Date();
             var now_str = now.getFullYear() + '/'
                 + (now.getMonth() < 9 ? '0' : '') + (now.getMonth() + 1) + '/'
@@ -36,7 +48,7 @@ exports.getCandidates = function (id, callback) {
         },
         function filterByCandidateCriteria(response, next) {
             var users = response;
-            console.log('candidates size: ' + users.size);
+            console.log('candidates size 1: ' + users.length);
             var candidates = [];
             users.forEach(function (candidate) {
                 if (canBeCandidate(user, candidate)) {
@@ -46,6 +58,7 @@ exports.getCandidates = function (id, callback) {
             next(null, candidates);
         },
         function filterRejectedCandidates(candidates, next) {
+        console.log('candidates size 2: ' + candidates.length);
             if (candidates.length == 0) {
                 next(null, candidates);
                 return;
@@ -63,6 +76,7 @@ exports.getCandidates = function (id, callback) {
             });
         },
         function filterCandidatesRejections(candidates, next) {
+            console.log('candidates size 3: ' + candidates.length);
             if (candidates.length == 0) {
                 next(null, candidates);
                 return;
@@ -80,6 +94,7 @@ exports.getCandidates = function (id, callback) {
             });
         },
         function filterBlockedCandidates(candidates, next) {
+            console.log('candidates size 4: ' + candidates.length);
             if (candidates.length == 0) {
                 next(null, candidates);
                 return;
@@ -97,6 +112,7 @@ exports.getCandidates = function (id, callback) {
             });
         },
         function filterCandidatesBlocks(candidates, next) {
+            console.log('candidates size 5: ' + candidates.length);
             if (candidates.length == 0) {
                 next(null, candidates);
                 return;
