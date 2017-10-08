@@ -1,6 +1,7 @@
 var chai = require('chai');
 var chaiHttp = require('chai-http');
 var server = require('../src/server');
+var async = require('async');
 
 chai.use(chaiHttp);
 
@@ -58,7 +59,10 @@ exports.createUserByCriteria = function(c, callback) {
                                                               : c.searchFemales
             },
             "control": {
-                "isActive": c.isActive == undefined ? "true" : c.isActive
+                "isActive": c.isActive == undefined ? "true" : c.isActive,
+                "deactivationTime": c.deactivationTime == undefined
+                                        ? null
+                                        : c.deactivationTime
             }
         }
     }; 
@@ -93,12 +97,40 @@ exports.createAbuseReportByCriteria = function(c, callback) {
         });
 }
 
-exports.cleanDB = function(callback) {
+exports.createBlock = function(idBlockerUser, idBlockedUser, callback) {
+    var body = {
+        "block": {
+            "idBlockerUser": idBlockerUser,
+            "idBlockedUser": idBlockedUser
+        }
+    }; 
+ 
     chai.request(server)
-        .get('/clean/user')
+        .post('/block')
+        .send(body)
         .end((err, res) => {
             callback(err, res);
         });
+}
+
+exports.cleanDB = function(callback) {
+    
+    async.waterfall([
+        function (next) {
+            chai.request(server)
+                .get('/clean/user')
+                .end((err, res) => {
+                    next();
+                });
+        }
+    ],
+    function (err, res) {
+        if (err) {
+            callback(err);
+            return;          
+        }
+        callback(null, res);
+    });
 }
 
 exports.cleanAbuseReports = function(callback) {

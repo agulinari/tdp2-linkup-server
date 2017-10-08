@@ -18,6 +18,7 @@ require('./app/UserRoutes.js')(app);
 require('./app/ImageRoutes.js')(app);
 require('./app/CandidateRoutes.js')(app);
 require('./app/RejectionRoutes.js')(app);
+require('./app/BlockRoutes.js')(app);
 require('./app/LinkRoutes.js')(app);
 require('./app/MatchRoutes.js')(app);
 require('./app/AbuseReportRoutes.js')(app);

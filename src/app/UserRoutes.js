@@ -23,7 +23,7 @@ module.exports = function (app) {
     });
 
     app.post('/user', function (req, res, next) {
-        console.log('POST /user ' + JSON.stringify(req.body));
+        console.log('POST /user ' /*+ JSON.stringify(req.body)*/);
         try{
             userCtrl.postUser(req, res);
         } catch (err) {

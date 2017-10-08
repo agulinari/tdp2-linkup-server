@@ -1,6 +1,7 @@
 var userDao = require('../dao/UserDao');
 var imageDao = require('../dao/ImageDao');
 var rejectionDao = require('../dao/RejectionDao');
+var blockDao = require('../dao/BlockDao');
 var abuseReportDao = require('../dao/AbuseReportDao');
 var utils = require('../utils/Utils');
 var async = require('async');
@@ -52,9 +53,12 @@ exports.cleanUsers = function (callback) {
         function deleteRejections(data, next) {
             rejectionDao.deleteRejections(next);
         },
+        function deleteBlocks(data, next) {
+            blockDao.deleteBlocks(next);
+        },
         function deleteAbuseReports(data, next) {
             abuseReportDao.deleteAllAbuseReports(next);
-        }
+        },
     ],
     function (err, data) {
         if (err) {
