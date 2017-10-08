@@ -116,6 +116,7 @@ exports.findAllOpenAbuseReportsSortedByReportedUser = function(callback) {
                 reports:{ $push:{
                             _id:"$_id",
                             idReporter:"$idReporter",
+                            fullnameReporter:"$fullnameReporter",
                             time:"$time",
                             idCategory:"$idCategory",
                             comment:"$comment",
@@ -163,6 +164,7 @@ exports.findAllClosedAbuseReportsSortedByReportedUser = function(callback) {
                 reports:{ $push:{
                             _id:"$_id",
                             idReporter:"$idReporter",
+                            fullnameReporter:"$fullnameReporter",
                             time:"$time",
                             idCategory:"$idCategory",
                             comment:"$comment",
