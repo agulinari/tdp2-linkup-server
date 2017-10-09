@@ -27,24 +27,45 @@ exports.getUserMatches = function (fbidUser, callback) {
                 }
                 next();
             });
+        },
+        function getMatches(next) {            
+            matchDao.findMatchs(fbidUser, function (err, matches) {
+                if (err) {
+                    next(err);
+                    return;
+                }
+                next(null, matches);
+            });
+        },
+        function filterInactiveUsers(matches, next) {
+            if (matches.length == 0) {
+                next(null, matches);
+                return;
+            }
+            userDao.findInactiveUsers(function (err, inactiveUsers) {
+                if (err) {
+                    next(err);
+                    return;
+                }
+                matches = matches.filter(function (c) {
+                    //console.log('fbid ' + c.fbid + ' is active: ' + isActive(c.fbid, inactiveUsers));
+                    return isActive(c.fbid, inactiveUsers);
+                });
+                next(null, matches);
+            });
         }
     ],
-    function (err, response) {
+    function (err, matches) {
         if (err) {
             callback(err);
             return;
         }
-        matchDao.findMatchs(fbidUser, function (err, value) {
-            if (err) {
-                callback(err, null);
-                return;
-            }
-            var response = {
-                matches: (value==null||value=="")?[]:value,
-                metadata : utils.getMetadata(1)
-            }
-            callback(null, response);
-        });
+        var response = {
+            matches: (matches == null || matches == "") ? [] : matches,
+            metadata : utils.getMetadata((matches == null || matches == "")
+                                         ? 0 : matches.length)
+        }
+        callback(null, response);
     });
 };
 
@@ -85,3 +106,13 @@ exports.deleteMatches = function (callback) {
         callback(null, response);
     });
 };
+
+function isActive(idUser, inactiveUsers) {
+    for (var u of inactiveUsers) {
+        if (u.fbid == idUser) {
+            return false;
+        }
+    }
+    return true;
+};
+

@@ -103,8 +103,8 @@ exports.createBlock = function(idBlockerUser, idBlockedUser, callback) {
             "idBlockerUser": idBlockerUser,
             "idBlockedUser": idBlockedUser
         }
-    };
-
+    }; 
+ 
     chai.request(server)
         .post('/block')
         .send(body)
@@ -114,7 +114,7 @@ exports.createBlock = function(idBlockerUser, idBlockedUser, callback) {
 }
 
 exports.cleanDB = function(callback) {
-
+    
     async.waterfall([
         function (next) {
             chai.request(server)
@@ -127,7 +127,7 @@ exports.cleanDB = function(callback) {
     function (err, res) {
         if (err) {
             callback(err);
-            return;
+            return;          
         }
         callback(null, res);
     });

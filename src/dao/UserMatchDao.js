@@ -16,7 +16,7 @@ exports.findMatchs = function(fbidUser, callback) {
             callback(err,null);
             return;
         }
-        console.log("Valores match: "+value);
+        //console.log("Valores match: "+value);
         matches = (value!=null && value!=undefined)?value.matches:'';
         callback(null,matches);
         return;
