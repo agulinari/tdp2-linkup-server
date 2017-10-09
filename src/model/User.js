@@ -12,6 +12,8 @@ var ObjectIdSchema = Schema.ObjectId;
 var ObjectId = mongoose.Types.ObjectId;
 
 const UserSchema = new Schema({
+    time: String,
+    typeOfLink: String,
     birthday: String,
     comments: String,
     education: String,
@@ -55,6 +57,13 @@ const UserSchema = new Schema({
 	    deactivationTime: { type : Date, default: null }
 	}
 },{ collection: 'users' });
+
+UserSchema.methods.toJSON = function() {
+ var obj = this.toObject();
+ delete obj.time;
+ delete obj.typeOfLink;
+ return obj;
+}
 
 // make this available to our users in our Node applications
 module.exports = mongoose.model("User", UserSchema);

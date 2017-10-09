@@ -1,6 +1,7 @@
 var async = require('async');
 var utils = require('../utils/Utils');
 var userDao = require('../dao/UserDao');
+var User = require('../model/User');
 var rejectionDao = require('../dao/RejectionDao');
 var blockService = require('./BlockService');
 var linkDao = require('../dao/LinkDao');
@@ -159,7 +160,7 @@ exports.getCandidates = function (id, callback) {
                 next(null, candidates);
                 return;
             }
-            var candidatesSort = []; //Lista de candidatos ordenada por superlinks
+
             console.log("Cantidad de candidatos superlink: "+candidates.length);
             console.log("candidatos: "+candidates);
             var idsCandidates = [];
@@ -175,7 +176,7 @@ exports.getCandidates = function (id, callback) {
                     return;
                 }
                 //console.log("valor valueLink:"+valueLink);
-                addCandidatesToArrayByTypeOfLink(candidatesSort,acceptedUsers,candidates,user.fbid);
+                var candidatesSort = getArrayCandidatesOrderByTypeOfLinkAndDate(acceptedUsers,candidates,user.fbid);
                 console.log("candidatos agregados al sort:"+candidatesSort);
                 completeCandidates(candidatesSort, candidates);
                 console.log("candidatos agregados restantes:"+candidatesSort);
@@ -318,12 +319,14 @@ function completeCandidates(candidatesSort, candidates){
         for(var c of candidates){
             encontrado = false;
             for (var cs of candidatesSort) {
+                console.log("Id sort candidate:"+cs.fbid);
                 if (cs.fbid == c.fbid) {
                     encontrado=true;
                     break;
                 }
             }
             if(!encontrado){
+                console.log("Agrego:"+c.fbid);
                 candidatesSort.push(c);
             }
         }
@@ -341,26 +344,67 @@ function getCandidateForAddToArray(fbidUser,candidates){
     return null;
 }
 
-function addCandidatesToArrayByTypeOfLink(candidatesSort,users,candidates,fbidUser){
+function sortCandidatesByTypeOfLinkAndDate(candidatesSort){
+    candidatesSort.sort(function(c1, c2) {
+        if ((c1.typeOfLink==c2.typeOfLink && c1.time<c2.time)||
+            (c1.typeOfLink!=c2.typeOfLink && c1.typeOfLink=="Link")){
+            return 1;
+        }
+        if ((c1.typeOfLink==c2.typeOfLink && c1.time>c2.time)||
+            (c1.typeOfLink!=c2.typeOfLink && c2.typeOfLink=="Link")   ) {
+            return -1;
+        }
+        // a debe ser igual b
+        return 0;
+    });
+}
+
+function removeSortCandidateTypeOfLinkAndDate(candidatesSort){
+    var candidatesSortAux=[];
+    for (candidate of candidatesSort){
+        var candidateAux = new User();
+
+        console.log("candidate AUX:"+candidateAux);
+        candidatesSortAux.push(candidateAux);
+    }
+    return candidatesSortAux;
+}
+
+function getArrayCandidatesOrderByTypeOfLinkAndDate(users,candidates,fbidUser){
 
     console.log("Candidate users:"+users);
 
+    var candidatesSort=[];
     for (user of users){
         for(acceptedUser of user.acceptedUsers){
             if((acceptedUser.fbidCandidate == fbidUser)&&(acceptedUser.typeOfLink=="Superlink")){
                 var candidateAdd = getCandidateForAddToArray(user.fbidUser,candidates);
-                if(candidateAdd!=null)
+                if(candidateAdd!=null){
+
+                    candidateAdd.typeOfLink="Superlink";
+                    candidateAdd.time=acceptedUser.time;
+
+                    console.log("Candidato a agregar:"+candidateAdd);
                     candidatesSort.unshift(candidateAdd);
+                }
                 console.log("UNSHIFT");
                 break;
             }else if(acceptedUser.fbidCandidate == fbidUser){
                 var candidateAdd = getCandidateForAddToArray(user.fbidUser,candidates);
-                if(candidateAdd!=null)
+                if(candidateAdd!=null){
+
+                    candidateAdd.typeOfLink="Link";
+                    candidateAdd.time=acceptedUser.time;
+
+                    console.log("Candidato a agregar:"+candidateAdd);
                     candidatesSort.push(candidateAdd);
+                }
                 console.log("PUSH");
                 break;
             }
         }
     }
-
+    sortCandidatesByTypeOfLinkAndDate(candidatesSort);
+    //candidateSort=removeSortCandidateTypeOfLinkAndDate(candidatesSortAux);
+    return candidatesSort;
 }

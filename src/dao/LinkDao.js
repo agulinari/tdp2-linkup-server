@@ -13,7 +13,7 @@ exports.findUserLinks = function(fbidUser, callback) {
     var query = {
         "fbidUser": fbidUser,
     };
-    var proj = "-_id -fbidUser -acceptedUsers.time -acceptedUsers._id -__v";
+    var proj = "-_id -fbidUser -acceptedUsers._id -__v";
     Link.findOne(query, proj, function (err, value) {
         if (err) {
             callback(err,null);
@@ -28,7 +28,7 @@ exports.findUserLinks = function(fbidUser, callback) {
  * @param {Function} callback The function to call when retrieval is complete.
  **/
 exports.findLinks = function(callback) {
-    var proj = "-_id -acceptedUsers.time -acceptedUsers._id -__v";
+    var proj = "-_id -acceptedUsers._id -__v";
     Link.find(null, proj, function (err, value) {
         if (err) {
             callback(err,null);
