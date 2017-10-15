@@ -3,6 +3,7 @@ var imageDao = require('../dao/ImageDao');
 var rejectionDao = require('../dao/RejectionDao');
 var blockDao = require('../dao/BlockDao');
 var abuseReportDao = require('../dao/AbuseReportDao');
+var adDao = require('../dao/AdDao');
 var utils = require('../utils/Utils');
 var async = require('async');
 var BadRequest = require("../error/BadRequest");
@@ -78,6 +79,26 @@ exports.cleanAbuseReports = function (callback) {
     async.waterfall([
         function deleteAbuseReports(next) {
             abuseReportDao.deleteAllAbuseReports(next);
+        }
+    ],
+    function (err, data) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            return;
+        }
+        callback(null, data);
+    });
+};
+
+/**
+ * Clean all Ads
+ * @param {Function} callback
+ */
+exports.cleanAds = function (callback) {
+    async.waterfall([
+        function deleteAds(next) {
+            adDao.deleteAllAds(next);
         }
     ],
     function (err, data) {

@@ -75,7 +75,7 @@ exports.createUserByCriteria = function(c, callback) {
         });
 }
 
-exports.createAbuseReportByCriteria = function(c, callback) {
+exports.createAbuseReportByCriteria = function (c, callback) {
     var body = {
         "abuseReport": {
             "_id" : c.id == undefined ? null : c.id,
@@ -92,12 +92,31 @@ exports.createAbuseReportByCriteria = function(c, callback) {
     chai.request(server)
         .post('/AbuseReport')
         .send(body)
-        .end((err, res) => {
-            callback(err, res);
-        });
+        .end((err, res) => { callback(err, res); });
 }
 
-exports.createBlock = function(idBlockerUser, idBlockedUser, callback) {
+exports.createAdByCriteria = function (c, callback) {
+    if (c == null) {
+        c = {};
+    }
+    var body = {
+        "ad": {
+                  "_id" : c.id != undefined ? c.id : null,
+            "advertiser": c.advertiser != undefined ? c.advertiser
+                                                    : 'advertiser ' + c.id,
+                 "image": c.image != undefined ? c.image : '123',
+                   "url": c.url != undefined ? c.url : 'www.linkup.com',
+              "isactive": c.isActive != undefined ? c.isActive : true
+        }
+    };
+ 
+    chai.request(server)
+        .post('/Ad')
+        .send(body)
+        .end((err, res) => { callback(err, res); });
+}
+
+exports.createBlock = function (idBlockerUser, idBlockedUser, callback) {
     var body = {
         "block": {
             "idBlockerUser": idBlockerUser,
@@ -108,9 +127,7 @@ exports.createBlock = function(idBlockerUser, idBlockedUser, callback) {
     chai.request(server)
         .post('/block')
         .send(body)
-        .end((err, res) => {
-            callback(err, res);
-        });
+        .end((err, res) => { callback(err, res); });
 }
 
 exports.cleanDB = function(callback) {
@@ -136,7 +153,12 @@ exports.cleanDB = function(callback) {
 exports.cleanAbuseReports = function(callback) {
     chai.request(server)
         .get('/clean/AbuseReport')
-        .end((err, res) => {
-            callback(err, res);
-        });
+        .end((err, res) => { callback(err, res); });
 }
+
+exports.cleanAds = function(callback) {
+    chai.request(server)
+        .get('/clean/Ad')
+        .end((err, res) => { callback(err, res); });
+}
+

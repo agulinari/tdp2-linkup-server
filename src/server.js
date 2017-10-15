@@ -22,6 +22,7 @@ require('./app/BlockRoutes.js')(app);
 require('./app/LinkRoutes.js')(app);
 require('./app/MatchRoutes.js')(app);
 require('./app/AbuseReportRoutes.js')(app);
+require('./app/AdRoutes.js')(app);
 require('./app/CleanRoutes.js')(app);
 
 app.all('*', function (req,res,next) {
