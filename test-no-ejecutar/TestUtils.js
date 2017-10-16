@@ -8,11 +8,13 @@ chai.use(chaiHttp);
 exports.createUserByCriteria = function(c, callback) {
     var body = {
         "user": {
+            "fbid": c.id,
             "birthday": c.birthday == undefined ? "1980/01/01" : c.birthday,
             "comments": "dummy comment",
             "education": "dummy education",
-            "fbid": c.id,        
+                    
             "firstName": "dummy name",
+            "lastName" : "dummy last name",
             "location": c.location == undefined ? {"longitude": "-58.370289",
                                                    "latitude": "-34.603800",
                                                    "name": "Obelisco"}
@@ -39,17 +41,13 @@ exports.createUserByCriteria = function(c, callback) {
                 }
             ],
             "interests" : [],
-            "lastName" : "dummy last name",
             "ocupation" : "dummy ocupation",
             "settings": {
-                "fbid": c.id,
                 "invisible": c.invisible == undefined ? "false" : c.invisible,
-                "maxRange" : "69",
                 "maxAge": c.maxAge == undefined ? "99" : c.maxAge,
                 "maxDistance" : c.maxDistance == undefined ? "99999"
                                                            : c.maxDistance,
                 "minAge": c.minAge == undefined ? "18" : c.minAge,
-                "accountType": "Basic",
                 "notifications": "true",
                 "onlyFriends": c.onlyFriends == undefined ? "true"
                                                           : c.onlyFriends,
@@ -62,7 +60,9 @@ exports.createUserByCriteria = function(c, callback) {
                 "isActive": c.isActive == undefined ? "true" : c.isActive,
                 "deactivationTime": c.deactivationTime == undefined
                                         ? null
-                                        : c.deactivationTime
+                                        : c.deactivationTime,
+                "isPremium": c.isPremium == undefined ? "false" : c.isPremium,
+                "token": c.token == undefined ? "12345" : c.token
             }
         }
     }; 

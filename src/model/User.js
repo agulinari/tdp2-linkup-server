@@ -14,12 +14,12 @@ var ObjectId = mongoose.Types.ObjectId;
 const UserSchema = new Schema({
     time: String,
     typeOfLink: String,
+    fbid: String,
     birthday: String,
     comments: String,
     education: String,
-    fbid: String,
-    token: String,
     firstName: String,
+    lastName: String,
     gender: String,
     avatar: {
         "image": {
@@ -32,7 +32,6 @@ const UserSchema = new Schema({
         }
 	],
     interests : [{ "interest" : String}],
-    lastName: String,
     location: {
         "longitude": Number,
         "latitude": Number,
@@ -40,13 +39,10 @@ const UserSchema = new Schema({
     },
     occupation: String,
     settings: {
-	    fbid: String,
         invisible: {type: Boolean}, //True: 1, False: 0
-	    maxRange : Number,
 	    maxAge: Number,
         maxDistance : Number,
 	    minAge: Number,
-	    accountType: {type: String, default: "Basic"},
 	    notifications: {type: Boolean}, //True: 1, False: 0
         onlyFriends: {type: Boolean}, //True: 1, False: 0
 	    searchMales: {type: Boolean}, //True: 1, False: 0
@@ -54,7 +50,10 @@ const UserSchema = new Schema({
 	},
 	control: {
 	    isActive: {type: Boolean, default: true},
-	    deactivationTime: { type : Date, default: null }
+	    deactivationTime: { type : Date, default: null },
+	    isPremium: {type: Boolean, default: false},
+	    token: String,
+	    availableSuperlinks: {type: Number, default: 5}
 	}
 },{ collection: 'users' });
 

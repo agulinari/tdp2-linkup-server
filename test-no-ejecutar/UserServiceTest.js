@@ -17,15 +17,18 @@ describe('Image service test', () => {
     // Before each test
     beforeEach((done) => {
         // start up activities
-        chai.request(server)
-                .delete('/user')
-                .end((err, res) => {
-                    //console.log(res);
-                    should.not.exist(err);
-                    res.should.have.status(200);
-                    //console.log(res.body);
-                    done();
-                });
+        async.waterfall([
+            function (next) {
+                testUtils.cleanDB(next);
+            }
+        ],
+        function (err, res) {
+            if (err) {
+                done(err);
+                return;          
+            }
+            done();
+        });
     });
     /*
     describe('DELETE /user', () => {
@@ -243,6 +246,108 @@ describe('Image service test', () => {
                     expect(user.fbid).to.equal('0');
                     expect(user.control.isActive).to.equal(false);
                     expect(user.control.deactivationDate).to.not.be.a('null');
+                    done();
+                });
+            });
+        });
+
+        it('It should set the premium account to an User', (done) => {
+            async.waterfall([
+                // Create a normal user account
+                function (next) {
+                    var criteria = {
+                        id:"0",
+                        isPremium: false
+                    }
+                    testUtils.createUserByCriteria(criteria, next);
+                },
+                // Change account to Premium
+                function (res, next) {
+                    var body = {
+                        "user": {
+                            "fbid": "0",
+                            "control": {
+                                "isPremium": true,
+                            }
+                        }
+                    };
+                    chai.request(server)
+                        .put('/user')
+                        .send(body)
+                        .end((err, res) => {
+                            //console.log(res);
+                            should.not.exist(err);
+                            res.should.have.status(200);
+                            next();
+                        });
+
+            }],
+            function (err, res) {
+                if (err) {
+                    done(err);
+                    return;
+                }
+                chai.request(server)
+                .get('/user/0')
+                .end((err, res) => {
+                    //console.log(res);
+                    should.not.exist(err);
+                    res.should.have.status(200);
+
+                    var user = res.body.user;
+                    expect(user.fbid).to.equal('0');
+                    expect(user.control.isPremium).to.equal(true);
+                    done();
+                });
+            });
+        });
+        
+        it("It should update the User's token", (done) => {
+            async.waterfall([
+                // Create a normal user account
+                function (next) {
+                    var criteria = {
+                        id:"0",
+                        token: '12345'
+                    }
+                    testUtils.createUserByCriteria(criteria, next);
+                },
+                // Update token
+                function (res, next) {
+                    var body = {
+                        "user": {
+                            "fbid": "0",
+                            "control": {
+                                "token": 'abcde',
+                            }
+                        }
+                    };
+                    chai.request(server)
+                        .put('/user')
+                        .send(body)
+                        .end((err, res) => {
+                            //console.log(res);
+                            should.not.exist(err);
+                            res.should.have.status(200);
+                            next();
+                        });
+
+            }],
+            function (err, res) {
+                if (err) {
+                    done(err);
+                    return;
+                }
+                chai.request(server)
+                .get('/user/0')
+                .end((err, res) => {
+                    //console.log(res);
+                    should.not.exist(err);
+                    res.should.have.status(200);
+
+                    var user = res.body.user;
+                    expect(user.fbid).to.equal('0');
+                    expect(user.control.token).to.equal('abcde');
                     done();
                 });
             });
