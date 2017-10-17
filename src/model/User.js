@@ -39,20 +39,21 @@ const UserSchema = new Schema({
     },
     occupation: String,
     settings: {
-        invisible: {type: Boolean}, //True: 1, False: 0
-	    maxAge: Number,
-        maxDistance : Number,
-	    minAge: Number,
-	    notifications: {type: Boolean}, //True: 1, False: 0
-        onlyFriends: {type: Boolean}, //True: 1, False: 0
-	    searchMales: {type: Boolean}, //True: 1, False: 0
-	    searchFemales: {type: Boolean} //True: 1, False: 0
+            invisible: {type: Boolean, default: false},
+	           maxAge: {type: Number, default: 100},
+          maxDistance: {type: Number, default: 500},
+	           minAge: {type: Number, default: 18},
+	    notifications: {type: Boolean, default: true},
+	         blockAds: {type: Boolean, default: false},
+          onlyFriends: {type: Boolean, default: false},
+	      searchMales: {type: Boolean, default: true},
+	    searchFemales: {type: Boolean, default: true}
 	},
 	control: {
-	    isActive: {type: Boolean, default: true},
-	    deactivationTime: { type : Date, default: null },
-	    isPremium: {type: Boolean, default: false},
-	    token: String,
+	               isActive: {type: Boolean, default: true},
+	       deactivationTime: { type : Date, default: null },
+	              isPremium: {type: Boolean, default: false},
+	                  token: String,
 	    availableSuperlinks: {type: Number, default: 5}
 	}
 },{ collection: 'users' });

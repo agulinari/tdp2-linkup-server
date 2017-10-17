@@ -85,24 +85,24 @@ exports.saveUser = function (userData, callback) {
         // Save user
         function (user, next) {            
             user = {
-                fbid: userData.fbid,
-                birthday: userData.birthday,
-                comments: userData.comments,
+                fbid     : userData.fbid,
+                birthday : userData.birthday,
+                comments : userData.comments,
                 education: userData.education,
                 firstName: userData.firstName,
-                lastName: userData.lastName,
-                location: {
+                lastName : userData.lastName,
+                location : {
                     longitude: userData.location.longitude,
-                    latitude: userData.location.latitude,
-                    name: userData.location.name
+                    latitude : userData.location.latitude,
+                    name     : userData.location.name
                 },
-                gender: userData.gender,
-                avatar: {image: {idImage: userData.avatar.image.idImage}},
-                images: [],
+                gender    : userData.gender,
+                avatar    : {image: {idImage: userData.avatar.image.idImage}},
+                images    : [],
                 interests : userData.interests,
                 occupation: userData.occupation,
-                settings: userData.settings,
-                control : userData.control
+                settings  : userData.settings,
+                control   : userData.control
             };
             userData.images.forEach(function(e) {
                 user.images.push({image: {idImage: e.image.idImage}});
