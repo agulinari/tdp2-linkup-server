@@ -71,9 +71,9 @@ function sendNotificationToUser(fbidTo, fbidFrom, title, message, firstName, mot
  
     userService.getUser(fbidTo,function (err, value){
 
-        if(value!=null && value.token!=null){
+        if(value!=null && value.control.token!=null){
 
-            var token = value.token;
+            var token = value.control.token;
             var payload = {
                 data: {
                     fbid: fbidFrom,
