@@ -35,7 +35,7 @@ describe('AbuseReport service test', () => {
             var criteria = {
                 "advertiser": "LinkUp",
                 "image": "test12345",
-                "url": "www.linkup.test.com",
+                "url": "https://stackoverflow.com",
                 "isActive": true
             };
             testUtils.createAdByCriteria(criteria, (err, res) => {

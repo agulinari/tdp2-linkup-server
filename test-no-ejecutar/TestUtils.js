@@ -49,6 +49,7 @@ exports.createUserByCriteria = function(c, callback) {
                                                            : c.maxDistance,
                 "minAge": c.minAge == undefined ? "18" : c.minAge,
                 "notifications": "true",
+                "blockAds": c.blockAds == undefined ? "false" : c.blockAds,
                 "onlyFriends": c.onlyFriends == undefined ? "true"
                                                           : c.onlyFriends,
                 "searchMales": c.searchMales == undefined ? "true"
@@ -130,7 +131,7 @@ exports.createBlock = function (idBlockerUser, idBlockedUser, callback) {
         .end((err, res) => { callback(err, res); });
 }
 
-exports.cleanDB = function(callback) {
+exports.cleanUsers = function(callback) {
     
     async.waterfall([
         function (next) {

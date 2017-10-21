@@ -8,12 +8,16 @@ var linkDao = require('../dao/LinkDao');
 var GeoPoint = require('geopoint');
 var NotFound = require("../error/NotFound");
 var DisabledAccountError = require("../error/DisabledAccountError");
+var adService = require("./AdService");
+
+var AD_RATE = 2;
 
 exports.getCandidates = function (id, callback) {
     var user = {};
 
     async.waterfall([
-        function getUser(next) {
+        // Get User
+        function (next) {
             userDao.findUser(id, (err, user) => {
                 if (err) {
                     next(err);
@@ -29,7 +33,8 @@ exports.getCandidates = function (id, callback) {
                 next(null, user);
             });
         },
-        function getCandidatesByUserCriteria(response, next) {
+        // Find candidates by user's criteria
+        function (response, next) {
             console.log('user: ' + JSON.stringify(response));
             user = response;
 
@@ -48,7 +53,8 @@ exports.getCandidates = function (id, callback) {
             };
             userDao.findUsersByCriteria(criteria, next);
         },
-        function filterByCandidateCriteria(response, next) {
+        // Filter candidates when user don't match candidate's criteria
+        function (response, next) {
             var users = response;
             var candidates = [];
             users.forEach(function (candidate) {
@@ -59,7 +65,8 @@ exports.getCandidates = function (id, callback) {
 
             next(null, candidates);
         },
-        function filterRejectedCandidates(candidates, next) {
+        // Filter rejected candidates
+        function (candidates, next) {
             if (candidates.length == 0) {
                 next(null, candidates);
                 return;
@@ -76,7 +83,8 @@ exports.getCandidates = function (id, callback) {
                 next(null, candidates);
             });
         },
-        function filterCandidatesRejections(candidates, next) {
+        // Filter candidates that rejected the user
+        function (candidates, next) {
             if (candidates.length == 0) {
                 next(null, candidates);
                 return;
@@ -93,7 +101,8 @@ exports.getCandidates = function (id, callback) {
                 next(null, candidates);
             });
         },
-        function filterBlockedCandidates(candidates, next) {
+        // Filter blocked candidates
+        function (candidates, next) {
             if (candidates.length == 0) {
                 next(null, candidates);
                 return;
@@ -110,7 +119,8 @@ exports.getCandidates = function (id, callback) {
                 next(null, candidates);
             });
         },
-        function filterCandidatesBlocks(candidates, next) {
+        // Filter candidates that blocked the user
+        function (candidates, next) {
             if (candidates.length == 0) {
                 next(null, candidates);
                 return;
@@ -127,7 +137,8 @@ exports.getCandidates = function (id, callback) {
                 next(null, candidates);
             });
         },
-        function filterLinkedCandidates(candidates, next) {
+        // Filter linked candidates
+        function (candidates, next) {
             if (candidates.length == 0) {
 
                 next(null, candidates);
@@ -147,7 +158,8 @@ exports.getCandidates = function (id, callback) {
                 next(null, candidates);
             });
         },
-        function filterMatchedCandidates(candidates, next) {
+        // Filter matched candidates
+        function (candidates, next) {
             if (candidates.length == 0) {
                 next(null, candidates);
                 return;
@@ -155,20 +167,21 @@ exports.getCandidates = function (id, callback) {
             console.log('TODO: filtrar candidatos matcheados');
             next(null, candidates);
         },
-        function sortCandidatesBySuperLink(candidates,next){
+        // Sort candidates by SuperLink priority
+        function (candidates,next){
             if (candidates.length == 0) {
                 next(null, candidates);
                 return;
             }
 
-            console.log("Cantidad de candidatos superlink: "+candidates.length);
-            console.log("candidatos: "+candidates);
+            //console.log("Cantidad de candidatos superlink: "+candidates.length);
+            //console.log("candidatos: "+candidates);
             var idsCandidates = [];
             for (var index = 0, len = candidates.length; index < len; index++) {
                 var fbIdCandidate = candidates[index].fbid;
                 idsCandidates.push(fbIdCandidate);
             }
-            console.log("Candidatos a buscar: "+idsCandidates);
+            //console.log("Candidatos a buscar: "+idsCandidates);
             linkDao.getUserLinkByIdsUsersAndIdCandidate(idsCandidates,user.fbid,function (err, acceptedUsers){
                 //linkDao.getUserLinkByIdUserAndIdCandidate(fbIdCandidate,user.fbid,function (err, valueLink){
                 if (err) {
@@ -177,21 +190,55 @@ exports.getCandidates = function (id, callback) {
                 }
                 //console.log("valor valueLink:"+valueLink);
                 var candidatesSort = getArrayCandidatesOrderByTypeOfLinkAndDate(acceptedUsers,candidates,user.fbid);
-                console.log("candidatos agregados al sort:"+candidatesSort);
+                //console.log("candidatos agregados al sort:"+candidatesSort);
                 completeCandidates(candidatesSort, candidates);
-                console.log("candidatos agregados restantes:"+candidatesSort);
+                //console.log("candidatos agregados restantes:"+candidatesSort);
                 next(null, candidatesSort);
             });
 
+        },
+        // Insert Ad content
+        function (candidates, next) {
+            if (candidates.length == 0) {
+                next(null, candidates);
+                return;
+            }
+            if (user.control.isPremium && user.settings.blockAds) {
+                next(null, candidates);
+                return;
+            }
+            adService.getAds((err, ads) => {
+                if (err) {
+                    next(err);
+                }
+                if (ads == null || ads.length == 0) {
+                    next(null, candidates);
+                    return;
+                }
+                
+                var candidatesPlusAds = [];
+                var ad = null;
+                candidatesPlusAds.push(candidates[0]);
+                for (var i = 1; i < candidates.length; ++i) {
+                    if (ads.length != 0 && ((i) % AD_RATE) == 0) {
+                        ad = ads.splice(Math.floor(Math.random() * ads.length),
+                                        1);
+                        candidatesPlusAds.push(ad[0]);
+                    }
+                    candidatesPlusAds.push(candidates[i]);
+                    
+                }
+                
+                next(null, candidatesPlusAds);
+            });
         }
-
     ],
-                    function (err, response) {
+    function (err, response) {
         if (err) {
             callback(err);
             return;
         }
-        console.log("response a devolver:"+response);
+        //console.log("response a devolver:"+response);
         var response = {
             'candidates': response,
             metadata : utils.getMetadata(response.length)
@@ -319,14 +366,14 @@ function completeCandidates(candidatesSort, candidates){
         for(var c of candidates){
             encontrado = false;
             for (var cs of candidatesSort) {
-                console.log("Id sort candidate:"+cs.fbid);
+                //console.log("Id sort candidate:"+cs.fbid);
                 if (cs.fbid == c.fbid) {
                     encontrado=true;
                     break;
                 }
             }
             if(!encontrado){
-                console.log("Agrego:"+c.fbid);
+                //console.log("Agrego:"+c.fbid);
                 candidatesSort.push(c);
             }
         }
@@ -364,7 +411,7 @@ function removeSortCandidateTypeOfLinkAndDate(candidatesSort){
     for (candidate of candidatesSort){
         var candidateAux = new User();
 
-        console.log("candidate AUX:"+candidateAux);
+        //console.log("candidate AUX:"+candidateAux);
         candidatesSortAux.push(candidateAux);
     }
     return candidatesSortAux;
@@ -372,7 +419,7 @@ function removeSortCandidateTypeOfLinkAndDate(candidatesSort){
 
 function getArrayCandidatesOrderByTypeOfLinkAndDate(users,candidates,fbidUser){
 
-    console.log("Candidate users:"+users);
+    //console.log("Candidate users:"+users);
 
     var candidatesSort=[];
     for (user of users){
@@ -384,10 +431,10 @@ function getArrayCandidatesOrderByTypeOfLinkAndDate(users,candidates,fbidUser){
                     candidateAdd.typeOfLink="Superlink";
                     candidateAdd.time=acceptedUser.time;
 
-                    console.log("Candidato a agregar:"+candidateAdd);
+                    //console.log("Candidato a agregar:"+candidateAdd);
                     candidatesSort.unshift(candidateAdd);
                 }
-                console.log("UNSHIFT");
+                //console.log("UNSHIFT");
                 break;
             }else if(acceptedUser.fbidCandidate == fbidUser){
                 var candidateAdd = getCandidateForAddToArray(user.fbidUser,candidates);
@@ -396,10 +443,10 @@ function getArrayCandidatesOrderByTypeOfLinkAndDate(users,candidates,fbidUser){
                     candidateAdd.typeOfLink="Link";
                     candidateAdd.time=acceptedUser.time;
 
-                    console.log("Candidato a agregar:"+candidateAdd);
+                    //console.log("Candidato a agregar:"+candidateAdd);
                     candidatesSort.push(candidateAdd);
                 }
-                console.log("PUSH");
+               // console.log("PUSH");
                 break;
             }
         }
