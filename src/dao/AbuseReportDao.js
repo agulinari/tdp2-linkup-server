@@ -225,6 +225,19 @@ exports.updateAbuseReport = function(abuseReportData, callback) {
 	});
 };
 
+exports.closeAbuseReportsForUser = function(idUser, callback) {
+    AbuseReport.updateMany({idReported:idUser},
+                           { $set: { isOpen: false} },
+                           null,
+                           (err, value) => {
+        if (err) {
+            callback(err, null);
+            return;
+		}
+        callback(null, value);
+	});
+};
+
 /**
  * Deletes all Images
  * @param {Function} callback

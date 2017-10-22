@@ -241,7 +241,43 @@ exports.updateUser = function (userData, callback) {
             }
                         
             userDao.updateUser(user, next);
-        }    
+        },
+        // Save images
+        function (user, next) {
+            imageDao.saveImage(user.fbid,
+                               user.avatar.image.idImage,
+                               userData.avatar.image.data,
+                               (err, image) => {
+                if (err) {
+                    next(err);
+                    return;
+                }
+                if (0 == userData.images.length) {
+                    next(null, user);
+                    return;
+                }
+                var i = 0;
+                var imageCallback = function(err, image) {
+                    if (err) {
+                        next(err);
+                        return;
+                    }
+                    ++i;
+                    if (i >= userData.images.length) {
+                        next(null, user);
+                        return;
+                    }
+                    imageDao.saveImage(user.fbid,
+                                       userData.images[i].image.idImage,
+                                       userData.images[i].image.data,
+                                       imageCallback);
+                }
+                imageDao.saveImage(user.fbid,
+                                   userData.images[i].image.idImage,
+                                   userData.images[i].image.data,
+                                   imageCallback);
+            });
+        },    
     ],
     function (err, user) {
         if (err) {
