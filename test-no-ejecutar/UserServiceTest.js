@@ -19,7 +19,7 @@ describe('Image service test', () => {
         // start up activities
         async.waterfall([
             function (next) {
-                testUtils.cleanDB(next);
+                testUtils.cleanUsers(next);
             }
         ],
         function (err, res) {
@@ -45,7 +45,7 @@ describe('Image service test', () => {
         });
     });
     */
-    /*
+    
     describe('POST /user', () => {
         it('It should save an User', (done) => {
             var body = {
@@ -71,7 +71,7 @@ describe('Image service test', () => {
                         {
                             "image": {
                                 "idImage": "1",
-                                "data": "123456"
+                                "data": "111111"
                             }
                         },
                          {
@@ -111,8 +111,7 @@ describe('Image service test', () => {
                 });
         });
     });
-    */
-    /*
+    
     describe('PUT /user', () => {
         it('It should update an User', (done) => {
             async.waterfall([
@@ -139,7 +138,21 @@ describe('Image service test', () => {
                                     "idImage": "0",
                                     "data": "000000"
                                 }
-                             },
+                            },
+                            "images": [
+                                {
+                                    "image": {
+                                        "idImage": "3",
+                                        "data": "3333"
+                                    }
+                                },
+                                {
+                                    "image": {
+                                        "idImage": "4",
+                                        "data": "4444"
+                                    }
+                                }
+                            ],
                             "lastName" : "Linari",
                             "occupation" : "Ciruja",
                             "settings": {
@@ -189,7 +202,6 @@ describe('Image service test', () => {
                     expect(user.lastName).to.equal("Linari");
                     expect(user.occupation).to.equal("Ciruja");
                     expect(user.settings.invisible).to.equal(true);
-                    expect(user.settings.maxRange).to.equal(99);
                     expect(user.settings.maxAge).to.equal(99);
                     expect(user.settings.maxDistance).to.equal(99);
                     expect(user.settings.notifications).to.equal(false);
@@ -202,7 +214,7 @@ describe('Image service test', () => {
         
 
     });
-    */
+    return;
     describe('PUT /user', () => {
         it('It should deactivate an User', (done) => {
             async.waterfall([

@@ -242,6 +242,16 @@ exports.updateUser = function (userData, callback) {
                         
             userDao.updateUser(user, next);
         },
+        // Delete images images
+        function (user, next) {
+            if (userData.images == undefined || userData.images.length == 0) {
+                next(null, user);
+                return;
+            }
+            imageDao.deleteImages(user.fbid, (err, data) => {
+                next(null, user);
+            });
+        },
         // Save images
         function (user, next) {
             imageDao.saveImage(user.fbid,
