@@ -255,7 +255,7 @@ exports.updateUser = function (userData, callback) {
         // Save images
         function (user, next) {
             imageDao.saveImage(user.fbid,
-                               user.avatar.image.idImage,
+                               userData.avatar.image.idImage,
                                userData.avatar.image.data,
                                (err, image) => {
                 if (err) {
