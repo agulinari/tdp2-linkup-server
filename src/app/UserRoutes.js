@@ -7,7 +7,7 @@ module.exports = function (app) {
         try {
             userCtrl.getUsers(req, res);
         } catch (err) {
-            console.log('ERR GET /user ' + '\n' + err);
+            console.log('ERR GET /user\n' + err);
             return res.sendStatus(500);
         }
     });
@@ -27,7 +27,7 @@ module.exports = function (app) {
         try{
             userCtrl.postUser(req, res);
         } catch (err) {
-            console.log('ERR POST /user '
+            console.log('ERR POST /user\n'
                         + JSON.stringify(req.body) + '\n'
                         + err);
             return res.sendStatus(500);
@@ -35,11 +35,11 @@ module.exports = function (app) {
     });
 
     app.put('/user', function (req, res, next) {
-        console.log('PUT /user ' + JSON.stringify(req.body));
+        console.log('PUT /user ' /*+ JSON.stringify(req.body)*/);
         try{
             userCtrl.putUser(req, res);
         } catch (err) {
-            console.log('ERR PUT /user '
+            console.log('ERR PUT /user\n'
                         + JSON.stringify(req.body) + '\n'
                         + err);
             return res.sendStatus(500);
@@ -59,9 +59,9 @@ module.exports = function (app) {
     app.delete('/user', function (req, res, next) {
         console.log('DELETE /user');
         try{
-            userCtrl.deleteAllUsers(req, res);
+            userCtrl.deleteUsers(req, res);
         } catch (err) {
-            console.log('DELETE /user' + '\n'+ err);
+            console.log('DELETE /user\n' + err);
             return res.sendStatus(500);
         }
     });
@@ -71,7 +71,7 @@ module.exports = function (app) {
         try{
             userCtrl.putToken(req, res);
         } catch (err) {
-            console.log('ERR PUT /token '
+            console.log('ERR PUT /token\n'
                         + JSON.stringify(req.body) + '\n'
                         + err);
             return res.sendStatus(500);

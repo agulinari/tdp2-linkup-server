@@ -4,16 +4,15 @@ var utils = require('../utils/Utils');
 var async = require('async');
 var BadRequest = require("../error/BadRequest");
 var NotFound = require("../error/NotFound");
-var jsonValidator = require('../utils/JsonValidator');
 
 /**
  * Get Users
  * @param {Function} callback
  */
 exports.getUsers = function (callback) {
-    userDao.findUsers(function (err, users) {
+    userDao.findUsers((err, users) => {
         if (err) {
-            callback(err, null);
+            callback(err);
             return;
         }
         callback(null, users);
@@ -26,20 +25,19 @@ exports.getUsers = function (callback) {
  * @param {Function} callback
  */
 exports.getUser = function (fbidUser, callback) {
-    userDao.findUser(fbidUser, function (err, user) {
+    userDao.findUser(fbidUser, (err, user) => {
         if (err) {
-            callback(err, null);
+            callback(err);
             return;
         }
         if (user == null) {
-            err = new NotFound("No se encontro el usuario");
-            callback(err, null);
+            callback(new NotFound("No se encontro el usuario"));
             return;
         }
         
-        imageDao.findImages(fbidUser, function(err, images) {
+        imageDao.findImages(fbidUser, (err, images) => {
             if (err) {
-                callback(err, null);
+                callback(err);
                 return;
             }
             user = user.toObject();
@@ -74,48 +72,51 @@ function getImageIndex(idImage, images) {
  */
 exports.saveUser = function (userData, callback) {
     async.waterfall([
-        function getUser(next) {
-            userDao.findUser(userData.fbid, next);
+        // Test for user existence
+        function (next) {
+            userDao.findUser(userData.fbid, (err, user) => {
+                if (user != null) {
+                    next(new BadRequest("El usuario ya existe"));
+                    return;
+                }
+                next(err, user);
+            });
         },
-        function save(user, next) {
-            if (user != null) {
-                err = new BadRequest("El usuario ya existe");
-                next(err, null);
-                return;
-            }
+        // Save user
+        function (user, next) {            
             user = {
-                birthday: userData.birthday,
-                comments: userData.comments,
+                fbid     : userData.fbid,
+                birthday : userData.birthday,
+                comments : userData.comments,
                 education: userData.education,
-                fbid: userData.fbid,
-                token: userData.token,
-                firstName: userData.firstName, 
-                location: {
+                firstName: userData.firstName,
+                lastName : userData.lastName,
+                location : {
                     longitude: userData.location.longitude,
-                    latitude: userData.location.latitude,
-                    name: userData.location.name
+                    latitude : userData.location.latitude,
+                    name     : userData.location.name
                 },
-                gender: userData.gender,
-                avatar: {image: {idImage: userData.avatar.image.idImage}},
-                images: [],
+                gender    : userData.gender,
+                avatar    : {image: {idImage: userData.avatar.image.idImage}},
+                images    : [],
                 interests : userData.interests,
-                lastName: userData.lastName,
                 occupation: userData.occupation,
-                settings: userData.settings,
-                control : userData.control
+                settings  : userData.settings,
+                control   : userData.control
             };
             userData.images.forEach(function(e) {
                 user.images.push({image: {idImage: e.image.idImage}});
             });
             userDao.saveUser(user, next);
         },
-        function saveImages(user, next) {
+        // Save images
+        function (user, next) {
             imageDao.saveImage(user.fbid,
                                user.avatar.image.idImage,
                                userData.avatar.image.data,
                                function(err, image) {
                 if (err) {
-                    next(err,null);
+                    next(err);
                     return;
                 }
                 if (0 == userData.images.length) {
@@ -125,7 +126,7 @@ exports.saveUser = function (userData, callback) {
                 var i = 0;
                 var imageCallback = function(err, image) {
                     if (err) {
-                        next(err,null);
+                        next(err);
                         return;
                     }
                     ++i;
@@ -162,56 +163,57 @@ exports.saveUser = function (userData, callback) {
  */
 exports.updateUser = function (userData, callback) {
     async.waterfall([
-        function getUser(next) {
-            userDao.findUser(userData.fbid, next);
+        // Test for user existence
+        function (next) {
+            userDao.findUser(userData.fbid, (err, user) => {
+                if (user == null) {
+                    next(new NotFound("No se encontro el usuario"));
+                    return;
+                }
+                next(err, user);
+            });
         },
+        // Update user
         function update(user, next) {
-            if (user == null) {
-                err = new NotFound("No se encontro el usuario");
-                next(err, null);
-                return;
-            }
             user = {
-                birthday: userData.birthday != undefined
-                            ? userData.birthday
-                            : user.birthday,
-                comments: userData.comments != undefined
-                            ? userData.comments
-                            : user.comments,
-                education: userData.education != undefined
-                            ? userData.education
-                            : user.education,
-                fbid: user.fbid,
-                token: userData.token != undefined
-                            ? userData.token
-                            : user.token,
-                firstName: userData.firstName != undefined
-                            ? userData.firstName
-                            : user.firstName,
-                location: userData.location != undefined
-                            ? userData.location
-                            : user.location,
-                gender: userData.gender != undefined
-                            ? userData.gender
-                            : user.gender,
-                avatar: userData.avatar != undefined
-                            ? userData.avatar
-                            : user.avatar,
-                images: user.images,
-                interests : userData.interests != undefined
-                            ? userData.interests
-                            : user.interests,
-                lastName: userData.lastName != undefined
-                            ? userData.lastName
-                            : user.lastName,
+                      fbid: user.fbid,
+                  birthday: userData.birthday != undefined
+                                ? userData.birthday
+                                : user.birthday,
+                  comments: userData.comments != undefined
+                                ? userData.comments
+                                : user.comments,
+                 education: userData.education != undefined
+                                ? userData.education
+                                : user.education,
+                 firstName: userData.firstName != undefined
+                                ? userData.firstName
+                                : user.firstName,
+                  lastName: userData.lastName != undefined
+                                ? userData.lastName
+                                : user.lastName,
+                  location: userData.location != undefined
+                                ? userData.location
+                                : user.location,
+                    gender: userData.gender != undefined
+                                ? userData.gender
+                                : user.gender,
+                    avatar: userData.avatar != undefined
+                                ? userData.avatar
+                                : user.avatar,
+                    images: user.images,
+                 interests: userData.interests != undefined
+                                ? userData.interests
+                                : user.interests,
                 occupation: userData.occupation != undefined
-                            ? userData.occupation
-                            : user.occupation,
-                settings: userData.settings != undefined
-                            ? userData.settings
-                            : user.settings,
-                control: user.control
+                                ? userData.occupation
+                                : user.occupation,
+                  settings: userData.settings != undefined
+                                ? userData.settings
+                                : user.settings,
+                   control: user.control
             };
+
             if (userData.images != undefined) {
                 user.images = [];
                 userData.images.forEach(function(e) {
@@ -222,15 +224,19 @@ exports.updateUser = function (userData, callback) {
                 if (userData.control.isActive != undefined) {
                     if (userData.control.isActive == true
                             && user.control.isActive == false) {
-                        console.log('HIT 1');
                         user.control.isActive = true;
                         user.control.deactivationTime = null;
                     } else if (userData.control.isActive == false
                             && user.control.isActive == true) {
-                        console.log('HIT 2');
                         user.control.isActive = false;
                         user.control.deactivationTime = new Date();
                     }
+                }
+                if (userData.control.isPremium != undefined) {
+                    user.control.isPremium = userData.control.isPremium;
+                }
+                if (userData.control.token != undefined) {
+                    user.control.token = userData.control.token;
                 }
             }
                         
@@ -248,11 +254,11 @@ exports.updateUser = function (userData, callback) {
 };
 
 exports.updateToken = function(fbid,token,callback){
-    userDao.updateToken(fbid, function(err, data){
-                if (err) {
-                    callback(err, null);
-                    return;
-                }
+    userDao.updateToken(fbid, (err, data) => {
+        if (err) {
+            callback(err);
+            return;
+        }
         callback(null, data);
     });
 }
@@ -263,14 +269,14 @@ exports.updateToken = function(fbid,token,callback){
  * @param {Function} callback
  */
 exports.deleteUser = function (fbidUser, callback) {
-    userDao.deleteUser(fbidUser, function (err, data) {
+    userDao.deleteUser(fbidUser, (err, data) => {
         if (err) {
-            callback(err, null);
+            callback(err);
             return;
         }
-        imageDao.deleteImages(fbidUser, function (err, data2) {
+        imageDao.deleteImages(fbidUser, (err, data2) => {
             if (err) {
-                callback(err, null);
+                callback(err);
                 return;
             }
             callback(null, data);
@@ -282,15 +288,15 @@ exports.deleteUser = function (fbidUser, callback) {
  * Delete Users
  * @param {Function} callback
  */
-exports.deleteAllUsers = function (callback) {
-    userDao.deleteAllUsers(function (err, data) {
+exports.deleteUsers = function (callback) {
+    userDao.deleteAllUsers((err, data) => {
         if (err) {
-            callback(err, null);
+            callback(err);
             return;
         }
-        imageDao.deleteAllImages(function (err, data2) {
+        imageDao.deleteAllImages((err, data2) => {
             if (err) {
-                callback(err, null);
+                callback(err);
                 return;
             }
             callback(null, data);

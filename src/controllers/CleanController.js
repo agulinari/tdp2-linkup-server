@@ -41,6 +41,18 @@ exports.getCleanAbuseReports = function (req, res) {
     });
 };
 
+exports.getCleanAds = function (req, res) {
+    service.cleanAds((err, data) => {
+        if (err) {
+            return errorHandler.throwError(res, err);
+        }
+        var response = {
+            metadata : utils.getMetadata(1)
+        }
+        return res.json(response);
+    });
+};
+
 exports.getCleanBlocks = function (req, res) {
     service.cleanBlocks(function(err, data) {
         if (err) {

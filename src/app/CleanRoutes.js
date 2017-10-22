@@ -33,6 +33,16 @@ module.exports = function (app) {
         }
     });
     
+    app.get('/clean/Ad', function (req, res, next) {
+        console.log('GET /clean/Ad');
+        try{
+            cleanCtrl.getCleanAds(req, res);
+        } catch (err) {
+            console.log('GET /clean/Ad' + '\n'+ err);
+            return res.sendStatus(500);
+        }
+    });
+    
     app.get('/clean/block', function (req, res, next) {
         console.log('GET /clean/block');
         try{

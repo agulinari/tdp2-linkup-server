@@ -8,11 +8,13 @@ chai.use(chaiHttp);
 exports.createUserByCriteria = function(c, callback) {
     var body = {
         "user": {
+            "fbid": c.id,
             "birthday": c.birthday == undefined ? "1980/01/01" : c.birthday,
             "comments": "dummy comment",
             "education": "dummy education",
-            "fbid": c.id,        
+                    
             "firstName": "dummy name",
+            "lastName" : "dummy last name",
             "location": c.location == undefined ? {"longitude": "-58.370289",
                                                    "latitude": "-34.603800",
                                                    "name": "Obelisco"}
@@ -39,18 +41,15 @@ exports.createUserByCriteria = function(c, callback) {
                 }
             ],
             "interests" : [],
-            "lastName" : "dummy last name",
             "ocupation" : "dummy ocupation",
             "settings": {
-                "fbid": c.id,
                 "invisible": c.invisible == undefined ? "false" : c.invisible,
-                "maxRange" : "69",
                 "maxAge": c.maxAge == undefined ? "99" : c.maxAge,
                 "maxDistance" : c.maxDistance == undefined ? "99999"
                                                            : c.maxDistance,
                 "minAge": c.minAge == undefined ? "18" : c.minAge,
-                "accountType": "Basic",
                 "notifications": "true",
+                "blockAds": c.blockAds == undefined ? "false" : c.blockAds,
                 "onlyFriends": c.onlyFriends == undefined ? "true"
                                                           : c.onlyFriends,
                 "searchMales": c.searchMales == undefined ? "true"
@@ -62,7 +61,9 @@ exports.createUserByCriteria = function(c, callback) {
                 "isActive": c.isActive == undefined ? "true" : c.isActive,
                 "deactivationTime": c.deactivationTime == undefined
                                         ? null
-                                        : c.deactivationTime
+                                        : c.deactivationTime,
+                "isPremium": c.isPremium == undefined ? "false" : c.isPremium,
+                "token": c.token == undefined ? "12345" : c.token
             }
         }
     }; 
@@ -75,7 +76,7 @@ exports.createUserByCriteria = function(c, callback) {
         });
 }
 
-exports.createAbuseReportByCriteria = function(c, callback) {
+exports.createAbuseReportByCriteria = function (c, callback) {
     var body = {
         "abuseReport": {
             "_id" : c.id == undefined ? null : c.id,
@@ -92,12 +93,31 @@ exports.createAbuseReportByCriteria = function(c, callback) {
     chai.request(server)
         .post('/AbuseReport')
         .send(body)
-        .end((err, res) => {
-            callback(err, res);
-        });
+        .end((err, res) => { callback(err, res); });
 }
 
-exports.createBlock = function(idBlockerUser, idBlockedUser, callback) {
+exports.createAdByCriteria = function (c, callback) {
+    if (c == null) {
+        c = {};
+    }
+    var body = {
+        "ad": {
+                  "_id" : c.id != undefined ? c.id : null,
+            "advertiser": c.advertiser != undefined ? c.advertiser
+                                                    : 'advertiser ' + c.id,
+                 "image": c.image != undefined ? c.image : '123',
+                   "url": c.url != undefined ? c.url : 'www.linkup.com',
+              "isactive": c.isActive != undefined ? c.isActive : true
+        }
+    };
+ 
+    chai.request(server)
+        .post('/Ad')
+        .send(body)
+        .end((err, res) => { callback(err, res); });
+}
+
+exports.createBlock = function (idBlockerUser, idBlockedUser, callback) {
     var body = {
         "block": {
             "idBlockerUser": idBlockerUser,
@@ -108,12 +128,10 @@ exports.createBlock = function(idBlockerUser, idBlockedUser, callback) {
     chai.request(server)
         .post('/block')
         .send(body)
-        .end((err, res) => {
-            callback(err, res);
-        });
+        .end((err, res) => { callback(err, res); });
 }
 
-exports.cleanDB = function(callback) {
+exports.cleanUsers = function(callback) {
     
     async.waterfall([
         function (next) {
@@ -136,7 +154,12 @@ exports.cleanDB = function(callback) {
 exports.cleanAbuseReports = function(callback) {
     chai.request(server)
         .get('/clean/AbuseReport')
-        .end((err, res) => {
-            callback(err, res);
-        });
+        .end((err, res) => { callback(err, res); });
 }
+
+exports.cleanAds = function(callback) {
+    chai.request(server)
+        .get('/clean/Ad')
+        .end((err, res) => { callback(err, res); });
+}
+

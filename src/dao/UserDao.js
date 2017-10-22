@@ -10,13 +10,11 @@ var BadRequest = require("../error/BadRequest");
  * @param {Function} callback
  **/
 exports.findUser = function(fbidUser, callback) {
-    var query = {
-        "fbid": fbidUser,
-    };
+    var query = { "fbid": fbidUser };
     var proj = "-_id";
-    User.findOne(query, proj, function (err, value) {
+    User.findOne(query, proj, (err, value) => {
         if (err) {
-            callback(err, null);
+            callback(err);
             return;
         }
         callback(null, value);
@@ -29,9 +27,9 @@ exports.findUser = function(fbidUser, callback) {
  **/
 exports.findUsers = function(callback) {
     var proj = "-_id";
-    User.find(null, proj, function (err, value) {
+    User.find(null, proj, (err, value) => {
         if (err) {
-            callback(err, null);
+            callback(err);
             return;
         }
         callback(null, value);
@@ -52,25 +50,23 @@ exports.findUsersByCriteria = function(criteria, callback) {
         query.gender = criteria.searchMales ? 'male' : 'female';
     }
 
-    //console.log('query: ' + JSON.stringify(query));
-    User.find(query, function (err, value) {
+    User.find(query, (err, value) => {
         if (err) {
-            callback(err, null);
+            callback(err);
             return;
         }
 	    if(value == null){
-		    callback(new NotFound("find value es null"), null);
+		    callback(new NotFound("find value es null"));
 		    return;
 	    }
         callback(null, value);
     });
 };
 
+// TODO: usar by Criteria, hay que modificar gender condition
 exports.findInactiveUsers = function(callback) {
-    var query = {
-        "control.isActive" : false
-    };
-    User.find(query, function (err, value) {
+    var query = { "control.isActive" : false };
+    User.find(query, (err, value) => {
         if (err) {
             callback(err, null);
             return;
@@ -85,9 +81,9 @@ exports.findInactiveUsers = function(callback) {
 
 exports.saveUser = function(userData, callback) {
     var newUser = new User(userData);
-    newUser.save(function(err, value) {
+    newUser.save((err, value) => {
         if (err) {
-            callback(err, null);
+            callback(err);
             return;
         }
         callback(null, value);
@@ -96,29 +92,25 @@ exports.saveUser = function(userData, callback) {
 
 exports.updateUser = function(userData, callback) {
     var newUserData = Object.assign({}, userData);
-    User.findOneAndUpdate({"fbid":userData.fbid}, newUserData, function(err){
-        if(err){
-            callback(err, null);
+    User.findOneAndUpdate({"fbid":userData.fbid}, newUserData, (err) => {
+        if (err) {
+            callback(err);
             return;
 		}
         callback(null, newUserData);
 	});
 };
 
-exports.updateToken = function(fbid,token,callback){
-    User.update(
-    {
-        fbid: fbid
-    },
-    {
-        $set: { 'users.$.token': token}
-    }, function(err, count) {
-           if (err){
-            callback(err, null);
-            return;
-           }
-           callback(null, count);
-    });
+exports.updateToken = function (fbid,token,callback) {
+    User.update({ fbid: fbid },
+                { $set: { 'users.$.control.token': token} },
+                (err, count) => {
+                    if (err) {
+                        callback(err);
+                        return;
+                    }
+                    callback(null, count);
+                });
 }
 
 /**
@@ -126,13 +118,11 @@ exports.updateToken = function(fbid,token,callback){
  * @param {String} fbidUser User facebook ID.
  * @param {Function} callback
  **/
-exports.deleteUser = function(fbidUser, callback) {
-    var query = {
-        "fbid": fbidUser,
-    };
-    User.deleteMany(query, function (err, value) {
+exports.deleteUser = function (fbidUser, callback) {
+    var query = { "fbid": fbidUser };
+    User.deleteMany(query, (err, value) => {
         if (err) {
-            callback(err,null);
+            callback(err);
             return;
         }
         callback(null, value);
@@ -144,9 +134,9 @@ exports.deleteUser = function(fbidUser, callback) {
  * @param {Function} callback
  **/
 exports.deleteAllUsers = function(callback) {
-    User.deleteMany(null, function (err, value) {
+    User.deleteMany(null, (err, value) => {
         if (err) {
-            callback(err,null);
+            callback(err);
             return;
         }
         callback(null, value);

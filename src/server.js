@@ -22,6 +22,7 @@ require('./app/BlockRoutes.js')(app);
 require('./app/LinkRoutes.js')(app);
 require('./app/MatchRoutes.js')(app);
 require('./app/AbuseReportRoutes.js')(app);
+require('./app/AdRoutes.js')(app);
 require('./app/CleanRoutes.js')(app);
 
 app.all('*', function (req,res,next) {
@@ -70,9 +71,9 @@ function sendNotificationToUser(fbidTo, fbidFrom, title, message, firstName, mot
  
     userService.getUser(fbidTo,function (err, value){
 
-        if(value!=null && value.token!=null){
+        if(value!=null && value.control.token!=null){
 
-            var token = value.token;
+            var token = value.control.token;
             var payload = {
                 data: {
                     fbid: fbidFrom,

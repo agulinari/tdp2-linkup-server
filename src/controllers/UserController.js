@@ -3,7 +3,7 @@ var errorHandler = require('../utils/ErrorHandler');
 var utils = require('../utils/Utils');
 
 exports.getUsers = function (req, res) {
-    service.getUsers(function(err, users) {
+    service.getUsers((err, users) => {
         if (err) {
             return errorHandler.throwError(res, err);
         }
@@ -17,8 +17,7 @@ exports.getUsers = function (req, res) {
 
 exports.getUser = function (req, res) {
     var idUser = req.params.idUser;
-
-    service.getUser(idUser, function (err, user) {
+    service.getUser(idUser, (err, user) => {
         if (err) {
             console.log(err);
             return errorHandler.throwError(res, err);
@@ -29,21 +28,9 @@ exports.getUser = function (req, res) {
         }
         return res.json(response);
     });
-    /*
-    service.deleteUser(idUser, function(err, data) {
-        if (err) {
-            return errorHandler.throwError(res, err);
-        }
-        var response = {
-            'data': data,
-            metadata : utils.getMetadata(1)
-        }
-        return res.json(response);
-    });
-    */
 };
 
-exports.postUser = function(req, res) {
+exports.postUser = function (req, res) {
     var userData = req.body.user;
     
     /*
@@ -53,7 +40,7 @@ exports.postUser = function(req, res) {
         return;
     }
     */
-    service.saveUser(userData, function(err, user) {
+    service.saveUser(userData, (err, user) => {
         if (err) {
             return errorHandler.throwError(res, err);
         }
@@ -65,7 +52,7 @@ exports.postUser = function(req, res) {
     });
 };
 
-exports.putUser = function(req, res) {
+exports.putUser = function (req, res) {
     var userData = req.body.user;
     /*
     var isValid = jsonValidator.isUserValid(userData);
@@ -74,7 +61,7 @@ exports.putUser = function(req, res) {
         return;
     }
     */
-    service.updateUser(userData, function(err, user) {
+    service.updateUser(userData, (err, user) => {
         if (err) {
             return errorHandler.throwError(res, err);
         }
@@ -86,11 +73,11 @@ exports.putUser = function(req, res) {
     });
 };
 
-exports.putToken = function(req, res){
+exports.putToken = function (req, res){
     var fbid = req.body.fbid;
     var token = req.body.token;
 
-     service.updateToken(fbid,token, function(err, data) {
+     service.updateToken(fbid,token, (err, data) => {
         if (err) {
             return errorHandler.throwError(res, err);
         }
@@ -101,9 +88,9 @@ exports.putToken = function(req, res){
     });
 }
 
-exports.deleteUser = function(req, res) {
+exports.deleteUser = function (req, res) {
     var idUser = req.params.idUser;
-    service.deleteUser(idUser, function(err, data) {
+    service.deleteUser(idUser, (err, data) => {
         if (err) {
             return errorHandler.throwError(res, err);
         }
@@ -115,8 +102,8 @@ exports.deleteUser = function(req, res) {
     });
 };
 
-exports.deleteAllUsers = function(req, res) {
-    service.deleteAllUsers(function(err, data) {
+exports.deleteUsers = function (req, res) {
+    service.deleteUsers((err, data) => {
         if (err) {
             return errorHandler.throwError(res, err);
         }

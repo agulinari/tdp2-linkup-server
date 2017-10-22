@@ -16,7 +16,21 @@ describe('Candidate service test', () => {
 
     // Before each test
     beforeEach((done) => {
-        testUtils.cleanDB(done);
+        async.waterfall([
+            function (next) {
+                testUtils.cleanUsers(next);
+            },
+            function (err, next) {
+                testUtils.cleanAds(next);
+            }
+        ],
+        function (err, res) {
+            if (err) {
+                done(err);
+                return;          
+            }
+            done();
+        });
     });
    
     describe('GET /candidate/:idUser', () => {
@@ -52,7 +66,7 @@ describe('Candidate service test', () => {
                     res.should.have.status(200);
                     var data = res.body;
                     var candidates = data.candidates;
-                    //expect(data.metadata.count).to.equal(5);
+                    expect(data.metadata.count).to.equal(5);
                     expect(containsCandidate(0, candidates)).to.equal(false);
                     expect(containsCandidate(1, candidates)).to.equal(true);
                     expect(containsCandidate(2, candidates)).to.equal(true);
@@ -64,8 +78,235 @@ describe('Candidate service test', () => {
                 });
             });
         });
+        
+        it('It should get all user\'s Candidates with ads', (done) => {
+            async.waterfall([
+                function (next) {
+                    testUtils.createUserByCriteria( {id:"0"}, next);
+                },
+                function (err, next) {
+                    testUtils.createUserByCriteria( {id:"1"}, next);
+                },
+                function (err, next) {
+                    testUtils.createUserByCriteria( {id:"2"}, next);
+                },
+                function (err, next) {
+                    testUtils.createUserByCriteria( {id:"3"}, next);
+                },
+                function (err, next) {
+                    testUtils.createUserByCriteria( {id:"4"}, next);
+                },
+                function (err, next) {
+                    testUtils.createUserByCriteria( {id:"5"}, next);
+                },
+                function (err, next) {
+                    var criteria = { "advertiser": "ad0" };
+                    testUtils.createAdByCriteria(criteria, next);
+                },
+                function (err, next) {
+                    var criteria = { "advertiser": "ad1" };
+                    testUtils.createAdByCriteria(criteria, next);
+                },
+                function (err, next) {
+                    var criteria = { "advertiser": "ad2" };
+                    testUtils.createAdByCriteria(criteria, next);
+                },
+                function (err, next) {
+                    var criteria = { "advertiser": "ad3" };
+                    testUtils.createAdByCriteria(criteria, next);
+                },
+                function (err, next) {
+                    var criteria = { "advertiser": "ad4" };
+                    testUtils.createAdByCriteria(criteria, next);
+                },
+                function (err, next) {
+                    var criteria = { "advertiser": "ad5" };
+                    testUtils.createAdByCriteria(criteria, next);
+                }
+            ],
+            function (err, user) {
+                should.not.exist(err);
+                
+                chai.request(server)
+                .get('/candidate/0')
+                .end((err, res) => {
+                    //console.log(err);
+                    should.not.exist(err);
+                    res.should.have.status(200);
+                    var data = res.body;
+                    var candidates = data.candidates;
+                    expect(data.metadata.count).to.equal(7);
+                    expect(containsCandidate(0, candidates)).to.equal(false);
+                    expect(containsCandidate(1, candidates)).to.equal(true);
+                    expect(containsCandidate(2, candidates)).to.equal(true);
+                    expect(containsCandidate(3, candidates)).to.equal(true);
+                    expect(containsCandidate(4, candidates)).to.equal(true);
+                    expect(containsCandidate(5, candidates)).to.equal(true);
+                    
+                    // Test ads
+                    expect(candidates[2]).to.have.property('advertiser');
+                    expect(candidates[5]).to.have.property('advertiser');
+                    
+                    done();
+                });
+            });
+        });
+        
+        it('It should get Candidates without ads for premium adblocker users',
+            (done) => {
+            async.waterfall([
+                function (next) {
+                    var criteria = {
+                        id:"0",
+                        isPremium: true,
+                        blockAds: true
+                    }
+                    testUtils.createUserByCriteria(criteria, next);
+                },
+                function (err, next) {
+                    testUtils.createUserByCriteria( {id:"1"}, next);
+                },
+                function (err, next) {
+                    testUtils.createUserByCriteria( {id:"2"}, next);
+                },
+                function (err, next) {
+                    testUtils.createUserByCriteria( {id:"3"}, next);
+                },
+                function (err, next) {
+                    testUtils.createUserByCriteria( {id:"4"}, next);
+                },
+                function (err, next) {
+                    testUtils.createUserByCriteria( {id:"5"}, next);
+                },
+                function (err, next) {
+                    var criteria = { "advertiser": "ad0" };
+                    testUtils.createAdByCriteria(criteria, next);
+                },
+                function (err, next) {
+                    var criteria = { "advertiser": "ad1" };
+                    testUtils.createAdByCriteria(criteria, next);
+                },
+                function (err, next) {
+                    var criteria = { "advertiser": "ad2" };
+                    testUtils.createAdByCriteria(criteria, next);
+                },
+                function (err, next) {
+                    var criteria = { "advertiser": "ad3" };
+                    testUtils.createAdByCriteria(criteria, next);
+                },
+                function (err, next) {
+                    var criteria = { "advertiser": "ad4" };
+                    testUtils.createAdByCriteria(criteria, next);
+                },
+                function (err, next) {
+                    var criteria = { "advertiser": "ad5" };
+                    testUtils.createAdByCriteria(criteria, next);
+                }
+            ],
+            function (err, user) {
+                should.not.exist(err);
+                
+                chai.request(server)
+                .get('/candidate/0')
+                .end((err, res) => {
+                    //console.log(err);
+                    should.not.exist(err);
+                    res.should.have.status(200);
+                    var data = res.body;
+                    var candidates = data.candidates;
+                    expect(data.metadata.count).to.equal(5);
+                    expect(containsCandidate(0, candidates)).to.equal(false);
+                    expect(containsCandidate(1, candidates)).to.equal(true);
+                    expect(containsCandidate(2, candidates)).to.equal(true);
+                    expect(containsCandidate(3, candidates)).to.equal(true);
+                    expect(containsCandidate(4, candidates)).to.equal(true);
+                    expect(containsCandidate(5, candidates)).to.equal(true);
+                    
+                    done();
+                });
+            });
+        });
+        
+        it('It should get Candidates with ads for non-adblocker premium users',
+            (done) => {
+            async.waterfall([
+                function (next) {
+                    var criteria = {
+                        id:"0",
+                        isPremium: true,
+                        blockAds: false
+                    }
+                    testUtils.createUserByCriteria(criteria, next);
+                },
+                function (err, next) {
+                    testUtils.createUserByCriteria( {id:"1"}, next);
+                },
+                function (err, next) {
+                    testUtils.createUserByCriteria( {id:"2"}, next);
+                },
+                function (err, next) {
+                    testUtils.createUserByCriteria( {id:"3"}, next);
+                },
+                function (err, next) {
+                    testUtils.createUserByCriteria( {id:"4"}, next);
+                },
+                function (err, next) {
+                    testUtils.createUserByCriteria( {id:"5"}, next);
+                },
+                function (err, next) {
+                    var criteria = { "advertiser": "ad0" };
+                    testUtils.createAdByCriteria(criteria, next);
+                },
+                function (err, next) {
+                    var criteria = { "advertiser": "ad1" };
+                    testUtils.createAdByCriteria(criteria, next);
+                },
+                function (err, next) {
+                    var criteria = { "advertiser": "ad2" };
+                    testUtils.createAdByCriteria(criteria, next);
+                },
+                function (err, next) {
+                    var criteria = { "advertiser": "ad3" };
+                    testUtils.createAdByCriteria(criteria, next);
+                },
+                function (err, next) {
+                    var criteria = { "advertiser": "ad4" };
+                    testUtils.createAdByCriteria(criteria, next);
+                },
+                function (err, next) {
+                    var criteria = { "advertiser": "ad5" };
+                    testUtils.createAdByCriteria(criteria, next);
+                }
+            ],
+            function (err, user) {
+                should.not.exist(err);
+                
+                chai.request(server)
+                .get('/candidate/0')
+                .end((err, res) => {
+                    //console.log(err);
+                    should.not.exist(err);
+                    res.should.have.status(200);
+                    var data = res.body;
+                    var candidates = data.candidates;
+                    expect(data.metadata.count).to.equal(7);
+                    expect(containsCandidate(0, candidates)).to.equal(false);
+                    expect(containsCandidate(1, candidates)).to.equal(true);
+                    expect(containsCandidate(2, candidates)).to.equal(true);
+                    expect(containsCandidate(3, candidates)).to.equal(true);
+                    expect(containsCandidate(4, candidates)).to.equal(true);
+                    expect(containsCandidate(5, candidates)).to.equal(true);
+                    
+                    // Test ads
+                    expect(candidates[2]).to.have.property('advertiser');
+                    expect(candidates[5]).to.have.property('advertiser');
+                    
+                    done();
+                });
+            });
+        });
     });
-    
+    return;
     describe('GET /candidate/:idUser', () => {
         it('It should filter inactive Candidates', (done) => {
             async.waterfall([
