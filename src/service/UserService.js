@@ -254,6 +254,10 @@ exports.updateUser = function (userData, callback) {
         },
         // Save images
         function (user, next) {
+            if (userData.images == undefined || userData.images.length == 0) {
+                next(null, user);
+                return;
+            }
             imageDao.saveImage(user.fbid,
                                userData.avatar.image.idImage,
                                userData.avatar.image.data,
