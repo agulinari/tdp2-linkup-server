@@ -241,7 +241,57 @@ exports.updateUser = function (userData, callback) {
             }
                         
             userDao.updateUser(user, next);
-        }    
+        },
+        // Delete images images
+        function (user, next) {
+            if (userData.images == undefined || userData.images.length == 0) {
+                next(null, user);
+                return;
+            }
+            imageDao.deleteImages(user.fbid, (err, data) => {
+                next(null, user);
+            });
+        },
+        // Save images
+        function (user, next) {
+            if (userData.images == undefined || userData.images.length == 0) {
+                next(null, user);
+                return;
+            }
+            imageDao.saveImage(user.fbid,
+                               userData.avatar.image.idImage,
+                               userData.avatar.image.data,
+                               (err, image) => {
+                if (err) {
+                    next(err);
+                    return;
+                }
+                if (0 == userData.images.length) {
+                    next(null, user);
+                    return;
+                }
+                var i = 0;
+                var imageCallback = function(err, image) {
+                    if (err) {
+                        next(err);
+                        return;
+                    }
+                    ++i;
+                    if (i >= userData.images.length) {
+                        next(null, user);
+                        return;
+                    }
+                    imageDao.saveImage(user.fbid,
+                                       userData.images[i].image.idImage,
+                                       userData.images[i].image.data,
+                                       imageCallback);
+                }
+                imageDao.saveImage(user.fbid,
+                                   userData.images[i].image.idImage,
+                                   userData.images[i].image.data,
+                                   imageCallback);
+            });
+        },    
     ],
     function (err, user) {
         if (err) {
