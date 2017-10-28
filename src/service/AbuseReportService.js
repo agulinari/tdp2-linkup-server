@@ -112,7 +112,7 @@ exports.saveAbuseReport = function (abuseReportData, callback) {
         function block(abuseReport, next) {
             blockService.saveBlock(abuseReport.idReporter,
                                    abuseReport.idReported,
-                                   (err, abuseReport) => {
+                                   (err, block) => {
                 if (err) {
                     next(err);
                     return;
@@ -184,6 +184,27 @@ exports.updateAbuseReport = function (abuseReportData, callback) {
             return;
         }
         callback(null, abuseReport);
+    });
+};
+
+/**
+ * Close AbuseReports
+ * @param {String} idUser
+ * @param {Function} callback
+ */
+exports.closeAbuseReports = function (idUser, callback) {
+    async.waterfall([
+        function (next) {
+            abuseReportDao.closeAbuseReportsForUser(idUser, next);
+        }
+    ],
+    function (err, data) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            return;
+        }
+        callback(null, data);
     });
 };
 

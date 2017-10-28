@@ -226,9 +226,9 @@ exports.updateAbuseReport = function(abuseReportData, callback) {
 };
 
 exports.closeAbuseReportsForUser = function(idUser, callback) {
-    AbuseReport.updateMany({idReported:idUser},
+    AbuseReport.update({idReported:idUser},
                            { $set: { isOpen: false} },
-                           null,
+                           { multi: true },
                            (err, value) => {
         if (err) {
             callback(err, null);

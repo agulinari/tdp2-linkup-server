@@ -102,12 +102,12 @@ exports.createAdByCriteria = function (c, callback) {
     }
     var body = {
         "ad": {
-                  "_id" : c.id != undefined ? c.id : null,
+            "_id" : c.id != undefined ? c.id : null,
             "advertiser": c.advertiser != undefined ? c.advertiser
                                                     : 'advertiser ' + c.id,
-                 "image": c.image != undefined ? c.image : '123',
-                   "url": c.url != undefined ? c.url : 'www.linkup.com',
-              "isactive": c.isActive != undefined ? c.isActive : true
+            "image": c.image != undefined ? c.image : '123',
+            "url": c.url != undefined ? c.url : 'www.linkup.com',
+            "isactive": c.isActive != undefined ? c.isActive : true
         }
     };
  
@@ -132,7 +132,6 @@ exports.createBlock = function (idBlockerUser, idBlockedUser, callback) {
 }
 
 exports.cleanUsers = function(callback) {
-    
     async.waterfall([
         function (next) {
             chai.request(server)
