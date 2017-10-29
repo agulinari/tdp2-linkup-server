@@ -254,7 +254,7 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
             },
             // Decrement Superlink count if not premium
             function (value, next) {
-                if (user.control.isPremium) {
+                if (user.control.isPremium || tipoDeLink != "Superlink") {
                     next(null, user);
                     return;
                 }

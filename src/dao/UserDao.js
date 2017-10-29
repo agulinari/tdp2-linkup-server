@@ -116,8 +116,6 @@ exports.updateToken = function (fbid, token, callback) {
 }
 
 exports.decrementSuperlinkCounter = function (user, callback) {
-    console.log(user.fbid);
-    console.log((user.control.availableSuperlinks - 1));
     User.update({ fbid: user.fbid },
                 { $set: { 'control.availableSuperlinks': (user.control.availableSuperlinks - 1) } },
                 { multi: true },
