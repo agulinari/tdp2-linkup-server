@@ -3,6 +3,7 @@
 var User = require('../model/User');
 var NotFound = require("../error/NotFound");
 var BadRequest = require("../error/BadRequest");
+var config = require('../config/Config');
 
 /**
  * Retrieves an User
@@ -101,9 +102,10 @@ exports.updateUser = function(userData, callback) {
 	});
 };
 
-exports.updateToken = function (fbid,token,callback) {
+exports.updateToken = function (fbid, token, callback) {
     User.update({ fbid: fbid },
                 { $set: { 'users.$.control.token': token} },
+                null,
                 (err, count) => {
                     if (err) {
                         callback(err);
@@ -112,6 +114,23 @@ exports.updateToken = function (fbid,token,callback) {
                     callback(null, count);
                 });
 }
+
+exports.resetSuperlinkCounter = function (callback) {
+    User.update(null,
+                {
+                    $set: {
+                        "control.availableSuperlinks": config.app.superlinkCount
+                    }
+                },
+                { multi: true },
+                (err, value) => {
+                    if (err) {
+                        callback(err, null);
+                        return;
+		            }
+                    callback(null, value);
+	            });
+};
 
 /**
  * Deletes an User

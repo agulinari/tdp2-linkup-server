@@ -215,114 +215,131 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
         var userLinkCandidate = null;
         var itemMatchCandidate = null;
         var itemMatchUser = null;
+        var user = {};
 
 
         //Si el usuario fue aceptado, guardo en la lista de aceptados el candidato aceptado el usuario
         //e inicio el match.Para este caso armo el response con el match true.
-
-
-                async.waterfall([
-                    function guardarActualizarLink(next){
-                        console.log("Usuario candidato para link con user OP2: "+userLinkCandidate);
-                        console.log("Haciendo Link usuario con candidato.... OP2");
-                        linkDao.saveOrUpdateUserLink(idUser,idCandidate,tipoDeLink,next);
-                    },
-                    function obtenerLinkUsuarioCandidato(value,next){
-                        console.log("Buscando usuarioLinkCandidate.... OP1");
-                        linkDao.getUserLinkByIdUserAndIdCandidate(idCandidate,idUser,next);
-                    },
-                    function obtenerCandidato(value,next){
-                        userLinkCandidate = value;
-                        console.log("Usuario candidato OP3: "+userLinkCandidate);
-                        if(userLinkCandidate!=null){
-                            console.log("Buscando candidato.... OP3");
-                            console.log("userLinkCandidate"+userLinkCandidate);
-                            userDao.findUser(idCandidate,next);
+        async.waterfall([
+            // Get User
+            function (next) {
+                userDao.findUser(idUser, (err, user) => {
+                    if (err) {
+                        next(err);
+                    }
+                    if (user == null) {
+                        next(new NotFound("No se encontro el usuario"));
+                        return;
+                    }
+                    if (! user.control.isActive) {
+                        next(new DisabledAccountError());
+                        return;
+                    }
+                    next(null, user);
+                });
+            },
+            function guardarActualizarLink(value, next) {
+                user = value;
+                console.log("Usuario candidato para link con user OP2: "+userLinkCandidate);
+                console.log("Haciendo Link usuario con candidato.... OP2");
+                linkDao.saveOrUpdateUserLink(idUser,idCandidate,tipoDeLink,next);
+            },
+            function obtenerLinkUsuarioCandidato(value,next){
+                console.log("Buscando usuarioLinkCandidate.... OP1");
+                linkDao.getUserLinkByIdUserAndIdCandidate(idCandidate,idUser,next);
+            },
+            function obtenerCandidato(value,next){
+                userLinkCandidate = value;
+                console.log("Usuario candidato OP3: "+userLinkCandidate);
+                if(userLinkCandidate!=null){
+                    console.log("Buscando candidato.... OP3");
+                    console.log("userLinkCandidate"+userLinkCandidate);
+                    userDao.findUser(idCandidate,next);
+                }else{
+                    console.log("op3");
+                    next(null,"op3");
+                }
+            },
+            function findImageCandidateUser(value,next){
+                 if(userLinkCandidate!=null){
+                        console.log("Buscando imagen candidato.... OP4");
+                        console.log("UserProfile candidato: "+value);
+                        if(value!=null && value!=undefined){
+                                console.log("Armando item candidate...OP4");
+                                itemMatchCandidate = {"fbid": idCandidate,"gender": value.gender,"name":value.firstName,
+                                                        "lastName":value.lastName,"age":value.birthday,"photo":"",
+                                                        "time": Date.now()};
+                                imageDao.findImage(idCandidate,value.avatar.image.idImage,next);
+                                
                         }else{
-                            console.log("op3");
-                            next(null,"op3");
+                            next(null,"op4");
                         }
-                    },
-                    function findImageCandidateUser(value,next){
-                         if(userLinkCandidate!=null){
-                                console.log("Buscando imagen candidato.... OP4");
-                                console.log("UserProfile candidato: "+value);
-                                if(value!=null && value!=undefined){
-                                        console.log("Armando item candidate...OP4");
-                                        itemMatchCandidate = {"fbid": idCandidate,"gender": value.gender,"name":value.firstName,
-                                                                "lastName":value.lastName,"age":value.birthday,"photo":"",
-                                                                "time": Date.now()};
-                                        imageDao.findImage(idCandidate,value.avatar.image.idImage,next);
-                                        
-                                }else{
-                                    next(null,"op4");
-                                }
-                          }else{
-                              console.log("op4");
-                              next(null,"op4");
-                          }
-                    },function saveMatchCandidate(value,next){
-                        if(userLinkCandidate!=null && itemMatchCandidate!=null){
-                                console.log("Guardando match user-candidate..OP5");
-                                itemMatchCandidate.photo = value.data;
-                                matchDao.saveOrUpdateUserMatch(idUser,idCandidate,itemMatchCandidate,next);
+                  }else{
+                      console.log("op4");
+                      next(null,"op4");
+                  }
+            },function saveMatchCandidate(value,next){
+                if(userLinkCandidate!=null && itemMatchCandidate!=null){
+                        console.log("Guardando match user-candidate..OP5");
+                        itemMatchCandidate.photo = value.data;
+                        matchDao.saveOrUpdateUserMatch(idUser,idCandidate,itemMatchCandidate,next);
+                }else{
+                     console.log("op5");
+                     next(null,"op5");
+                }    
+            },
+            function obtenerUsuario(value,next){
+                if(userLinkCandidate!=null){
+                    console.log("Obteniendo usuario...OP6");
+                    userDao.findUser(idUser,next);
+                 }else{
+                     console.log("op6");
+                     next(null,"op6");
+                 }
+                
+            },
+            function findImageUser(value,next){
+                console.log("Buscando imagen usuario.. OP7");
+                if(userLinkCandidate!=null){
+                        if(value!=null && value!=undefined){
+                            console.log("Armando item usuario... OP7");
+                            itemMatchUser = {"fbid": idUser,"gender": value.gender,"name":value.firstName,
+                                                        "lastName":value.lastName,"age":value.birthday,"photo":"",
+                                                        "time": Date.now()};
+                            imageDao.findImage(idUser,value.avatar.image.idImage,next);
+                            
                         }else{
-                             console.log("op5");
-                             next(null,"op5");
-                        }    
-                    },
-                    function obtenerUsuario(value,next){
-                        if(userLinkCandidate!=null){
-                            console.log("Obteniendo usuario...OP6");
-                            userDao.findUser(idUser,next);
-                         }else{
-                             console.log("op6");
-                             next(null,"op6");
-                         }
-                        
-                    },
-                    function findImageUser(value,next){
-                        console.log("Buscando imagen usuario.. OP7");
-                        if(userLinkCandidate!=null){
-                                if(value!=null && value!=undefined){
-                                    console.log("Armando item usuario... OP7");
-                                    itemMatchUser = {"fbid": idUser,"gender": value.gender,"name":value.firstName,
-                                                                "lastName":value.lastName,"age":value.birthday,"photo":"",
-                                                                "time": Date.now()};
-                                    imageDao.findImage(idUser,value.avatar.image.idImage,next);
-                                    
-                                }else{
-                                    next(null,"op7");
-                                }
-                        }else{
-                            console.log("op7");
                             next(null,"op7");
                         }
-                    },
-                    function saveMatchUser(value,next){
-                        if(userLinkCandidate!=null && itemMatchUser != null){
-                                    console.log("Guardando match candidate-user...OP8");
-                                    itemMatchUser.photo = value.data;
-                                    matchDao.saveOrUpdateUserMatch(idCandidate,idUser,itemMatchUser,next);
-                        }else{
-                            console.log("op8");
-                            next(null,"op8");
-                        }
-                       
+                }else{
+                    console.log("op7");
+                    next(null,"op7");
+                }
+            },
+            function saveMatchUser(value,next){
+                if(userLinkCandidate!=null && itemMatchUser != null){
+                            console.log("Guardando match candidate-user...OP8");
+                            itemMatchUser.photo = value.data;
+                            matchDao.saveOrUpdateUserMatch(idCandidate,idUser,itemMatchUser,next);
+                }else{
+                    console.log("op8");
+                    next(null,"op8");
+                }
+               
+            }
+            ],function (err, matches) {
+                    if (err) {
+                        callback(err);
+                        return;
                     }
-                    ],function (err, matches) {
-                            if (err) {
-                                callback(err);
-                                return;
-                            }
 
-                            console.log(JSON.stringify(matches));
-                            response = (userLinkCandidate!=null)?{'remainingSuperlinks': 0, 'match':true,metadata : utils.getMetadata(1)}:
-                                                                {'remainingSuperlinks': 0, 'match':false,metadata : utils.getMetadata(1)};
-                            callback(null, response);
-                            console.log("fin");
-                            return;
-                      });
+                    console.log(JSON.stringify(matches));
+                    response = (userLinkCandidate!=null)?{'availableSuperlinks': 0, 'match':true,metadata : utils.getMetadata(1)}:
+                                                        {'availableSuperlinks': 0, 'match':false,metadata : utils.getMetadata(1)};
+                    callback(null, response);
+                    console.log("fin");
+                    return;
+              });
 
     }
 };

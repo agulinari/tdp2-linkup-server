@@ -1,4 +1,5 @@
 var async = require('async');
+var config = require('../config/Config');
 var utils = require('../utils/Utils');
 var userDao = require('../dao/UserDao');
 var User = require('../model/User');
@@ -9,8 +10,6 @@ var GeoPoint = require('geopoint');
 var NotFound = require("../error/NotFound");
 var DisabledAccountError = require("../error/DisabledAccountError");
 var adService = require("./AdService");
-
-var AD_RATE = 2;
 
 exports.getCandidates = function (id, callback) {
     var user = {};
@@ -220,7 +219,7 @@ exports.getCandidates = function (id, callback) {
                 var ad = null;
                 candidatesPlusAds.push(candidates[0]);
                 for (var i = 1; i < candidates.length; ++i) {
-                    if (ads.length != 0 && ((i) % AD_RATE) == 0) {
+                    if (ads.length != 0 && ((i) % config.app.adRate) == 0) {
                         ad = ads.splice(Math.floor(Math.random() * ads.length),
                                         1);
                         candidatesPlusAds.push(ad[0]);
@@ -241,6 +240,7 @@ exports.getCandidates = function (id, callback) {
         //console.log("response a devolver:"+response);
         var response = {
             'candidates': response,
+            availableSuperlinks: user.control.availableSuperlinks,
             metadata : utils.getMetadata(response.length)
         }
         callback(null, response);
