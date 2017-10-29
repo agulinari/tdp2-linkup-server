@@ -226,6 +226,7 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                 userDao.findUser(idUser, (err, user) => {
                     if (err) {
                         next(err);
+                        return;
                     }
                     if (user == null) {
                         next(new NotFound("No se encontro el usuario"));
@@ -254,7 +255,7 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
             // Decrement Superlink count if not premium
             function (value, next) {
                 if (user.control.isPremium) {
-                    next();
+                    next(null, user);
                     return;
                 }
                 userDao.decrementSuperlinkCounter(user, (err, data) => {
