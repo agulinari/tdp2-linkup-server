@@ -115,6 +115,19 @@ exports.updateToken = function (fbid, token, callback) {
                 });
 }
 
+exports.decrementSuperlinkCounter = function (user, callback) {
+    User.update({ fbid: user.fbid },
+                { $set: { 'users.$.control.availableSuperlinks': (user.control.availableSuperlinks - 1) } },
+                null,
+                (err, count) => {
+                    if (err) {
+                        callback(err);
+                        return;
+                    }
+                    callback(null, count);
+                });
+}
+
 exports.resetSuperlinkCounter = function (callback) {
     User.update(null,
                 {

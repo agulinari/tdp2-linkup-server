@@ -235,14 +235,35 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                         next(new DisabledAccountError());
                         return;
                     }
+                    
+                    if (user.control.availableSuperlinks == 0
+                            && tipoDeLink == "Superlink") {
+                        next(new LinkError('El usuario no tiene superlinks disponibles'));
+                        return;
+                    }
+                    
                     next(null, user);
                 });
             },
             function guardarActualizarLink(value, next) {
-                user = value;
+                user = value.toObject();
                 console.log("Usuario candidato para link con user OP2: "+userLinkCandidate);
                 console.log("Haciendo Link usuario con candidato.... OP2");
                 linkDao.saveOrUpdateUserLink(idUser,idCandidate,tipoDeLink,next);
+            },
+            // Decrement Superlink count if not premium
+            function (value, next) {
+                if (user.control.isPremium) {
+                    next();
+                    return;
+                }
+                userDao.decrementSuperlinkCounter(user, (err, data) => {
+                    if (err) {
+                        next(err);
+                    }
+                    user.control.availableSuperlinks = user.control.availableSuperlinks - 1;
+                    next();
+                });
             },
             function obtenerLinkUsuarioCandidato(value,next){
                 console.log("Buscando usuarioLinkCandidate.... OP1");
@@ -334,8 +355,8 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                     }
 
                     console.log(JSON.stringify(matches));
-                    response = (userLinkCandidate!=null)?{'availableSuperlinks': 0, 'match':true,metadata : utils.getMetadata(1)}:
-                                                        {'availableSuperlinks': 0, 'match':false,metadata : utils.getMetadata(1)};
+                    response = (userLinkCandidate!=null)?{'availableSuperlinks': user.control.availableSuperlinks, 'match':true,metadata : utils.getMetadata(1)}:
+                                                        {'availableSuperlinks': user.control.availableSuperlinks, 'match':false,metadata : utils.getMetadata(1)};
                     callback(null, response);
                     console.log("fin");
                     return;
