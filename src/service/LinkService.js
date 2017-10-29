@@ -237,7 +237,8 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                         return;
                     }
                     
-                    if (user.control.availableSuperlinks == 0
+                    if (! user.control.isPremium
+                            && user.control.availableSuperlinks == 0
                             && tipoDeLink == "Superlink") {
                         next(new LinkError('El usuario no tiene superlinks disponibles'));
                         return;
