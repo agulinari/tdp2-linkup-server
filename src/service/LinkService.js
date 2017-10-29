@@ -262,10 +262,10 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                         next(err);
                     }
                     user.control.availableSuperlinks = user.control.availableSuperlinks - 1;
-                    next();
+                    next(null, user);
                 });
             },
-            function obtenerLinkUsuarioCandidato(value,next){
+            function obtenerLinkUsuarioCandidato(value, next){
                 console.log("Buscando usuarioLinkCandidate.... OP1");
                 linkDao.getUserLinkByIdUserAndIdCandidate(idCandidate,idUser,next);
             },
