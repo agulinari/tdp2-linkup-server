@@ -58,7 +58,9 @@ function notifyUser(fbidTo, fbidFrom, title, message, firstName, motive, onSucce
                 return;
             });
         } else {
-            console.log('ERROR: user or token is null')
+            console.log('ERROR: user or token is null');
+            console.log(user);
+            console.log(token);
         }
     });
 }
