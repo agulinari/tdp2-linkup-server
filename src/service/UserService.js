@@ -248,7 +248,9 @@ exports.updateUser = function (userData, callback) {
                                                    '',
                                                    '',
                                                    'Ban',
-                                                   () => { });
+                                                   () => {
+                                                       console.log('user ' + user.fbidTo + ' notification sent <BAN>');
+                                                   });
                     }
                 }
             }
