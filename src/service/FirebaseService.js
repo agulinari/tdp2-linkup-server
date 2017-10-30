@@ -31,6 +31,7 @@ exports.listenForNotificationRequests = function () {
 var userDao = require('../dao/UserDao');
 
 function notifyUser(fbidTo, fbidFrom, title, message, firstName, motive, onSuccess) {
+    console.log('fbidTo: ' + fbidTo);
     userDao.findUser(fbidTo, (err, user) => {
         if (err) {
             console.log(err);
@@ -59,8 +60,8 @@ function notifyUser(fbidTo, fbidFrom, title, message, firstName, motive, onSucce
             });
         } else {
             console.log('ERROR: user or token is null');
-            console.log(user);
-            console.log(token);
+            console.log('user: ' + user);
+            console.log('token: ' + token);
         }
     });
 }
