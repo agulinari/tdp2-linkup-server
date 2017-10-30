@@ -242,7 +242,7 @@ exports.updateUser = function (userData, callback) {
                         user.control.deactivationTime = new Date();
                         
                         // TODO: async call response should not be ignored
-                        firebaseService.notifyUser(user.fbidTo,
+                        firebaseService.notifyUser(user.fbid,
                                                    '',
                                                    '',
                                                    '',
