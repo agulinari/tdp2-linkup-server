@@ -2,6 +2,7 @@
 
 var Block = require('../model/Block');
 var NotFound = require("../error/NotFound");
+var BlockError = require("../error/BlockError");
 var BadRequest = require("../error/BadRequest");
 
 /**

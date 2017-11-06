@@ -4,6 +4,7 @@ var utils = require('../utils/Utils');
 var userDao = require('../dao/UserDao');
 var User = require('../model/User');
 var rejectionDao = require('../dao/RejectionDao');
+var activityLogService = require('./ActivityLogService');
 var blockService = require('./BlockService');
 var linkDao = require('../dao/LinkDao');
 var GeoPoint = require('geopoint');
@@ -32,11 +33,25 @@ exports.getCandidates = function (id, callback) {
                 next(null, user);
             });
         },
+        // Log activity
+        function (response, next) {
+            user = response;
+            var activityLog = {
+                idUser: user.fbid,
+                isPremium: user.control.isPremium,
+                activityType: 0
+            };
+            activityLogService.saveActivityLog(activityLog,
+                                               (err, activityLog) => {
+                if (err) {
+                    next(err, null);
+                    return;
+                }
+                next(null, activityLog);
+            });
+        },
         // Find candidates by user's criteria
         function (response, next) {
-            console.log('user: ' + JSON.stringify(response));
-            user = response;
-
             var now = new Date();
             var now_str = now.getFullYear() + '/'
             + (now.getMonth() < 9 ? '0' : '') + (now.getMonth() + 1) + '/'

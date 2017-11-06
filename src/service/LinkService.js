@@ -247,8 +247,24 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                     next(null, user);
                 });
             },
+            // Log activity
+            function (response, next) {
+                user = response.toObject();
+                var activityLog = {
+                    idUser: user.fbid,
+                    isPremium: user.control.isPremium,
+                    activityType: 1
+                };
+                activityLogService.saveActivityLog(activityLog,
+                                                   (err, activityLog) => {
+                    if (err) {
+                        next(err, null);
+                        return;
+                    }
+                    next(null, activityLog);
+                });
+            },
             function guardarActualizarLink(value, next) {
-                user = value.toObject();
                 console.log("Usuario candidato para link con user OP2: "+userLinkCandidate);
                 console.log("Haciendo Link usuario con candidato.... OP2");
                 linkDao.saveOrUpdateUserLink(idUser,idCandidate,tipoDeLink,next);

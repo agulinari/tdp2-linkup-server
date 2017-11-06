@@ -23,6 +23,7 @@ require('./app/MatchRoutes.js')(app);
 require('./app/AbuseReportRoutes.js')(app);
 require('./app/AdRoutes.js')(app);
 require('./app/CleanRoutes.js')(app);
+require('./app/StatRoutes.js')(app);
 
 app.all('*', function (req,res,next) {
     return res.sendStatus(401);
@@ -37,15 +38,15 @@ app.listen(config.server.port, function() {
 // Start Super-Link schedule task
 var userService = require('./service/UserService');
 var cron = require('node-cron');
-cron.schedule('*/5 * * * *', function(){
-    console.log('running a task every five minutes');
+cron.schedule('*/10 * * * *', function(){
+    console.log('Updating link counter every ten minutes');
     console.log(new Date);
     userService.resetSuperlinkCounter((err, data) => {
         if (err) {
             console.log(err);
             return;
         }
-        console.log(data);
+        //console.log(data);
     });
 });
 

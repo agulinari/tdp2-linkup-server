@@ -252,3 +252,76 @@ exports.deleteAllAbuseReports = function(callback) {
     });
 };
 
+/**
+ * Retrieves AbusReport stats by date and category
+ * @param {Object} criteria
+ * @param {Function} callback
+ **/
+exports.countAbuseReportsByDateAndCategory = function(criteria, callback) {
+    var query = {};
+    var time = {};
+
+    if (criteria.fromDate != undefined) {
+        time.$gte = criteria.fromDate;
+        query.time = time;
+    }
+    if (criteria.toDate != undefined) {
+        time.$lte = criteria.toDate;
+        query.time = time;
+    }
+   
+    AbuseReport.aggregate([
+        //{$match: { isOpen: true} },
+        
+        {
+            $group: {
+                "_id": {
+                    idCategory:"$idCategory"
+                },
+                "count": {
+                    $sum: 1
+                }
+            }
+        },  
+        {
+            $group: {
+                "_id": {
+                   idCategory:"$idCategory"
+                },
+                "abusiveLang": {
+                    $sum: { '$cond': [{'$eq':['$_id.idCategory', 1]}, '$count', 0] }
+                },
+                "illegalImage": {
+                    $sum: {'$cond': [{'$eq':['$_id.idCategory', 2]}, '$count', 0]}
+                },
+                "spam": {
+                    $sum: {'$cond': [{'$eq':['$_id.idCategory', 3]}, '$count', 0]}
+                },
+                "other": {
+                    $sum: {'$cond': [{'$eq':['$_id.idCategory', 4]}, '$count', 0]}
+                },
+                "total": {
+                    $sum: '$count'
+                }
+            }
+        },      
+        {
+            $project: {
+                abusiveLang: "$abusiveLang",
+                illegalImage: "$illegalImage",
+                spam: "$spam",
+                other: "$other",
+                total: "$total",
+                _id: false
+            }
+        }
+        
+    ], function (err, value) {
+        if (err) {
+            callback(err,null);
+            return;
+        }
+        callback(null, value);
+    });
+};
+
