@@ -105,7 +105,7 @@ exports.saveRejection = function (fbidUser, fbidCandidate, callback) {
             var activityLog = {
                 idUser: user.fbid,
                 isPremium: user.control.isPremium,
-                activityType: 1
+                activityType: 2
             };
             activityLogService.saveActivityLog(activityLog,
                                                (err, activityLog) => {
