@@ -24,6 +24,7 @@ require('./app/AbuseReportRoutes.js')(app);
 require('./app/AdRoutes.js')(app);
 require('./app/CleanRoutes.js')(app);
 require('./app/StatRoutes.js')(app);
+require('./app/RecommendationRoutes.js')(app);
 
 app.all('*', function (req,res,next) {
     return res.sendStatus(401);

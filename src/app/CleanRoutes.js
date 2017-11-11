@@ -53,6 +53,16 @@ module.exports = function (app) {
         }
     });
 
+    app.get('/clean/Recommendation', function (req, res, next) {
+        console.log('GET /clean/Recommendation');
+        try{
+            cleanCtrl.getCleanRecommendations(req, res);
+        } catch (err) {
+            console.log('GET /clean/Recommendation' + '\n'+ err);
+            return res.sendStatus(500);
+        }
+    });
+
 };
 
 

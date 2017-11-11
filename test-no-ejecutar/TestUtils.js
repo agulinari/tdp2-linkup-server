@@ -131,6 +131,22 @@ exports.createBlock = function (idBlockerUser, idBlockedUser, callback) {
         .end((err, res) => { callback(err, res); });
 }
 
+exports.createRecommendationByCriteria = function (c, callback) {
+    var body = {
+        "recommendation": {
+            "_id" : c.id == undefined ? null : c.id,
+            "idFromUser": c.idFromUser,
+            "idToUser": c.idToUser,
+            "idRecommendedUser": c.idRecommendedUser
+        }
+    };
+ 
+    chai.request(server)
+        .post('/Recommendation')
+        .send(body)
+        .end((err, res) => { callback(err, res); });
+}
+
 exports.cleanUsers = function(callback) {
     async.waterfall([
         function (next) {
@@ -153,6 +169,12 @@ exports.cleanUsers = function(callback) {
 exports.cleanAbuseReports = function(callback) {
     chai.request(server)
         .get('/clean/AbuseReport')
+        .end((err, res) => { callback(err, res); });
+}
+
+exports.cleanRecommendations = function(callback) {
+    chai.request(server)
+        .get('/clean/Recommendation')
         .end((err, res) => { callback(err, res); });
 }
 
