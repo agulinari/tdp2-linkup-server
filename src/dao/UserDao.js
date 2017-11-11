@@ -232,4 +232,61 @@ exports.countUserActiveBlocked = function(callback) {
     });
 };
 
+/**
+ * Retrieves User stats by active and blocked status
+ * @param {Object} criteria
+ * @param {Function} callback
+ **/
+exports.countUserPremiumBasicByActiveStatus = function(isActive, callback) {
+    User.aggregate([
+        { $match: {"control.isActive": isActive} },
+        
+        {
+            $group: {
+                "_id": { isPremium:"$control.isPremium" },
+                "count": { $sum: 1 }
+            }
+        },  
+        {
+            $group: {
+                "_id": {
+                   isPremium:"$isPremium"
+                },
+                "premium": {
+                    $sum: { '$cond': [{'$eq':['$_id.isPremium', true]}, '$count', 0] }
+                },
+                "basic": {
+                    $sum: {'$cond': [{'$eq':['$_id.isPremium', false]}, '$count', 0]}
+                },
+                "total": {
+                    $sum: '$count'
+                }
+            }
+        },    
+        {
+            $project: {
+                premium: "$premium",
+                basic: "$basic",
+                total: "$total",
+                _id: false
+            }
+        }
+        
+    ], function (err, value) {
+        if (err) {
+            callback(err,null);
+            return;
+        }
+        if (value.length === 0) {
+            value.push({
+                premium: 0,
+                basic: 0,
+                total: 0
+            });
+        }
+        
+        callback(null, value);
+    });
+};
+
 

@@ -33,10 +33,30 @@ exports.getUserActivityStats = function (fromDate, toDate, callback) {
  * Get User status stats
  * @param {Function} callback
  */
-exports.getUserStatus = function (callback) {
+exports.getUserActiveBlockedStats = function (callback) {
     async.waterfall([
         function (next) {
             userDao.countUserActiveBlocked(next);
+        }
+    ],
+    function (err, stats) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            return;
+        }
+        callback(null, stats);
+    });
+};
+
+/**
+ * Get User status stats
+ * @param {Function} callback
+ */
+exports.getUserPremiumBasicByActiveStatusStats = function (isActive, callback) {
+    async.waterfall([
+        function (next) {
+            userDao.countUserPremiumBasicByActiveStatus(isActive, next);
         }
     ],
     function (err, stats) {

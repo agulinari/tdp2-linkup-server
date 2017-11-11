@@ -12,12 +12,22 @@ module.exports = function (app) {
         }
     });
     
-    app.get('/stat/user/status', function (req, res, next) {
-        console.log('GET /stat/user/status');
+    app.get('/stat/user/ActiveStatus', function (req, res, next) {
+        console.log('GET /stat/user/ActiveStatus');
         try{
-            statCtrl.getUserStatus(req, res);
+            statCtrl.getUserActiveBlockedStats(req, res);
         } catch (err) {
-            console.log('GET /stat/user/status\n'+ err);
+            console.log('GET /stat/user/ActiveStatus\n'+ err);
+            return res.sendStatus(500);
+        }
+    });
+    
+    app.get('/stat/user/ActiveStatus/PremiumStatus', function (req, res, next) {
+        console.log('GET /stat/user/ActiveStatus/PremiumStatus');
+        try{
+            statCtrl.getUserPremiumBasicByActiveStatusStats(req, res);
+        } catch (err) {
+            console.log('GET /stat/user/ActiveStatus/PremiumStatus\n'+ err);
             return res.sendStatus(500);
         }
     });

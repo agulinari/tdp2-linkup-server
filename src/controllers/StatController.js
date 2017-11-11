@@ -20,8 +20,23 @@ exports.getUserActivityStats = function(req, res) {
 };
 
 //GET - Returns the User base status
-exports.getUserStatus = function(req, res) {
-    service.getUserStatus((err, stats) => {
+exports.getUserActiveBlockedStats = function(req, res) {
+    service.getUserActiveBlockedStats((err, stats) => {
+        if (err) {
+            return errorHandler.throwError(res, err);
+        }
+        var response = {
+            'stats': stats,
+            metadata : utils.getMetadata(stats.length)
+        }
+        return res.json(response);
+    });
+};
+
+//GET - Returns the User base status
+exports.getUserPremiumBasicByActiveStatusStats = function(req, res) {
+    var isActive = (req.query.isActive == 'true');
+    service.getUserPremiumBasicByActiveStatusStats(isActive, (err, stats) => {
         if (err) {
             return errorHandler.throwError(res, err);
         }
