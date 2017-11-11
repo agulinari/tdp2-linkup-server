@@ -211,6 +211,32 @@ exports.getCandidates = function (id, callback) {
             });
 
         },
+        // Sort candidates by Account Type
+        function (candidates,next){
+            if (candidates.length == 0) {
+                next(null, candidates);
+                return;
+            }
+            
+            var indexToDelete = [];
+            var candidatesPremium = [];
+            
+            for (var index = 0, len = candidates.length; index < len; index++) {
+                var isCandidatePremium = candidates[index].control.isPremium;
+                console.log("Es candidato Premium: "+isCandidatePremium);
+                if(isCandidatePremium){
+                    candidatesPremium.push(candidates[index]);
+                    indexToDelete.push(index); 
+                }
+            }
+            
+            for(var index = 0, len = indexToDelete.length; index < len; index++){ 
+                candidates.splice(indexToDelete[index],1); //Elimina el candidato con cuenta premium
+                candidates.unshift(candidatesPremium[index]); //Pongo el candidato con cuenta premium en la primera posicion
+            }
+            console.log("Fin proceso sor candidates by account type ");
+            next(null, candidates);            
+        },
         // Insert Ad content
         function (candidates, next) {
             if (candidates.length == 0) {
