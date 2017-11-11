@@ -40,18 +40,26 @@ exports.findActivityLogById = function(idActivityLog, callback) {
 exports.countActivityLogsByDateAndAccountType = function(criteria, callback) {
     var query = {};
     var time = {};
-
+    var dateParts;
     if (criteria.fromDate != undefined) {
-        time.$gte = criteria.fromDate;
+        dateParts = criteria.fromDate.split("/");
+        time.$gte = new Date(Date.UTC(dateParts[2],
+                                      dateParts[1] - 1,
+                                      dateParts[0],
+                                      0, 0, 0));
         query.time = time;
     }
     if (criteria.toDate != undefined) {
-        time.$lte = criteria.toDate;
+        dateParts = criteria.toDate.split("/");
+        time.$lte = new Date(Date.UTC(dateParts[2],
+                                      dateParts[1] - 1,
+                                      dateParts[0],
+                                      23, 59, 59));
         query.time = time;
     }
-   
+    console.log(query);
     ActivityLog.aggregate([
-        //{$match: { isOpen: true} },
+        { $match: query },
         
         {
             $group: {

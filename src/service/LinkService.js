@@ -3,7 +3,7 @@ var userDao = require('../dao/UserDao');
 var matchDao = require('../dao/UserMatchDao');
 var linkDao = require('../dao/LinkDao');
 var imageDao = require('../dao/ImageDao');
-
+var activityLogService = require('./ActivityLogService');
 var utils = require('../utils/Utils');
 var LinkError = require("../error/LinkError");
 var NotFound = require("../error/NotFound");

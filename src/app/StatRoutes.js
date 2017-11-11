@@ -12,6 +12,16 @@ module.exports = function (app) {
         }
     });
     
+    app.get('/stat/user/status', function (req, res, next) {
+        console.log('GET /stat/user/status');
+        try{
+            statCtrl.getUserStatus(req, res);
+        } catch (err) {
+            console.log('GET /stat/user/status\n'+ err);
+            return res.sendStatus(500);
+        }
+    });
+    
     app.get('/stat/AbuseReport', function (req, res, next) {
         console.log('GET /stat/AbuseReport');
         try{

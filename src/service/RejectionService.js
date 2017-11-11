@@ -1,6 +1,7 @@
 var async = require('async');
 var userDao = require('../dao/UserDao');
 var rejectionDao = require('../dao/RejectionDao');
+var activityLogService = require('./ActivityLogService');
 var utils = require('../utils/Utils');
 var RejectionError = require("../error/RejectionError");
 var NotFound = require("../error/NotFound");
