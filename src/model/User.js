@@ -1,4 +1,5 @@
 require('./db');
+var config = require('../config/Config');
 
 /**
  * Module dependencies.
@@ -54,7 +55,7 @@ const UserSchema = new Schema({
 	       deactivationTime: { type : Date, default: null },
 	              isPremium: {type: Boolean, default: false},
 	                  token: String,
-	    availableSuperlinks: {type: Number, default: 5}
+	    availableSuperlinks: {type: Number, default: config.app.superlinkCount}
 	}
 },{ collection: 'users' });
 

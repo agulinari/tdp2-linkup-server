@@ -1,3 +1,4 @@
+var firebaseService = require('./FirebaseService');
 var userDao = require('../dao/UserDao');
 var imageDao = require('../dao/ImageDao');
 var utils = require('../utils/Utils');
@@ -35,6 +36,9 @@ exports.getUser = function (fbidUser, callback) {
             return;
         }
         
+        callback(null, user);
+        
+        /*
         imageDao.findImages(fbidUser, (err, images) => {
             if (err) {
                 callback(err);
@@ -52,7 +56,7 @@ exports.getUser = function (fbidUser, callback) {
             });
             callback(null, user);	    
         });
-
+        */
     });
 };
 
@@ -221,6 +225,12 @@ exports.updateUser = function (userData, callback) {
                 });
             }
             if (userData.control != undefined) {
+                if (userData.control.isPremium != undefined) {
+                    user.control.isPremium = userData.control.isPremium;
+                }
+                if (userData.control.token != undefined) {
+                    user.control.token = userData.control.token;
+                }
                 if (userData.control.isActive != undefined) {
                     if (userData.control.isActive == true
                             && user.control.isActive == false) {
@@ -230,13 +240,18 @@ exports.updateUser = function (userData, callback) {
                             && user.control.isActive == true) {
                         user.control.isActive = false;
                         user.control.deactivationTime = new Date();
+                        
+                        // TODO: async call response should not be ignored
+                        firebaseService.notifyUser(user.fbid,
+                                                   '',
+                                                   '',
+                                                   '',
+                                                   '',
+                                                   'Ban',
+                                                   () => {
+                                                       console.log('user ' + user.fbidTo + ' notification sent <BAN>');
+                                                   });
                     }
-                }
-                if (userData.control.isPremium != undefined) {
-                    user.control.isPremium = userData.control.isPremium;
-                }
-                if (userData.control.token != undefined) {
-                    user.control.token = userData.control.token;
                 }
             }
                         
@@ -314,6 +329,26 @@ exports.updateToken = function(fbid,token,callback){
 }
 
 /**
+ * Reinit Superlink counter to all Users
+ * @param {Function} callback
+ */
+exports.resetSuperlinkCounter = function (callback) {
+    async.waterfall([
+        function (next) {
+            userDao.resetSuperlinkCounter(next);
+        }
+    ],
+    function (err, data) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            return;
+        }
+        callback(null, data);
+    });
+};
+
+/**
  * Delete User
  * @param {String} fbidUser
  * @param {Function} callback
@@ -353,5 +388,4 @@ exports.deleteUsers = function (callback) {
         });
     });
 };
-
 

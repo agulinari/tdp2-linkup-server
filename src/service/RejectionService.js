@@ -1,6 +1,7 @@
 var async = require('async');
 var userDao = require('../dao/UserDao');
 var rejectionDao = require('../dao/RejectionDao');
+var activityLogService = require('./ActivityLogService');
 var utils = require('../utils/Utils');
 var RejectionError = require("../error/RejectionError");
 var NotFound = require("../error/NotFound");
@@ -94,12 +95,29 @@ exports.saveRejection = function (fbidUser, fbidCandidate, callback) {
         function getUser(next) {
             userDao.findUser(fbidUser, next);
         },
-        function getCandidate(response, next) {
+        // Log activity
+        function (response, next) {
             user = response;
             if (user == null) {
 		        next(new NotFound("No se encontro el usuario"), null);
                 return;
             }
+            
+            var activityLog = {
+                idUser: user.fbid,
+                isPremium: user.control.isPremium,
+                activityType: 2
+            };
+            activityLogService.saveActivityLog(activityLog,
+                                               (err, activityLog) => {
+                if (err) {
+                    next(err, null);
+                    return;
+                }
+                next(null, activityLog);
+            });
+        },
+        function getCandidate(response, next) {           
             userDao.findUser(fbidCandidate, next);
         },
         function findRejections(response, next) {

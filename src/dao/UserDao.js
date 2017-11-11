@@ -3,6 +3,7 @@
 var User = require('../model/User');
 var NotFound = require("../error/NotFound");
 var BadRequest = require("../error/BadRequest");
+var config = require('../config/Config');
 
 /**
  * Retrieves an User
@@ -101,9 +102,10 @@ exports.updateUser = function(userData, callback) {
 	});
 };
 
-exports.updateToken = function (fbid,token,callback) {
+exports.updateToken = function (fbid, token, callback) {
     User.update({ fbid: fbid },
                 { $set: { 'users.$.control.token': token} },
+                null,
                 (err, count) => {
                     if (err) {
                         callback(err);
@@ -112,6 +114,36 @@ exports.updateToken = function (fbid,token,callback) {
                     callback(null, count);
                 });
 }
+
+exports.decrementSuperlinkCounter = function (user, callback) {
+    User.update({ fbid: user.fbid },
+                { $set: { 'control.availableSuperlinks': (user.control.availableSuperlinks - 1) } },
+                { multi: true },
+                (err, count) => {
+                    if (err) {
+                        callback(err);
+                        return;
+                    }
+                    callback(null, count);
+                });
+}
+
+exports.resetSuperlinkCounter = function (callback) {
+    User.update(null,
+                {
+                    $set: {
+                        "control.availableSuperlinks": config.app.superlinkCount
+                    }
+                },
+                { multi: true },
+                (err, value) => {
+                    if (err) {
+                        callback(err, null);
+                        return;
+		            }
+                    callback(null, value);
+	            });
+};
 
 /**
  * Deletes an User
@@ -142,4 +174,119 @@ exports.deleteAllUsers = function(callback) {
         callback(null, value);
     });
 };
+
+/**
+ * Retrieves User stats by active and blocked status
+ * @param {Object} criteria
+ * @param {Function} callback
+ **/
+exports.countUserActiveBlocked = function(callback) {   
+    User.aggregate([
+        //{ $match: query },
+        
+        {
+            $group: {
+                "_id": { isActive:"$control.isActive" },
+                "count": { $sum: 1 }
+            }
+        },  
+        {
+            $group: {
+                "_id": {
+                   isActive:"$isActive"
+                },
+                "active": {
+                    $sum: { '$cond': [{'$eq':['$_id.isActive', true]}, '$count', 0] }
+                },
+                "blocked": {
+                    $sum: {'$cond': [{'$eq':['$_id.isActive', false]}, '$count', 0]}
+                },
+                "total": {
+                    $sum: '$count'
+                }
+            }
+        },    
+        {
+            $project: {
+                active: "$active",
+                blocked: "$blocked",
+                total: "$total",
+                _id: false
+            }
+        }
+        
+    ], function (err, value) {
+        if (err) {
+            callback(err,null);
+            return;
+        }
+        if (value.length === 0) {
+            value.push({
+                active: 0,
+                blocked: 0,
+                total: 0
+            });
+        }
+        
+        callback(null, value[0]);
+    });
+};
+
+/**
+ * Retrieves User stats by active and blocked status
+ * @param {Object} criteria
+ * @param {Function} callback
+ **/
+exports.countUserPremiumBasicByActiveStatus = function(isActive, callback) {
+    User.aggregate([
+        { $match: {"control.isActive": isActive} },
+        
+        {
+            $group: {
+                "_id": { isPremium:"$control.isPremium" },
+                "count": { $sum: 1 }
+            }
+        },  
+        {
+            $group: {
+                "_id": {
+                   isPremium:"$isPremium"
+                },
+                "premium": {
+                    $sum: { '$cond': [{'$eq':['$_id.isPremium', true]}, '$count', 0] }
+                },
+                "basic": {
+                    $sum: {'$cond': [{'$eq':['$_id.isPremium', false]}, '$count', 0]}
+                },
+                "total": {
+                    $sum: '$count'
+                }
+            }
+        },    
+        {
+            $project: {
+                premium: "$premium",
+                basic: "$basic",
+                total: "$total",
+                _id: false
+            }
+        }
+        
+    ], function (err, value) {
+        if (err) {
+            callback(err,null);
+            return;
+        }
+        if (value.length === 0) {
+            value.push({
+                premium: 0,
+                basic: 0,
+                total: 0
+            });
+        }
+        
+        callback(null, value);
+    });
+};
+
 

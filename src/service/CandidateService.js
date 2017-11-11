@@ -1,16 +1,16 @@
 var async = require('async');
+var config = require('../config/Config');
 var utils = require('../utils/Utils');
 var userDao = require('../dao/UserDao');
 var User = require('../model/User');
 var rejectionDao = require('../dao/RejectionDao');
+var activityLogService = require('./ActivityLogService');
 var blockService = require('./BlockService');
 var linkDao = require('../dao/LinkDao');
 var GeoPoint = require('geopoint');
 var NotFound = require("../error/NotFound");
 var DisabledAccountError = require("../error/DisabledAccountError");
 var adService = require("./AdService");
-
-var AD_RATE = 2;
 
 exports.getCandidates = function (id, callback) {
     var user = {};
@@ -33,11 +33,25 @@ exports.getCandidates = function (id, callback) {
                 next(null, user);
             });
         },
+        // Log activity
+        function (response, next) {
+            user = response;
+            var activityLog = {
+                idUser: user.fbid,
+                isPremium: user.control.isPremium,
+                activityType: 0
+            };
+            activityLogService.saveActivityLog(activityLog,
+                                               (err, activityLog) => {
+                if (err) {
+                    next(err, null);
+                    return;
+                }
+                next(null, activityLog);
+            });
+        },
         // Find candidates by user's criteria
         function (response, next) {
-            console.log('user: ' + JSON.stringify(response));
-            user = response;
-
             var now = new Date();
             var now_str = now.getFullYear() + '/'
             + (now.getMonth() < 9 ? '0' : '') + (now.getMonth() + 1) + '/'
@@ -220,7 +234,7 @@ exports.getCandidates = function (id, callback) {
                 var ad = null;
                 candidatesPlusAds.push(candidates[0]);
                 for (var i = 1; i < candidates.length; ++i) {
-                    if (ads.length != 0 && ((i) % AD_RATE) == 0) {
+                    if (ads.length != 0 && ((i) % config.app.adRate) == 0) {
                         ad = ads.splice(Math.floor(Math.random() * ads.length),
                                         1);
                         candidatesPlusAds.push(ad[0]);
@@ -241,6 +255,7 @@ exports.getCandidates = function (id, callback) {
         //console.log("response a devolver:"+response);
         var response = {
             'candidates': response,
+            availableSuperlinks: user.control.availableSuperlinks,
             metadata : utils.getMetadata(response.length)
         }
         callback(null, response);

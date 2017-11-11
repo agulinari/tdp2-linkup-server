@@ -18,7 +18,10 @@ describe('AbuseReport service test', () => {
     beforeEach((done) => {
         async.waterfall([
             function (next) {
-                testUtils.cleanDB(next);
+                testUtils.cleanUsers(next);
+            },
+            function (res, next) {
+                testUtils.cleanAbuseReports(next);
             },
             function (res, next) {
                 testUtils.createUserByCriteria( {id:"0"}, next);
@@ -60,6 +63,7 @@ describe('AbuseReport service test', () => {
                 
                 var data = res.body;
                 var abuseReport = data.abuseReport;
+                console.log(data);
                 expect(abuseReport.idReporter).to.equal('0');
                 expect(abuseReport.idReported).to.equal('1');
                 expect(abuseReport.idCategory).to.equal(2);
@@ -88,7 +92,6 @@ describe('AbuseReport service test', () => {
                 done();
             });
         });
-
     });
     
     describe('PUT /AbuseReport', () => {
@@ -134,7 +137,72 @@ describe('AbuseReport service test', () => {
                 
             });
         });
+        
+        it("It should close all the User's AbuseReports", (done) => {
+            async.waterfall([
+                function (next) {
+                    var criteria = {
+                        "idReporter": "0",
+                        "idReported": "1",
+                        "isOpen": "true"
+                    };
+                    testUtils.createAbuseReportByCriteria(criteria, next);
+                },
+                function (res, next) {
+                    var criteria = {
+                        "idReporter": "2",
+                        "idReported": "1",
+                        "isOpen": "true"
+                    };
+                    testUtils.createAbuseReportByCriteria(criteria, next);
+                },
+                function (res, next) {
+                    var criteria = {
+                        "idReporter": "3",
+                        "idReported": "0",
+                        "isOpen": "true"
+                    };
+                    testUtils.createAbuseReportByCriteria(criteria, next);
+                },
+                function (res, next) {
+                    var body = {
+                        "abuseReport": {
+                            "idUser" : "1",
+                        }
+                    };
+                    chai.request(server)
+                    .put('/AbuseReport')
+                    .send(body)
+                    .end(next);
+                },
+            ],
+            function (err, res) {
+                if (err) {
+                    done(err);
+                    return;          
+                }
+                chai.request(server)
+                    .get('/AbuseReport/open')
+                    .end((err, res) => {
+                    
+                    //console.log(res);
+                    should.not.exist(err);
+                    res.should.have.status(200);
+                    var data = res.body;
+                    var reports = data.abuseReports;
+                    expect(data.metadata.count).to.equal(1);
+                    expect(containsAbuseReport(0, 1, reports)).to.equal(false);
+                    expect(containsAbuseReport(2, 1, reports)).to.equal(false);
+                    expect(containsAbuseReport(3, 0, reports)).to.equal(true);
+                                        
+                    done();
+                });             
+                
+            });
+        });
     });
+    
+    return;
     
     describe('GET /AbuseReport', () => {
    

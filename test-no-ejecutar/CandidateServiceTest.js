@@ -78,7 +78,7 @@ describe('Candidate service test', () => {
                 });
             });
         });
-        
+        return;
         it('It should get all user\'s Candidates with ads', (done) => {
             async.waterfall([
                 function (next) {

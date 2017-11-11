@@ -214,7 +214,7 @@ describe('Image service test', () => {
         
 
     });
-    return;
+    
     describe('PUT /user', () => {
         it('It should deactivate an User', (done) => {
             async.waterfall([

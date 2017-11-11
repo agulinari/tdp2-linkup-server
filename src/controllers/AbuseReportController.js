@@ -75,6 +75,21 @@ exports.putAbuseReport = function(req, res) {
         return;
     }
     */
+    if (ar.idUser != undefined && ar.idUser != null) {
+        service.closeAbuseReports(ar.idUser, (err, data) => {
+            if (err) {
+                return errorHandler.throwError(res, err);
+            }
+            var response = {
+                'data': data,
+                metadata : utils.getMetadata(1)
+            }
+            return res.json(response);
+        });
+        
+        return;
+    }
+    
     service.updateAbuseReport(ar, function(err, abuseReport) {
         if (err) {
             return errorHandler.throwError(res, err);

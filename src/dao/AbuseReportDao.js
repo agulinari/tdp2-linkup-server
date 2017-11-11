@@ -226,9 +226,9 @@ exports.updateAbuseReport = function(abuseReportData, callback) {
 };
 
 exports.closeAbuseReportsForUser = function(idUser, callback) {
-    AbuseReport.updateMany({idReported:idUser},
+    AbuseReport.update({idReported:idUser},
                            { $set: { isOpen: false} },
-                           null,
+                           { multi: true },
                            (err, value) => {
         if (err) {
             callback(err, null);
@@ -249,6 +249,97 @@ exports.deleteAllAbuseReports = function(callback) {
             return;
         }
         callback(null, value);
+    });
+};
+
+/**
+ * Retrieves AbusReport stats by date and category
+ * @param {Object} criteria
+ * @param {Function} callback
+ **/
+exports.countAbuseReportsByDateAndCategory = function(criteria, callback) {
+    var query = {};
+    var time = {};
+    var dateParts;
+    if (criteria.fromDate != undefined) {
+        dateParts = criteria.fromDate.split("/");
+        time.$gte = new Date(Date.UTC(dateParts[2],
+                                      dateParts[1] - 1,
+                                      dateParts[0],
+                                      0, 0, 0));
+        query.time = time;
+    }
+    if (criteria.toDate != undefined) {
+        dateParts = criteria.toDate.split("/");
+        time.$lte = new Date(Date.UTC(dateParts[2],
+                                      dateParts[1] - 1,
+                                      dateParts[0],
+                                      23, 59, 59));
+        query.time = time;
+    }
+   
+    AbuseReport.aggregate([
+        { $match: query },
+        
+        {
+            $group: {
+                "_id": {
+                    idCategory:"$idCategory"
+                },
+                "count": {
+                    $sum: 1
+                }
+            }
+        },  
+        {
+            $group: {
+                "_id": {
+                   idCategory:"$idCategory"
+                },
+                "abusiveLang": {
+                    $sum: { '$cond': [{'$eq':['$_id.idCategory', 1]}, '$count', 0] }
+                },
+                "illegalImage": {
+                    $sum: {'$cond': [{'$eq':['$_id.idCategory', 2]}, '$count', 0]}
+                },
+                "spam": {
+                    $sum: {'$cond': [{'$eq':['$_id.idCategory', 3]}, '$count', 0]}
+                },
+                "other": {
+                    $sum: {'$cond': [{'$eq':['$_id.idCategory', 4]}, '$count', 0]}
+                },
+                "total": {
+                    $sum: '$count'
+                }
+            }
+        },      
+        {
+            $project: {
+                abusiveLang: "$abusiveLang",
+                illegalImage: "$illegalImage",
+                spam: "$spam",
+                other: "$other",
+                total: "$total",
+                _id: false
+            }
+        }
+        
+    ], function (err, value) {
+        if (err) {
+            callback(err,null);
+            return;
+        }
+        if (value.length === 0) {
+            value.push({
+                abusiveLang: 0,
+                illegalImage: 0,
+                spam: 0,
+                other: 0,
+                total: 0
+            });
+        }
+        
+        callback(null, value[0]);
     });
 };
 

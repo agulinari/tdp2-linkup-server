@@ -1,3 +1,4 @@
+var config = require("./config/Config");
 var express = require("express");
 var bodyParser = require("body-parser");
 var url = require('url');
@@ -11,8 +12,6 @@ app.use(bodyParser.urlencoded({
 	extended: true
 }));
 
-app.set('port', (process.env.PORT || 3000));
-
 // Load routes
 require('./app/UserRoutes.js')(app);
 require('./app/ImageRoutes.js')(app);
@@ -24,6 +23,7 @@ require('./app/MatchRoutes.js')(app);
 require('./app/AbuseReportRoutes.js')(app);
 require('./app/AdRoutes.js')(app);
 require('./app/CleanRoutes.js')(app);
+require('./app/StatRoutes.js')(app);
 
 app.all('*', function (req,res,next) {
     return res.sendStatus(401);
@@ -31,75 +31,27 @@ app.all('*', function (req,res,next) {
 });
 
 // Start server
-app.listen(app.get('port'), function() {
-	console.log('Node app is running on port:', app.get('port'));
+app.listen(config.server.port, function() {
+	console.log('Node app is running on port:', config.server.port);
 });
 
-//Se integra con firebase
-
-var firebase = require("firebase-admin");
-var serviceAccount = require("./linkuptdp-firebase-key.json");
-var API_KEY = "AAAAVU9hATc:APA91bE6lGLOsFV13kyQOevjJV64VrrIM4FCeLLXCewE8pJa8XY27OYl8Kn6X7PqpvDB5uvmcrnszeZMU4ii0DONkpCTU_LD-iX0G_ZKDKseyxGHGYc1ozRX_iagbHA7lwQM9F0LtEyu";
-
-firebase.initializeApp({
-  credential: firebase.credential.cert(serviceAccount),
-  databaseURL: "https://linkuptdp.firebaseio.com"
-});
-
-ref = firebase.database().ref();
-
-function listenForNotificationRequests() {
-  var requests = ref.child('notifications');
-  requests.on('child_added', function(requestSnapshot) {
-    var request = requestSnapshot.val();
-    console.log("Request: "+JSON.stringify(request));
-    sendNotificationToUser(request.fbidTo, request.fbid, request.messageTitle,
-      request.messageBody, request.firstName, request.motive,
-      function() {
-        requestSnapshot.ref.remove();
-      }
-    );
-  }, function(error) {
-    console.error(error);
-  });
-};
-
-var userService = require(process.cwd() + '/src/service/UserService');
-
-function sendNotificationToUser(fbidTo, fbidFrom, title, message, firstName, motive, onSuccess) {
-	
- 
-    userService.getUser(fbidTo,function (err, value){
-
-        if(value!=null && value.control.token!=null){
-
-            var token = value.control.token;
-            var payload = {
-                data: {
-                    fbid: fbidFrom,
-                    fbidTo: fbidTo,
-                    title: title,
-                    body: message,
-                    firstName: firstName,
-                    motive: motive
-                }
-            };
-
-            firebase.messaging().sendToDevice(token, payload).then(function(response) {
-                // See the MessagingDevicesResponse reference documentation for
-                // the contents of response.
-                console.log("Successfully sent message:", response);
-                onSuccess();
-            }).catch(function(error) {
-                console.log("Error sending message:", error);
-                return;
-            });
+// Start Super-Link schedule task
+var userService = require('./service/UserService');
+var cron = require('node-cron');
+cron.schedule('*/10 * * * *', function(){
+    console.log('Updating link counter every ten minutes');
+    console.log(new Date);
+    userService.resetSuperlinkCounter((err, data) => {
+        if (err) {
+            console.log(err);
+            return;
         }
-        return;
+        //console.log(data);
     });
-}
+});
 
-// start listening
-listenForNotificationRequests();
+// Start listening firebase notifications
+var firebaseService = require("./service/FirebaseService");
+firebaseService.listenForNotificationRequests();
 
 module.exports = app; // for testing
