@@ -175,3 +175,47 @@ exports.deleteAllUsers = function(callback) {
     });
 };
 
+/**
+ * Retrieves User stats by active and blocked status
+ * @param {Object} criteria
+ * @param {Function} callback
+ **/
+exports.countUserActiveBlocked = function(callback) {   
+    User.aggregate([
+        //{ $match: query },
+        
+        {
+            $group: {
+                "_id": { isActive:"$control.isActive"},
+                "active": { $sum: {'$cond': [{'$eq':['$control.isActive',true]},1,0]} },
+                "blocked": { $sum: {'$cond': [{'$eq':['$control.isActive',false]},1,0]} },
+                "total": { $sum: 1 }
+            }
+        },
+        {
+            $project: {
+                active: "$active",
+                blocked: "$blocked",
+                total: "$total",
+                _id: false
+            }
+        }
+        
+    ], function (err, value) {
+        if (err) {
+            callback(err,null);
+            return;
+        }
+        if (value.length === 0) {
+            value.push({
+                active: 0,
+                blocked: 0,
+                total: 0
+            });
+        }
+        
+        callback(null, value[0]);
+    });
+};
+
+

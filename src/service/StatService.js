@@ -35,12 +35,8 @@ exports.getUserActivityStats = function (fromDate, toDate, callback) {
  */
 exports.getUserStatus = function (callback) {
     async.waterfall([
-        // Find ActivityLogs by date interval
         function (next) {
-            userDao.countActivityLogsByDateAndAccountType(criteria,
-                                                     (err, activityLogs) => {
-                next(err, activityLogs);
-            });
+            userDao.countUserActiveBlocked(next);
         }
     ],
     function (err, stats) {
