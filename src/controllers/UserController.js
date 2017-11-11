@@ -17,7 +17,7 @@ exports.getUsers = function (req, res) {
 
 exports.getUser = function (req, res) {
     var idUser = req.params.idUser;
-    /*
+    
     service.getUser(idUser, (err, user) => {
         if (err) {
             console.log(err);
@@ -29,7 +29,7 @@ exports.getUser = function (req, res) {
         }
         return res.json(response);
     });
-    */
+    /*
     service.deleteUser(idUser, (err, data) => {
         if (err) {
             return errorHandler.throwError(res, err);
@@ -40,6 +40,7 @@ exports.getUser = function (req, res) {
         }
         return res.json(response);
     });
+    */
 };
 
 exports.postUser = function (req, res) {
