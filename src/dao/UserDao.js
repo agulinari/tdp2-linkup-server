@@ -186,12 +186,26 @@ exports.countUserActiveBlocked = function(callback) {
         
         {
             $group: {
-                "_id": { isActive:"$control.isActive"},
-                "active": { $sum: {'$cond': [{'$eq':['$control.isActive',true]},1,0]} },
-                "blocked": { $sum: {'$cond': [{'$eq':['$control.isActive',false]},1,0]} },
-                "total": { $sum: 1 }
+                "_id": { isActive:"$control.isActive" },
+                "count": { $sum: 1 }
             }
-        },
+        },  
+        {
+            $group: {
+                "_id": {
+                   isActive:"$isActive"
+                },
+                "active": {
+                    $sum: { '$cond': [{'$eq':['$_id.isActive', true]}, '$count', 0] }
+                },
+                "blocked": {
+                    $sum: {'$cond': [{'$eq':['$_id.isActive', false]}, '$count', 0]}
+                },
+                "total": {
+                    $sum: '$count'
+                }
+            }
+        },    
         {
             $project: {
                 active: "$active",
