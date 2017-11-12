@@ -6,6 +6,7 @@ var User = require('../model/User');
 var rejectionDao = require('../dao/RejectionDao');
 var activityLogService = require('./ActivityLogService');
 var blockService = require('./BlockService');
+var recommendationService = require('./RecommendationService');
 var linkDao = require('../dao/LinkDao');
 var GeoPoint = require('geopoint');
 var NotFound = require("../error/NotFound");
@@ -181,6 +182,37 @@ exports.getCandidates = function (id, callback) {
             console.log('TODO: filtrar candidatos matcheados');
             next(null, candidates);
         },
+        
+        // Sort candidates by recommendations
+        function (candidates, next) {
+            if (candidates.length == 0) {
+                next(null, candidates);
+                return;
+            }
+            recommendationService.getRecommendedUsersToUser(user.fbid,
+                                                            (err, idUsers) => {
+                if (err) {
+                    next(err, null);
+                    return;
+                }
+                var indexToDelete = [];
+                var recommendedcandidates = [];
+                
+                for (var i = 0, len = candidates.length; i < len; i++) {
+                    if (isRecommended(candidates[i].fbid, idUsers)) {
+                        recommendedCandidates.push(candidates[i]);
+                        indexToDelete.push(i); 
+                    }
+                }
+                
+                for(var j = 0, len = indexToDelete.length; j < len; j++){ 
+                    candidates.splice(indexToDelete[j],1);
+                    candidates.unshift(recommendedCandidates[j]);
+                }
+                next(null, candidates);   
+            });
+        },
+                
         // Sort candidates by SuperLink priority
         function (candidates,next){
             if (candidates.length == 0) {
@@ -212,7 +244,7 @@ exports.getCandidates = function (id, callback) {
 
         },
         // Sort candidates by Account Type
-        function (candidates,next){
+        function (candidates, next){
             if (candidates.length == 0) {
                 next(null, candidates);
                 return;
@@ -352,6 +384,15 @@ function getDateFromAge(birthdate, age) {
     var month = birthdate.substring(5, 7);
     var year = birthdate.substring(0, 4);
     return (new Date().getFullYear() - age) + '/' + month + '/' + day;
+};
+
+function isRecommended(fbidCandidate, recommendedUsers) {
+    for (var id of recommendedUsers) {
+        if (id == fbidCandidate) {
+            return true;
+        }
+    }
+    return false;
 };
 
 function isRejected(fbidCandidate, rejections) {

@@ -130,10 +130,11 @@ describe('Block service test', () => {
                     done(err);
                     return;
                 }
-                
+                console.log('PRE');
                 chai.request(server)
                     .get('/recommendation/1')
                     .end((err, res) => {
+                    console.log('POS');
                     //console.log(res);
                     should.not.exist(err);
                     res.should.have.status(200);

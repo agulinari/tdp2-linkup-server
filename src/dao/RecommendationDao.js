@@ -31,12 +31,22 @@ exports.findRecommendation = function (idFromUser,
  * @param {Function} callback
  **/
 exports.findRecommendationsToUser = function(idUser, callback) {
-    var query = {
-        "idToUser": idUser,
-    };
+    var query = { "idToUser": idUser };
     var proj = "-_id -__v";
     Recommendation.find(query, proj, function (err, value) {
         callback(err, value);
+    });
+};
+
+/**
+ * Retrieves user's recommended users
+ * @param {String} idUser
+ * @param {Function} callback
+ **/
+exports.findRecommendedUsersToUser = function(idUser, callback) {
+    var q = { "idToUser": idUser }; // query
+    Recommendation.distinct("idRecommendedUser", q, (err, idUsers) => {
+        callback(err, idUsers);
     });
 };
 

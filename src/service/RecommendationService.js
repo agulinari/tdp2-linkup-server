@@ -45,6 +45,18 @@ exports.getRecommendationsToUser = function (idUser, callback) {
 };
 
 /**
+ * Get Recommendations for User
+ * @param {String} fbidUser
+ * @param {Function} callback
+ */
+exports.getRecommendedUsersToUser = function (idUser, callback) {
+    recommendationDao.findRecommendedUsersToUser(idUser,
+                                                (err, idUsers) => {
+        callback(err, idUsers);
+    });
+};
+
+/**
  * Get Recommendations
  * @param {Function} callback  The function to call when retrieval is complete.
  */
@@ -155,21 +167,13 @@ exports.saveRecommendation = function (idFromUser,
             recommendationDao.saveRecommendation(idFromUser,
                                                  idToUser,
                                                  idRecommendedUser,
-                                                 (err, recommendation) => {
-                if (err) {
-                    next(err, null);
-                    return;
-                }                
-                next(null, recommendation);
+                                                 (err, recommendation) => {                
+                next(err, recommendation);
             });
         }
     ],
     function (err, recommendation) {
-        if (err) {
-            callback(err);
-            return;
-        }
-        callback(null, recommendation);
+        callback(err, recommendation);
     });
 };
 

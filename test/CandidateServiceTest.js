@@ -78,7 +78,7 @@ describe('Candidate service test', () => {
                 });
             });
         });
-        return;
+        
         it('It should get all user\'s Candidates with ads', (done) => {
             async.waterfall([
                 function (next) {
@@ -1177,7 +1177,78 @@ describe('Candidate service test', () => {
         });
     });
 
-
+    describe('GET /candidate/:idUser', () => {
+        it('It should get all user\'s recommended candidates first', (done) => {
+            async.waterfall([
+                function (next) {
+                    testUtils.createUserByCriteria( {id:"0"}, next);
+                },
+                function (err, next) {
+                    testUtils.createUserByCriteria( {id:"1"}, next);
+                },
+                function (err, next) {
+                    testUtils.createUserByCriteria( {id:"2"}, next);
+                },
+                function (err, next) {
+                    testUtils.createUserByCriteria( {id:"3"}, next);
+                },
+                function (err, next) {
+                    testUtils.createUserByCriteria( {id:"4"}, next);
+                },
+                function (err, next) {
+                    testUtils.createUserByCriteria( {id:"5"}, next);
+                },
+                function (err, next) {
+                    testUtils.createUserByCriteria( {id:"5"}, next);
+                },
+                function (err, next) {
+                    var c = {
+                        "idFromUser": "1",
+                        "idToUser": "0",
+                        "idRecommendedUser": "5"
+                    };
+                    testUtils.createRecommendationByCriteria(c, next);
+                },
+                function (err, next) {
+                    var c = {
+                        "idFromUser": "1",
+                        "idToUser": "0",
+                        "idRecommendedUser": "3"
+                    };
+                    testUtils.createRecommendationByCriteria(c, next);
+                }
+            ],
+            function (err, user) {
+                should.not.exist(err);
+                
+                chai.request(server)
+                .get('/candidate/0')
+                .end((err, res) => {
+                    //console.log(err);
+                    should.not.exist(err);
+                    res.should.have.status(200);
+                    var data = res.body;
+                    var candidates = data.candidates;
+                    expect(data.metadata.count).to.equal(5);
+                    expect(containsCandidate(0, candidates)).to.equal(false);
+                    expect(containsCandidate(1, candidates)).to.equal(true);
+                    expect(containsCandidate(2, candidates)).to.equal(true);
+                    expect(containsCandidate(3, candidates)).to.equal(true);
+                    expect(containsCandidate(4, candidates)).to.equal(true);
+                    expect(containsCandidate(5, candidates)).to.equal(true);
+                    
+                    // Test order
+                    var fbid = candidates[0].fbid;
+                    expect(fbid === '5' || fbid === '3').to.be.true;
+                    fbid = candidates[1].fbid;
+                    expect(fbid === '5' || fbid === '3').to.be.true;
+                    expect(candidates[0].fbid != candidates[1].fbid).to.be.true;
+                    
+                    done();
+                });
+            });
+        });
+    });
 });
 
 function containsCandidate(fbid, candidates) {
