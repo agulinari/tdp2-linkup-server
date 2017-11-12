@@ -196,7 +196,7 @@ exports.getCandidates = function (id, callback) {
                     return;
                 }
                 var indexToDelete = [];
-                var recommendedcandidates = [];
+                var recommendedCandidates = [];
                 
                 for (var i = 0, len = candidates.length; i < len; i++) {
                     if (isRecommended(candidates[i].fbid, idUsers)) {
