@@ -36,7 +36,8 @@ function notifyUser(fbidTo, fbidFrom, title, message, firstName, motive, onSucce
         if (err) {
             console.log(err);
         }
-        if (user != null && user.control.token != null) {
+        if (user != null && user.control.token != null && 
+            (user.settings.notifications || motive == 'Ban')) {
             var token = user.control.token;
             var payload = {
                 data: {
