@@ -57,7 +57,7 @@ exports.countActivityLogsByDateAndAccountType = function(criteria, callback) {
                                       23, 59, 59));
         query.time = time;
     }
-    console.log(query);
+    
     ActivityLog.aggregate([
         { $match: query },
         
@@ -87,6 +87,9 @@ exports.countActivityLogsByDateAndAccountType = function(criteria, callback) {
                 }
             }
         },
+        
+        { $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1} },
+        
         {
             $project: {
                 date: {

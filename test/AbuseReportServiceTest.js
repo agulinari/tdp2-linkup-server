@@ -1,5 +1,4 @@
-//During the test the env variable is set to test
-process.env.NODE_ENV = 'test';
+process.env.NODE_ENV = 'TEST';
 
 //Require the dev-dependencies
 var chai = require('chai');
@@ -201,8 +200,6 @@ describe('AbuseReport service test', () => {
             });
         });
     });
-    
-    return;
     
     describe('GET /AbuseReport', () => {
    
@@ -414,7 +411,7 @@ describe('AbuseReport service test', () => {
         });
         
     });
-    return;
+    
     describe('DELETE /AbuseReport', () => {
         it('It should delete all AbuseReports', (done) => {
             async.waterfall([

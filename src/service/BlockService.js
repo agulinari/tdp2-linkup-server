@@ -3,6 +3,7 @@ var userDao = require('../dao/UserDao');
 var blockDao = require('../dao/BlockDao');
 var linkService = require('../service/LinkService');
 var matchService = require('../service/MatchService');
+var recommendationService = require('../service/RecommendationService');
 var utils = require('../utils/Utils');
 var BlockError = require("../error/BlockError");
 var NotFound = require("../error/NotFound");
@@ -105,38 +106,30 @@ exports.saveBlock = function (idBlockerUser, idBlockedUser, callback) {
         },
         function save(next) {
             blockDao.saveBlock(idBlockerUser, idBlockedUser, (err, block) => {
-                if (err) {
-                    next(err);
-                    return;
-                }
-                next(null, block);
+                next(err, block);
             });
         },
         function deleteBlockerUserLink(block, next) {
             linkService.deleteLink(idBlockerUser, idBlockedUser, (err, d) => {
-                if (err) {
-                    next(err);
-                    return;
-                }
-                next(null, block);
+                next(err, block);
             });
         },
         function deleteBlockedUserLink(block, next) {
             linkService.deleteLink(idBlockedUser, idBlockerUser, (err, d) => {
-                if (err) {
-                    next(err);
-                    return;
-                }
-                next(null, block);
+                next(err, block);
             });
         },
         function deleteMatchs(block, next) {
             matchService.deleteMatch(idBlockedUser, idBlockerUser, (err, d) => {
-                if (err) {
-                    next(err);
-                    return;
-                }
-                next(null, block);
+                next(err, block);
+            });
+        },
+        // Delete blocked user from the blocker user's recommendations
+        function (block, next) {
+            recommendationService.deleteUserRecommendationsToUser(idBlockerUser,
+                                                                  idBlockedUser,
+                                                                  (err, d) => {
+                next(err, block);
             });
         }
     ],
