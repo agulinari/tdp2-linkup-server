@@ -4,6 +4,7 @@ var matchDao = require('../dao/UserMatchDao');
 var linkDao = require('../dao/LinkDao');
 var imageDao = require('../dao/ImageDao');
 var activityLogService = require('./ActivityLogService');
+var recommendationService = require('./RecommendationService');
 var utils = require('../utils/Utils');
 var LinkError = require("../error/LinkError");
 var NotFound = require("../error/NotFound");
@@ -269,6 +270,14 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                 console.log("Haciendo Link usuario con candidato.... OP2");
                 linkDao.saveOrUpdateUserLink(idUser,idCandidate,tipoDeLink,next);
             },
+            
+            // Delete blocked user from the blocker user's recommendations
+            function (value, next) {
+                recommendationService.deleteUserRecommendationsToUser(idUser,
+                                                                      idCandidate,
+                                                                      next);
+            },
+                        
             // Decrement Superlink count if not premium
             function (value, next) {
                 if (user.control.isPremium || tipoDeLink != "Superlink") {
@@ -283,6 +292,7 @@ exports.linkCandidate = function (idUser,idCandidate,tipoDeLink, callback) {
                     next(null, user);
                 });
             },
+            
             function obtenerLinkUsuarioCandidato(value, next){
                 console.log("Buscando usuarioLinkCandidate.... OP1");
                 linkDao.getUserLinkByIdUserAndIdCandidate(idCandidate,idUser,next);

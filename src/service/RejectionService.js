@@ -2,6 +2,7 @@ var async = require('async');
 var userDao = require('../dao/UserDao');
 var rejectionDao = require('../dao/RejectionDao');
 var activityLogService = require('./ActivityLogService');
+var recommendationService = require('./RecommendationService');
 var utils = require('../utils/Utils');
 var RejectionError = require("../error/RejectionError");
 var NotFound = require("../error/NotFound");
@@ -132,6 +133,15 @@ exports.saveRejection = function (fbidUser, fbidCandidate, callback) {
             rejection = response;
             console.log('TODO: delete link if exists from candidate');
             next(null, rejection);
+        },
+        
+        // Delete blocked user from the blocker user's recommendations
+        function (rejection, next) {
+            recommendationService.deleteUserRecommendationsToUser(fbidUser,
+                                                                  fbidCandidate,
+                                                                  (err, d) => {
+                next(err, rejection);
+            });
         }
     ],
     function (err, rejection) {

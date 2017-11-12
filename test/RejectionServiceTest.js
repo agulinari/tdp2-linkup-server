@@ -102,6 +102,93 @@ describe('Rejection service test', () => {
                     done();
                 });
         });
+        
+        it('It should remove blocked user recomendations from blocker user',
+                (done) => {
+           
+            async.waterfall([
+                function (next) {
+                    var c = {
+                        "idFromUser": "0",
+                        "idToUser": "1",
+                        "idRecommendedUser": "2"
+                    };
+                    testUtils.createRecommendationByCriteria(c, next);
+                },
+                function (res, next) {
+                    var c = {
+                        "idFromUser": "2",
+                        "idToUser": "1",
+                        "idRecommendedUser": "0"
+                    };
+                    testUtils.createRecommendationByCriteria(c, next);
+                },
+                function (res, next) {
+                    var c = {
+                        "idFromUser": "3",
+                        "idToUser": "1",
+                        "idRecommendedUser": "0"
+                    };
+                    testUtils.createRecommendationByCriteria(c, next);
+                },
+                function (res, next) {
+                    var c = {
+                        "idFromUser": "4",
+                        "idToUser": "1",
+                        "idRecommendedUser": "0"
+                    };
+                    testUtils.createRecommendationByCriteria(c, next);
+                },
+                function (res, next) {
+                    var c = {
+                        "idFromUser": "0",
+                        "idToUser": "1",
+                        "idRecommendedUser": "3"
+                    };
+                    testUtils.createRecommendationByCriteria(c, next);
+                },
+                function (res, next) {
+                     var body = {
+                        "rejection": { "fbidUser": "1", "fbidCandidate": "0" }
+                    }; 
+                
+                    chai.request(server)
+                        .post('/rejection')
+                        .send(body)
+                        .end((err, res) => {
+                            //console.log(res);
+                            should.not.exist(err);
+                            res.should.have.status(200);
+                            
+                            next();
+                        });
+                }
+            ],
+            function (err, res) {
+                if (err) {
+                    done(err);
+                    return;
+                }
+                
+                chai.request(server)
+                    .get('/recommendation/1')
+                    .end((err, res) => {
+                    //console.log(res);
+                    should.not.exist(err);
+                    res.should.have.status(200);
+                    var data = res.body;
+                    var rs = data.recommendations;
+                    expect(data.metadata.count).to.equal(2);
+                    expect(containsRecommendation(0, 1, 2, rs)).to.equal(true);
+                    expect(containsRecommendation(2, 1, 0, rs)).to.equal(false);
+                    expect(containsRecommendation(3, 1, 0, rs)).to.equal(false);
+                    expect(containsRecommendation(4, 1, 0, rs)).to.equal(false);
+                    expect(containsRecommendation(0, 1, 3, rs)).to.equal(true);
+
+                    done();
+                });
+            });
+        });
     });
 
     describe('GET /rejection/:idUser/:idCandidate', () => {
@@ -109,10 +196,7 @@ describe('Rejection service test', () => {
             async.waterfall([
                 function (next) {
                     var body = {
-                        "rejection": {
-                            "fbidUser": "0",
-                            "fbidCandidate": "1"
-                        }
+                        "rejection": { "fbidUser": "0", "fbidCandidate": "1" }
                     }; 
                 
                     chai.request(server)
@@ -131,7 +215,6 @@ describe('Rejection service test', () => {
                     should.not.exist(err);
                     res.should.have.status(200);
                     var rejection = res.body.rejection;
-                    console.log('REJECTION: ' + rejection);
                     expect(rejection.fbidUser).to.equal('0');
                     expect(rejection.fbidCandidate).to.equal('1');
                     done();
@@ -170,3 +253,18 @@ describe('Rejection service test', () => {
     });
 
 });
+
+function containsRecommendation(idFromUser,
+                                idToUser,
+                                idRecommendedUser,
+                                recommendations) {
+    for (var i = 0; i < recommendations.length; ++i) {
+        if (recommendations[i].idFromUser == idFromUser
+                && recommendations[i].idToUser == idToUser
+                && recommendations[i].idRecommendedUser == idRecommendedUser) {
+            return true;
+        }
+    }
+    return false;
+};
+

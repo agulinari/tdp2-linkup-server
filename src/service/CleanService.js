@@ -20,14 +20,21 @@ var jsonValidator = require('../utils/JsonValidator');
  */
 exports.cleanUser = function (fbidUser, callback) {
     async.waterfall([
+        // Clean User
         function deleteUser(next) {
             userDao.deleteUser(fbidUser, next);
         },
+        // Clean User's images
         function deleteImages(data, next) {
             imageDao.deleteImages(fbidUser, next);
         },
+        // Clean User's rejections
         function deleteRejections(user, next) {
             rejectionDao.deleteUserRejections(fbidUser, next);
+        },
+        // Clean User's recommendations
+        function (user, next) {
+            recommendationDao.deleteRecommendationsToUser(fbidUser, next);
         }
     ],
     function (err, data) {
@@ -61,6 +68,9 @@ exports.cleanUsers = function (callback) {
         function deleteAbuseReports(data, next) {
             abuseReportDao.deleteAllAbuseReports(next);
         },
+        function (data, next) {
+            recommendationDao.deleteRecommendations(next);
+        }
     ],
     function (err, data) {
         if (err) {
