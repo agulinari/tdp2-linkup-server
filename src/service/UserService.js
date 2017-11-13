@@ -178,7 +178,7 @@ exports.updateUser = function (userData, callback) {
             });
         },
         // Update user
-        function update(user, next) {
+        function update(user, next) {        
             user = {
                       fbid: user.fbid,
                   birthday: userData.birthday != undefined
@@ -218,7 +218,9 @@ exports.updateUser = function (userData, callback) {
                    control: user.control
             };
 
-            if (userData.images != undefined) {
+            var updateImages = (userData.images != undefined
+                    && userData.images[0].image.data != undefined);
+            if (updateImages) {
                 user.images = [];
                 userData.images.forEach(function(e) {
                     user.images.push({image: {idImage: e.image.idImage}});
@@ -269,7 +271,9 @@ exports.updateUser = function (userData, callback) {
         },
         // Save images
         function (user, next) {
-            if (userData.images == undefined || userData.images.length == 0) {
+            if (userData.images == undefined
+                    || userData.images.length == 0
+                    || userData.images[0].image.data != undefined) {
                 next(null, user);
                 return;
             }
